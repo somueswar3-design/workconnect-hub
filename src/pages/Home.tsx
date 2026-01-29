@@ -50,13 +50,14 @@ const Home = () => {
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button asChild size="lg" className="gap-2">
                 <Link to="/register">
-                  Register Now
+                  I'm a Freelancer
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/dashboard">
-                  Browse Workers
+              <Button asChild size="lg" variant="outline" className="gap-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
+                <Link to="/browse">
+                  Find Talent
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
