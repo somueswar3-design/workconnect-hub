@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, Users, UserPlus, Home } from 'lucide-react';
+import { Briefcase, Users, UserPlus, Home, LayoutDashboard, UserSearch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -34,13 +34,24 @@ const Header = () => {
           </Button>
           
           <Button 
-            variant={isActive('/dashboard') ? 'default' : 'ghost'} 
+            variant={isActive('/browse') ? 'default' : 'ghost'} 
             asChild
             size="sm"
           >
-            <Link to="/dashboard" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
+            <Link to="/browse" className="flex items-center gap-2">
+              <UserSearch className="h-4 w-4" />
+              <span className="hidden sm:inline">Find Talent</span>
+            </Link>
+          </Button>
+          
+          <Button 
+            variant={isActive('/freelancer') ? 'default' : 'ghost'} 
+            asChild
+            size="sm"
+          >
+            <Link to="/freelancer" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">My Dashboard</span>
             </Link>
           </Button>
           

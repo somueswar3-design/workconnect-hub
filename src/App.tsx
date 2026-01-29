@@ -7,6 +7,9 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
+import RegisterChoice from "./pages/RegisterChoice";
+import FreelancerDashboard from "./pages/FreelancerDashboard";
+import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +26,10 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/register" element={<RegisterChoice />} />
+              <Route path="/register/freelancer" element={<Register />} />
+              <Route path="/freelancer" element={<FreelancerDashboard />} />
+              <Route path="/browse" element={<BrowseWorkers />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
