@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Shield, Zap, CheckCircle, Star, Laptop, Clock, DollarSign, Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award, Heart } from 'lucide-react';
+import { ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign, Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import heroImage from '@/assets/hero-freelancer.jpg';
+import teamImage from '@/assets/team-collaboration.jpg';
+import successImage from '@/assets/business-success.jpg';
 
 const Home = () => {
   const features = [
@@ -109,41 +112,60 @@ const Home = () => {
   
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
+      {/* Hero Section with Image */}
       <section className="relative overflow-hidden py-20 lg:py-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt="IT Professional working remotely" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background/80" />
+        </div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
         <div className="container relative">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-              🚀 Join 500+ IT Professionals Already Thriving
-            </Badge>
-            <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl">
-              <span className="text-primary">IT</span>
-              <span className="text-secondary">Work</span>
-              <span className="text-primary">Help</span>
-            </h1>
-            <p className="mb-4 text-2xl font-semibold text-foreground sm:text-3xl">
-              Connect IT Professionals with Projects
-            </p>
-            <p className="mb-8 text-lg text-muted-foreground max-w-2xl mx-auto">
-              The privacy-first freelancing platform for IT professionals. Work on your terms, 
-              protect your identity, and connect with quality projects that match your expertise.
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button asChild size="lg" className="gap-2 text-lg px-8 py-6">
-                <Link to="/register">
-                  Find Jobs / Support Work
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
-                <Link to="/browse">
-                  Hire IT Talent
-                  <Users className="h-5 w-5" />
-                </Link>
-              </Button>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                🚀 Join 500+ IT Professionals Already Thriving
+              </Badge>
+              <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                <span className="text-primary">IT</span>
+                <span className="text-secondary">Work</span>
+                <span className="text-primary">Help</span>
+              </h1>
+              <p className="mb-4 text-2xl font-semibold text-foreground sm:text-3xl">
+                Connect IT Professionals with Projects
+              </p>
+              <p className="mb-8 text-lg text-muted-foreground">
+                The privacy-first freelancing platform for IT professionals. Work on your terms, 
+                protect your identity, and connect with quality projects that match your expertise.
+              </p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
+                <Button asChild size="lg" className="gap-2 text-lg px-8 py-6">
+                  <Link to="/register">
+                    Become a Freelancer
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
+                  <Link to="/browse">
+                    Need Work Support
+                    <Users className="h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-2xl" />
+                <img 
+                  src={heroImage} 
+                  alt="IT Professional working" 
+                  className="relative rounded-3xl shadow-2xl border border-primary/20"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -339,33 +361,11 @@ const Home = () => {
             </div>
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-3xl blur-2xl" />
-              <Card className="relative border-none shadow-2xl">
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Headphones className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">24/7 IT Support</h3>
-                      <p className="text-muted-foreground">On-demand professionals</p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <span>React Developer</span>
-                      <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">Available</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <span>DevOps Engineer</span>
-                      <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">Available</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <span>Python Expert</span>
-                      <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">Busy</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <img 
+                src={successImage} 
+                alt="Business partnership" 
+                className="relative rounded-3xl shadow-2xl"
+              />
             </div>
           </div>
         </div>
@@ -399,30 +399,51 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-card border-t">
+      {/* Team Section with Image */}
+      <section className="py-16 lg:py-24 bg-card">
         <div className="container">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Laptop className="h-6 w-6 text-primary" />
-              <span className="font-bold">
-                <span className="text-primary">IT</span>
-                <span className="text-secondary">Work</span>
-                <span className="text-primary">Help</span>
-              </span>
+          <div className="grid gap-12 lg:grid-cols-2 items-center">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-2xl" />
+              <img 
+                src={teamImage} 
+                alt="Our team of IT professionals" 
+                className="relative rounded-3xl shadow-2xl"
+              />
             </div>
-            <p className="text-muted-foreground text-sm">
-              © 2024 ITWorkHelp. Connecting IT talent with opportunities.
-            </p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Heart className="h-4 w-4 text-secondary" />
-                Made for IT Professionals
-              </span>
+            <div>
+              <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+                Our Team
+              </Badge>
+              <h2 className="text-3xl font-bold mb-4">Expert IT Professionals</h2>
+              <p className="text-muted-foreground mb-6">
+                Our network consists of verified, experienced IT professionals ready to help with any technical challenge. 
+                From development to DevOps, we have experts in every domain.
+              </p>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span>Verified professionals with proven track records</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span>Coverage across all major IT technologies</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-primary" />
+                  <span>24/7 availability for urgent support needs</span>
+                </li>
+              </ul>
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/browse">
+                  Meet Our Freelancers
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 };
