@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import RegisterChoice from "./pages/RegisterChoice";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
+import ClientDashboard from "./pages/ClientDashboard";
 import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
         <Routes>
           {/* Dashboard routes - no header/footer */}
           <Route path="/freelancer/*" element={<FreelancerDashboard />} />
+          <Route path="/client/*" element={<ClientDashboard />} />
           
           {/* Public routes - with header/footer */}
           <Route path="/*" element={
