@@ -57,11 +57,11 @@ const Header = () => {
           </Button>
           
           <Button 
-            variant="outline" 
+            variant={isActive('/login') ? 'default' : 'outline'} 
             asChild
             size="sm"
           >
-            <Link to="/register" className="flex items-center gap-2">
+            <Link to="/login" className="flex items-center gap-2">
               <UserPlus className="h-4 w-4" />
               <span className="hidden sm:inline">Login</span>
             </Link>

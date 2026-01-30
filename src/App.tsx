@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import RegisterChoice from "./pages/RegisterChoice";
+import Login from "./pages/Login";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import BrowseWorkers from "./pages/BrowseWorkers";
@@ -38,6 +39,7 @@ const App = () => (
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/register" element={<RegisterChoice />} />
                   <Route path="/register/freelancer" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
                   <Route path="/browse" element={<BrowseWorkers />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
