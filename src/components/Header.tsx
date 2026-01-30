@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, UserPlus, Home, UserSearch, Users, Phone, Info } from 'lucide-react';
+import { Briefcase, UserPlus, Home, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -20,14 +20,6 @@ const Header = () => {
             <span className="text-primary">Help</span>
           </span>
         </Link>
-
-        {/* Contact Info - Desktop */}
-        <div className="hidden lg:flex items-center gap-2 text-sm">
-          <Phone className="h-4 w-4 text-primary" />
-          <a href="tel:9441363687" className="font-medium hover:text-primary transition-colors">
-            9441363687
-          </a>
-        </div>
         
         <nav className="flex items-center gap-1">
           <Button 
@@ -38,17 +30,6 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-2">
               <Home className="h-4 w-4" />
               <span className="hidden sm:inline">Home</span>
-            </Link>
-          </Button>
-          
-          <Button 
-            variant={isActive('/browse') ? 'default' : 'ghost'} 
-            asChild
-            size="sm"
-          >
-            <Link to="/browse" className="flex items-center gap-2">
-              <UserSearch className="h-4 w-4" />
-              <span className="hidden sm:inline">Find Talent</span>
             </Link>
           </Button>
           
@@ -65,24 +46,13 @@ const Header = () => {
           </Button>
 
           <Button 
-            variant={isActive('/hire') ? 'default' : 'ghost'} 
+            variant={isActive('/browse') ? 'default' : 'ghost'} 
             asChild
             size="sm"
           >
             <Link to="/browse" className="flex items-center gap-2">
-              <UserSearch className="h-4 w-4" />
+              <Briefcase className="h-4 w-4" />
               <span className="hidden sm:inline">Need Work Support</span>
-            </Link>
-          </Button>
-
-          <Button 
-            variant={isActive('/about') ? 'default' : 'ghost'} 
-            asChild
-            size="sm"
-          >
-            <Link to="/about" className="flex items-center gap-2">
-              <Info className="h-4 w-4" />
-              <span className="hidden sm:inline">About Us</span>
             </Link>
           </Button>
           
