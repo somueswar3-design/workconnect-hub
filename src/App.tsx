@@ -22,22 +22,29 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/register" element={<RegisterChoice />} />
-              <Route path="/register/freelancer" element={<Register />} />
-              <Route path="/freelancer" element={<FreelancerDashboard />} />
-              <Route path="/browse" element={<BrowseWorkers />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-          <FloatingContact />
-        </div>
+        <Routes>
+          {/* Dashboard routes - no header/footer */}
+          <Route path="/freelancer/*" element={<FreelancerDashboard />} />
+          
+          {/* Public routes - with header/footer */}
+          <Route path="/*" element={
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/register" element={<RegisterChoice />} />
+                  <Route path="/register/freelancer" element={<Register />} />
+                  <Route path="/browse" element={<BrowseWorkers />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+              <FloatingContact />
+            </div>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
