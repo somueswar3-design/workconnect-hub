@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, UserPlus, Home, Users } from 'lucide-react';
+import { Briefcase, UserPlus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -23,17 +23,6 @@ const Header = () => {
         
         <nav className="flex items-center gap-1">
           <Button 
-            variant={isActive('/') ? 'default' : 'ghost'} 
-            asChild
-            size="sm"
-          >
-            <Link to="/" className="flex items-center gap-2">
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Home</span>
-            </Link>
-          </Button>
-          
-          <Button 
             variant={isActive('/register') ? 'secondary' : 'outline'} 
             asChild
             size="sm"
@@ -41,7 +30,7 @@ const Header = () => {
           >
             <Link to="/register" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Become a Freelancer</span>
+              <span className="hidden sm:inline">Register</span>
             </Link>
           </Button>
 

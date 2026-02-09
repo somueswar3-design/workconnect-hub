@@ -4,10 +4,8 @@ import { ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign, G
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import heroImage from '@/assets/hero-freelancer.jpg';
+import HeroSlider from '@/components/HeroSlider';
 import teamImage from '@/assets/team-collaboration.jpg';
-import successImage from '@/assets/business-success.jpg';
-import developersTeamImage from '@/assets/developers-team.jpg';
 import modernOfficeImage from '@/assets/modern-office.jpg';
 import remoteWorkImage from '@/assets/remote-work.jpg';
 import businessHandshakeImage from '@/assets/business-handshake.jpg';
@@ -18,15 +16,7 @@ const fadeInUp: Variants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
-};
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { duration: 0.8 }
+    transition: { duration: 0.6, ease: 'easeOut' as const }
   }
 };
 
@@ -35,7 +25,7 @@ const slideInLeft: Variants = {
   visible: { 
     opacity: 1, 
     x: 0,
-    transition: { duration: 0.7, ease: "easeOut" }
+    transition: { duration: 0.7, ease: 'easeOut' as const }
   }
 };
 
@@ -44,16 +34,7 @@ const slideInRight: Variants = {
   visible: { 
     opacity: 1, 
     x: 0,
-    transition: { duration: 0.7, ease: "easeOut" }
-  }
-};
-
-const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { 
-    opacity: 1, 
-    scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" }
+    transition: { duration: 0.7, ease: 'easeOut' as const }
   }
 };
 
@@ -73,7 +54,7 @@ const staggerItem: Variants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" }
+    transition: { duration: 0.5, ease: 'easeOut' as const }
   }
 };
 
@@ -82,7 +63,7 @@ const floatAnimation = {
   transition: {
     duration: 3,
     repeat: Infinity,
-    ease: "easeInOut" as const
+    ease: 'easeInOut' as const
   }
 };
 
@@ -223,98 +204,8 @@ const Home = () => {
   
   return (
     <div className="flex flex-col overflow-hidden">
-      {/* Hero Section with Image */}
-      <section className="relative overflow-hidden py-16 lg:py-28">
-        <div className="absolute inset-0">
-          <motion.img 
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            src={developersTeamImage} 
-            alt="IT Professional working remotely" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/60" />
-        </div>
-        <div className="container relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              className="text-center lg:text-left"
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
-            >
-              <motion.div variants={staggerItem}>
-                <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-                  🚀 Join 500+ IT Professionals Already Thriving
-                </Badge>
-              </motion.div>
-              <motion.h1 
-                className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl"
-                variants={staggerItem}
-              >
-                <span className="text-primary">IT</span>
-                <span className="text-secondary">Work</span>
-                <span className="text-primary">Help</span>
-              </motion.h1>
-              <motion.p 
-                className="mb-4 text-2xl font-semibold text-foreground sm:text-3xl"
-                variants={staggerItem}
-              >
-                Connect IT Professionals with Projects
-              </motion.p>
-              <motion.p 
-                className="mb-8 text-lg text-muted-foreground"
-                variants={staggerItem}
-              >
-                The privacy-first freelancing platform for IT professionals. Work on your terms, 
-                protect your identity, and connect with quality projects that match your expertise.
-              </motion.p>
-              <motion.div 
-                className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start"
-                variants={staggerItem}
-              >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button asChild size="lg" className="gap-2 text-lg px-8 py-6">
-                    <Link to="/register">
-                      Become a Freelancer
-                      <ArrowRight className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground">
-                    <Link to="/browse">
-                      Need Work Support
-                      <Users className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-            <motion.div 
-              className="hidden lg:block"
-              initial="hidden"
-              animate="visible"
-              variants={slideInRight}
-            >
-              <div className="relative">
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-2xl"
-                  animate={floatAnimation}
-                />
-                <motion.img 
-                  src={heroImage} 
-                  alt="IT Professional working" 
-                  className="relative rounded-3xl shadow-2xl border border-primary/20"
-                  whileHover={{ scale: 1.02, rotate: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Slider Section */}
+      <HeroSlider />
 
       {/* Stats Section */}
       <section className="py-10 bg-primary">
@@ -451,7 +342,7 @@ const Home = () => {
                   { icon: Clock, title: 'Flexible Hours', desc: 'Work on your schedule', primary: false },
                   { icon: Laptop, title: 'Easy Demos', desc: 'Screen sharing & live sessions', primary: true },
                   { icon: Headphones, title: '24/7 Support', desc: 'Help when you need it', primary: false },
-                ].map((item, index) => (
+                ].map((item) => (
                   <motion.div 
                     key={item.title}
                     className="flex items-start gap-3"
@@ -498,7 +389,7 @@ const Home = () => {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            {techSkills.map((skill, index) => (
+            {techSkills.map((skill) => (
               <motion.div 
                 key={skill.name} 
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-background border hover:border-primary transition-colors cursor-pointer"
@@ -552,7 +443,7 @@ const Home = () => {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <motion.div
                 key={feature.title}
                 variants={staggerItem}
@@ -740,7 +631,7 @@ const Home = () => {
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
           >
-            {clientBenefits.map((benefit, index) => (
+            {clientBenefits.map((benefit) => (
               <motion.div 
                 key={benefit.title} 
                 className="text-center p-6 rounded-2xl bg-background hover:shadow-lg transition-shadow"
