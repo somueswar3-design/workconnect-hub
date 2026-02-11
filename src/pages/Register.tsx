@@ -1,333 +1,219 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Phone, ChevronDown } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { registerUser, verifyOtp } from '@/services/authApi';
+import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable/index';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-const countryCodes = [
-  { code: '+1', country: 'US', flag: '🇺🇸' },
-  { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+91', country: 'IN', flag: '🇮🇳' },
-  { code: '+61', country: 'AU', flag: '🇦🇺' },
-  { code: '+49', country: 'DE', flag: '🇩🇪' },
-  { code: '+33', country: 'FR', flag: '🇫🇷' },
-  { code: '+81', country: 'JP', flag: '🇯🇵' },
-  { code: '+86', country: 'CN', flag: '🇨🇳' },
-  { code: '+971', country: 'AE', flag: '🇦🇪' },
-  { code: '+65', country: 'SG', flag: '🇸🇬' },
-  { code: '+55', country: 'BR', flag: '🇧🇷' },
-  { code: '+52', country: 'MX', flag: '🇲🇽' },
-  { code: '+82', country: 'KR', flag: '🇰🇷' },
-  { code: '+234', country: 'NG', flag: '🇳🇬' },
-  { code: '+27', country: 'ZA', flag: '🇿🇦' },
-];
-
-const emailSchema = z.object({
+const registerSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').max(255),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
 });
 
-const mobileSchema = z.object({
-  countryCode: z.string().min(1, 'Select country code'),
-  mobile: z.string().regex(/^\d{7,15}$/, 'Enter a valid mobile number (7-15 digits)'),
-});
-
-type EmailFormData = z.infer<typeof emailSchema>;
-type MobileFormData = z.infer<typeof mobileSchema>;
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
-  const [step, setStep] = useState<'register' | 'otp'>('register');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('email');
-  const [mobileForOtp, setMobileForOtp] = useState('');
-  const [otpValue, setOtpValue] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const emailForm = useForm<EmailFormData>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: { email: '' },
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { email: '', password: '', confirmPassword: '' },
   });
 
-  const mobileForm = useForm<MobileFormData>({
-    resolver: zodResolver(mobileSchema),
-    defaultValues: { countryCode: '+91', mobile: '' },
-  });
-
-  const handleEmailRegister = async (data: EmailFormData) => {
+  const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      await registerUser({ email: data.email });
-      toast.success('Registration successful!');
-      navigate('/register/freelancer');
-    } catch {
-      toast.error('Registration failed. Please try again.');
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+      toast.success('Registration successful! Please check your email to verify your account, then log in.');
+      navigate('/login');
+    } catch (error: any) {
+      toast.error(error.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleMobileRegister = async (data: MobileFormData) => {
-    setIsLoading(true);
-    const fullMobile = `${data.countryCode}${data.mobile}`;
-    try {
-      await registerUser({ mobile: fullMobile });
-      setMobileForOtp(fullMobile);
-      setStep('otp');
-      toast.success('OTP sent to your mobile number!');
-    } catch {
-      toast.error('Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (otpValue.length !== 6) {
-      toast.error('Please enter a 6-digit OTP');
-      return;
-    }
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      await verifyOtp({ mobile: mobileForOtp, otp: otpValue });
-      toast.success('OTP verified successfully!');
-      navigate('/register/freelancer');
-    } catch {
-      toast.error('Invalid OTP. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setIsLoading(true);
-    try {
-      await registerUser({ mobile: mobileForOtp });
-      toast.success('OTP resent successfully!');
-    } catch {
-      toast.error('Failed to resend OTP.');
-    } finally {
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || 'Google sign-in failed.');
       setIsLoading(false);
     }
   };
 
   return (
     <div className="container py-12 flex items-center justify-center min-h-[70vh]">
-      <AnimatePresence mode="wait">
-        {step === 'register' ? (
-          <motion.div
-            key="register"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="w-full max-w-md"
-          >
-            <Card className="border-2">
-              <CardHeader className="text-center space-y-2">
-                <CardTitle className="text-2xl font-bold">
-                  Create Account
-                </CardTitle>
-                <CardDescription>
-                  Register with your email or mobile number
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="email" className="gap-2">
-                      <Mail className="h-4 w-4" />
-                      Email
-                    </TabsTrigger>
-                    <TabsTrigger value="mobile" className="gap-2">
-                      <Phone className="h-4 w-4" />
-                      Mobile
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="email">
-                    <Form {...emailForm}>
-                      <form onSubmit={emailForm.handleSubmit(handleEmailRegister)} className="space-y-4">
-                        <FormField
-                          control={emailForm.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Email Address</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="email"
-                                  placeholder="you@example.com"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                          {isLoading ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Registering...
-                            </>
-                          ) : (
-                            'Register with Email'
-                          )}
-                        </Button>
-                      </form>
-                    </Form>
-                  </TabsContent>
-
-                  <TabsContent value="mobile">
-                    <Form {...mobileForm}>
-                      <form onSubmit={mobileForm.handleSubmit(handleMobileRegister)} className="space-y-4">
-                        <FormField
-                          control={mobileForm.control}
-                          name="countryCode"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Country Code</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select country" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-background z-50">
-                                  {countryCodes.map((c) => (
-                                    <SelectItem key={c.code} value={c.code}>
-                                      {c.flag} {c.country} ({c.code})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={mobileForm.control}
-                          name="mobile"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Mobile Number</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="tel"
-                                  placeholder="9876543210"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                          {isLoading ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Sending OTP...
-                            </>
-                          ) : (
-                            'Send OTP'
-                          )}
-                        </Button>
-                      </form>
-                    </Form>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="otp"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="w-full max-w-md"
-          >
-            <Card className="border-2">
-              <CardHeader className="text-center space-y-2">
-                <CardTitle className="text-2xl font-bold">
-                  Verify OTP
-                </CardTitle>
-                <CardDescription>
-                  Enter the 6-digit code sent to {mobileForOtp}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={otpValue}
-                    onChange={setOtpValue}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-md"
+      >
+        <Card className="border border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-2">
+            <CardTitle className="text-2xl font-bold text-white">
+              Create Account
+            </CardTitle>
+            <CardDescription className="text-slate-400">
+              Register with your email and password
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">Email Address</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                          <Input
+                            type="email"
+                            placeholder="you@example.com"
+                            className="pl-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••••"
+                            className="pl-10 pr-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">Confirm Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••••"
+                            className="pl-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button
-                  onClick={handleVerifyOtp}
-                  className="w-full"
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white"
                   size="lg"
-                  disabled={isLoading || otpValue.length !== 6}
+                  disabled={isLoading}
                 >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Verifying...
+                      Creating Account...
                     </>
                   ) : (
-                    'Verify OTP'
+                    <>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Create Account
+                    </>
                   )}
                 </Button>
+              </form>
+            </Form>
 
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Didn't receive the code?
-                  </p>
-                  <Button
-                    variant="link"
-                    onClick={handleResendOtp}
-                    disabled={isLoading}
-                    className="text-sm"
-                  >
-                    Resend OTP
-                  </Button>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      onClick={() => { setStep('register'); setOtpValue(''); }}
-                      className="text-sm"
-                    >
-                      ← Back to Register
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-700" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-slate-800 px-2 text-slate-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Auth */}
+            <Button
+              variant="outline"
+              className="w-full border-slate-700 bg-slate-900/50 text-white hover:bg-slate-700/50"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+              </svg>
+              Continue with Google
+            </Button>
+
+            {/* Login link */}
+            <div className="text-center text-sm">
+              <span className="text-slate-400">Already have an account? </span>
+              <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-medium hover:underline">
+                Sign in here
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 };
