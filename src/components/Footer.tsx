@@ -12,10 +12,16 @@ const Footer = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
                 <Briefcase className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">
-                <span className="text-primary">IT</span>
-                <span className="text-secondary">Work</span>
-                <span className="text-primary">Help</span>
+              <span className="text-xl font-bold tracking-tight">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">
+                  IT
+                </span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
+                  Work
+                </span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">
+                  Help
+                </span>
               </span>
             </Link>
             <p className="text-background/70 text-sm">
