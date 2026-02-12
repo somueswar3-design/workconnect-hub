@@ -16,10 +16,6 @@ import { motion } from 'framer-motion';
 const registerSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').max(255),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Please confirm your password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -31,7 +27,7 @@ const Register = () => {
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '' },
+    defaultValues: { email: '', password: '' },
   });
 
   const handleRegister = async (data: RegisterFormData) => {
@@ -168,27 +164,6 @@ const Register = () => {
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-300">Confirm Password</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            className="pl-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500"
-                            {...field}
-                          />
                         </div>
                       </FormControl>
                       <FormMessage />
