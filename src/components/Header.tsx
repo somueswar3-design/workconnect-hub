@@ -1,31 +1,15 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const { isAuthenticated, user, logout } = useAuth();
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user && (location.pathname === '/login' || location.pathname === '/register')) {
-        navigate('/dashboard');
-      }
-    });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+  const handleLogout = () => {
+    logout();
     navigate('/');
   };
 
@@ -46,12 +30,12 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex items-center gap-2">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <Link
-                to="/dashboard"
+                to={user?.role === 'client' ? '/client' : '/freelancer'}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  isActive('/dashboard') ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  location.pathname.startsWith('/freelancer') || location.pathname.startsWith('/client') ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <LayoutDashboard className="h-4 w-4" />
@@ -78,7 +62,6 @@ const Header = () => {
                 <Users className="h-4 w-4" />
                 <span>Become a Freelancer</span>
               </Link>
-
               <Link
                 to="/register"
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
@@ -90,7 +73,6 @@ const Header = () => {
                 <Briefcase className="h-4 w-4" />
                 <span>Need Work Support</span>
               </Link>
-
               <Link
                 to="/login"
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
