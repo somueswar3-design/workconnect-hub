@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,23 +68,61 @@ const Register = () => {
   };
 
   return (
-    <div className="container py-12 flex items-center justify-center min-h-[70vh]">
+    <div
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2b46 70%, #0a1628 100%)',
+      }}
+    >
+      {/* Diagonal Lines Pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.1) 40px, rgba(255,255,255,0.1) 41px)',
+        }}
+      />
+
+      {/* Background Branding Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+        <div className="flex flex-col items-center gap-4 opacity-[0.03]">
+          <Monitor className="w-32 h-32 text-white" />
+          <span className="text-7xl font-extrabold tracking-widest text-white">
+            ITWorkHelp
+          </span>
+        </div>
+      </div>
+
+      {/* Main Form Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.4 }}
+        className="relative z-10 w-full max-w-md px-4"
       >
-        <Card className="border border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-2">
+        {/* Glass Card */}
+        <Card className="relative border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-2xl shadow-black/40 rounded-2xl overflow-hidden">
+          {/* Inner glow */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
+
+          <CardHeader className="relative text-center space-y-3 pb-2">
+            {/* Small Logo */}
+            <div className="flex items-center justify-center gap-2">
+              <Monitor className="h-5 w-5 text-cyan-400" />
+              <span className="text-sm font-semibold tracking-wide text-cyan-400">
+                ITWorkHelp
+              </span>
+            </div>
+
             <CardTitle className="text-2xl font-bold text-white">
               Create Account
             </CardTitle>
             <CardDescription className="text-slate-400">
-              Register with your email and password
+              Join our IT professional network
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+
+          <CardContent className="relative space-y-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
                 <FormField
@@ -99,7 +137,7 @@ const Register = () => {
                           <Input
                             type="email"
                             placeholder="you@example.com"
-                            className="pl-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            className="pl-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500"
                             {...field}
                           />
                         </div>
@@ -120,13 +158,13 @@ const Register = () => {
                           <Input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
-                            className="pl-10 pr-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            className="pl-10 pr-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500"
                             {...field}
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
@@ -148,7 +186,7 @@ const Register = () => {
                           <Input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
-                            className="pl-10 bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500"
+                            className="pl-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500"
                             {...field}
                           />
                         </div>
@@ -181,17 +219,17 @@ const Register = () => {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-700" />
+                <span className="w-full border-t border-white/10" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-slate-800 px-2 text-slate-500">Or continue with</span>
+                <span className="bg-[#0d1f35] px-2 text-slate-500">Or continue with</span>
               </div>
             </div>
 
             {/* Google Auth */}
             <Button
               variant="outline"
-              className="w-full border-slate-700 bg-slate-900/50 text-white hover:bg-slate-700/50"
+              className="w-full border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
             >
