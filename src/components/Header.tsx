@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
+import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -40,6 +40,15 @@ const Header = () => {
               >
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Dashboard</span>
+              </Link>
+              <Link
+                to="/gis-complaints"
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  location.pathname === '/gis-complaints' ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <MapPin className="h-4 w-4" />
+                <span>GIS Portal</span>
               </Link>
               <button
                 onClick={handleLogout}

@@ -19,6 +19,7 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
+import GISComplaints from "./pages/GISComplaints";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Dashboard routes - no header/footer */}
+            <Route path="/gis-complaints" element={<GISComplaints />} />
             <Route path="/freelancer/*" element={<FreelancerDashboard />} />
             <Route path="/client/*" element={<ClientDashboard />} />
             
