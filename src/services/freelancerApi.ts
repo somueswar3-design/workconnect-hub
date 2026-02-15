@@ -126,11 +126,12 @@ export const submitInterestForm = async (data: InterestFormData): Promise<{ succ
   };
 };
 
-// Get masked contact info for browse view
+// Get masked contact info for browse view - show only last 2 digits of mobile, hide email completely
 export const getMaskedProfile = (profile: WorkerProfile): WorkerProfile => {
+  const lastTwo = profile.mobile.replace(/\D/g, '').slice(-2);
   return {
     ...profile,
-    email: profile.email.replace(/(.{2})(.*)(@.*)/, '$1****$3'),
-    mobile: profile.mobile.replace(/(\+\d{1,3})-(\d{3})-(\d{4})/, '$1-***-$3').slice(0, -4) + '****',
+    email: '******@****.com',
+    mobile: `XXXXXXXX${lastTwo}`,
   };
 };
