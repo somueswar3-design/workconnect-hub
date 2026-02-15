@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Users, Loader2, Phone, Mail, Star, ChevronLeft, ChevronRight, Shield, Clock, Award, Zap, CheckCircle2, Eye, MapPin, Briefcase } from 'lucide-react';
+import { Search, Filter, Users, Loader2, Phone, Mail, Star, ChevronLeft, ChevronRight, Shield, Clock, Award, Zap, CheckCircle2, Eye, MapPin, Briefcase, UserPlus, FileText, Video, ClipboardCheck, Handshake, CreditCard, Play, Trophy, BadgeDollarSign, UserCheck, CalendarCheck, FileSignature, Banknote, Target } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,9 +36,9 @@ const promoSlides = [
     icon: CheckCircle2,
   },
   {
-    title: "Only 5% Service Commission",
+    title: "Only 15% Service Commission",
     subtitle: "Transparent pricing with no hidden fees",
-    description: "We charge only 5% commission on the agreed hourly rate. Payment starts only after admin approval and assignment. Fair, simple, and transparent.",
+    description: "We charge only 15% commission on the agreed project amount. Payment starts only after admin approval and assignment. Fair, simple, and transparent.",
     gradient: "from-violet-600 to-purple-700",
     icon: Shield,
   },
@@ -146,7 +146,7 @@ const BrowseWorkers = () => {
                   { step: '2', text: 'Request FREE demo' },
                   { step: '3', text: 'Admin arranges demo' },
                   { step: '4', text: 'Approve & start work' },
-                  { step: '5', text: 'Only 5% commission' },
+                  { step: '5', text: 'Only 15% commission' },
                 ].map((item) => (
                   <div key={item.step} className="flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-xs font-bold">{item.step}</span>
@@ -172,6 +172,9 @@ const BrowseWorkers = () => {
         </div>
       </div>
 
+      {/* ─── Project Lifecycle Section ─── */}
+      <ProjectLifecycle />
+
       <div className="container py-6">
         {/* Stats Bar */}
         <div className="flex flex-wrap gap-2 mb-5">
@@ -182,7 +185,7 @@ const BrowseWorkers = () => {
             <Zap className="h-3.5 w-3.5 mr-1.5" />Free Demo Available
           </Badge>
           <Badge className="py-1.5 px-3 bg-violet-500/10 text-violet-600 border-violet-500/20">
-            <Shield className="h-3.5 w-3.5 mr-1.5" />Only 5% Commission
+            <Shield className="h-3.5 w-3.5 mr-1.5" />Only 15% Commission
           </Badge>
         </div>
 
@@ -292,6 +295,100 @@ const BrowseWorkers = () => {
           }}>
             Talk to Our Team
           </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Project Lifecycle Section ─── */
+const lifecycleSteps = [
+  { step: 1, title: 'User Registration', desc: 'User selects role (Freelancer or Client) and completes registration with required information', icon: UserPlus, color: 'from-blue-500 to-blue-600' },
+  { step: 2, title: 'Freelancer Profile Creation', desc: 'Freelancer adds skills, experience, work history, hourly rate, and portfolio', icon: FileText, color: 'from-cyan-500 to-cyan-600' },
+  { step: 3, title: 'Client Searches for Freelancers', desc: 'Client uses filters (skill, experience, rate, availability) to find suitable freelancers', icon: Search, color: 'from-indigo-500 to-indigo-600' },
+  { step: 4, title: 'Client Sends Hiring Request', desc: 'Client submits request with project details, budget, and timeline', icon: Mail, color: 'from-violet-500 to-violet-600' },
+  { step: 5, title: 'Admin Reviews Request', desc: "Admin verifies both parties' credentials and project feasibility", icon: ClipboardCheck, color: 'from-purple-500 to-purple-600' },
+  { step: 6, title: 'HR Schedules Demo Call', desc: 'HR team coordinates video call between client, freelancer, and HR representative', icon: CalendarCheck, color: 'from-pink-500 to-pink-600' },
+  { step: 7, title: 'Demo Call Conducted', desc: 'Skills verification, requirement discussion, and compatibility assessment', icon: Video, color: 'from-rose-500 to-rose-600' },
+  { step: 8, title: 'HR Decision', desc: 'HR approves/rejects based on demo call outcomes and documents notes', icon: UserCheck, color: 'from-orange-500 to-orange-600' },
+  { step: 9, title: 'Agreement Generation', desc: 'Two agreements created: Client-Platform and Freelancer-Platform', icon: FileSignature, color: 'from-amber-500 to-amber-600' },
+  { step: 10, title: 'Both Parties Sign Agreements', desc: 'Digital signatures collected from client and freelancer', icon: Handshake, color: 'from-yellow-500 to-yellow-600' },
+  { step: 11, title: '30-Day Advance Payment', desc: 'Client pays full project amount in advance', icon: Banknote, color: 'from-lime-500 to-lime-600' },
+  { step: 12, title: 'Platform Commission Deduction', desc: '15% commission automatically deducted and credited to WorkSupport360', icon: BadgeDollarSign, color: 'from-emerald-500 to-emerald-600' },
+  { step: 13, title: 'Work Allocation & Project Start', desc: 'Freelancer is officially assigned and project begins', icon: Play, color: 'from-teal-500 to-teal-600' },
+  { step: 14, title: 'Milestone-Based Payments', desc: 'Freelancer receives payment as milestones are completed and approved', icon: Target, color: 'from-sky-500 to-sky-600' },
+  { step: 15, title: 'Project Completion & Closure', desc: 'Final payment released, project marked complete, ratings collected', icon: Trophy, color: 'from-green-500 to-green-600' },
+];
+
+const ProjectLifecycle = () => {
+  return (
+    <div className="bg-muted/30 border-y border-border">
+      <div className="container py-12">
+        <div className="text-center mb-10">
+          <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-sm px-4 py-1">Complete Project Lifecycle</Badge>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">How WorkSupport360 Works</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
+            From registration to project completion — a transparent, secure, and fully managed process for both clients and freelancers.
+          </p>
+        </div>
+
+        {/* Timeline */}
+        <div className="relative">
+          {/* Center line - desktop */}
+          <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20 -translate-x-1/2" />
+
+          <div className="space-y-4 lg:space-y-0">
+            {lifecycleSteps.map((item, idx) => {
+              const Icon = item.icon;
+              const isLeft = idx % 2 === 0;
+
+              return (
+                <div key={item.step} className="relative lg:flex lg:items-center lg:min-h-[100px]">
+                  {/* Desktop: alternating left/right */}
+                  <div className={`lg:w-1/2 ${isLeft ? 'lg:pr-12 lg:text-right' : 'lg:pl-12 lg:ml-auto'}`}>
+                    <div className={`group flex items-start gap-3 p-4 rounded-xl bg-card border border-border/60 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 ${isLeft ? 'lg:flex-row-reverse lg:text-left' : ''}`}>
+                      {/* Icon */}
+                      <div className={`flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-bold text-muted-foreground bg-muted rounded-full px-2 py-0.5">STEP {item.step}</span>
+                        </div>
+                        <h3 className="text-sm font-bold text-foreground leading-tight mb-1">{item.title}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Center dot - desktop */}
+                  <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card border-2 border-primary items-center justify-center shadow-md z-10">
+                    <span className="text-[10px] font-extrabold text-primary">{item.step}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Bottom Summary */}
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            { icon: Shield, title: '100% Free Demos', desc: 'No charges until you approve the freelancer after demo', color: 'text-emerald-600 bg-emerald-500/10' },
+            { icon: BadgeDollarSign, title: '15% Transparent Commission', desc: 'Only deducted after advance payment — no hidden fees', color: 'text-violet-600 bg-violet-500/10' },
+            { icon: Trophy, title: 'Milestone Payments', desc: 'Freelancers get paid per milestone — ensuring quality delivery', color: 'text-amber-600 bg-amber-500/10' },
+          ].map((card) => (
+            <div key={card.title} className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border/60">
+              <div className={`p-2.5 rounded-lg ${card.color}`}>
+                <card.icon className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-foreground">{card.title}</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">{card.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
