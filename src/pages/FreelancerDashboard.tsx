@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
-  Languages, Lock, ChevronDown, Star, DollarSign
+  Languages, Lock, ChevronDown, Star, DollarSign, TrendingUp, Users, CheckCircle2,
+  Wifi, WifiOff, ChevronLeft, ChevronRight, Shield, Zap, Award, Target
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +13,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { getAssignedProjects, getFreelancerStats } from '@/services/freelancerApi';
+import WorkHistoryTimeline from '@/components/WorkHistoryTimeline';
+import { AssignedProject, FreelancerStats } from '@/types/project';
 
 interface FreelancerFormData {
   fullName: string;
@@ -28,8 +35,50 @@ interface FreelancerFormData {
   primaryLanguage: string;
   otherLanguages: string[];
   companyAlias: string;
-  availability: 'available' | 'busy' | 'offline';
 }
+
+const promoSlides = [
+  {
+    title: "Complete Your Profile Today",
+    description: "Freelancers with complete profiles get 3x more work opportunities. Update your skills, experience, and hourly rate to stand out.",
+    icon: User,
+    gradient: "from-[hsl(217,91%,50%)] to-[hsl(217,91%,35%)]",
+    cta: "Update Profile",
+    tab: "profile",
+  },
+  {
+    title: "Set Your Hourly Rate",
+    description: "Define your worth! We match you with clients looking for your exact skill set and budget range. Fair rates attract quality projects.",
+    icon: DollarSign,
+    gradient: "from-[hsl(160,84%,39%)] to-[hsl(160,84%,25%)]",
+    cta: "Set Rate Now",
+    tab: "profile",
+  },
+  {
+    title: "We Find Work For You",
+    description: "Once your profile is complete, our system matches you with clients. You'll be notified via email or phone when a matching opportunity arises.",
+    icon: Target,
+    gradient: "from-[hsl(25,95%,53%)] to-[hsl(25,95%,40%)]",
+    cta: "Learn More",
+    tab: "dashboard",
+  },
+  {
+    title: "Go Online & Get Noticed",
+    description: "Toggle your status to 'Online' to let clients know you're available. Offline freelancers won't appear in search results.",
+    icon: Zap,
+    gradient: "from-[hsl(270,70%,55%)] to-[hsl(270,70%,40%)]",
+    cta: "Go Online",
+    tab: "dashboard",
+  },
+  {
+    title: "Quality Work = Better Ratings",
+    description: "Deliver excellent work consistently to build your reputation. Top-rated freelancers earn 40% more and get priority matching.",
+    icon: Award,
+    gradient: "from-[hsl(340,75%,55%)] to-[hsl(340,75%,40%)]",
+    cta: "View Ratings",
+    tab: "history",
+  },
+];
 
 const FreelancerDashboard = () => {
   const { user, logout, updateUser } = useAuth();
@@ -39,6 +88,12 @@ const FreelancerDashboard = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || null);
   const [newSkill, setNewSkill] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isOnline, setIsOnline] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [projects, setProjects] = useState<AssignedProject[]>([]);
+  const [stats, setStats] = useState<FreelancerStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState<FreelancerFormData>({
     fullName: user?.fullName || '',
@@ -52,8 +107,26 @@ const FreelancerDashboard = () => {
     primaryLanguage: 'English',
     otherLanguages: [],
     companyAlias: '',
-    availability: 'available',
   });
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const [p, s] = await Promise.all([getAssignedProjects(), getFreelancerStats()]);
+      setProjects(p);
+      setStats(s);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  // Auto-rotate slides
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % promoSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -63,9 +136,7 @@ const FreelancerDashboard = () => {
         return;
       }
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -106,10 +177,7 @@ const FreelancerDashboard = () => {
     setForm(p => ({ ...p, skills: p.skills.filter(s => s !== skill) }));
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+  const handleLogout = () => { logout(); navigate('/'); };
 
   const update = (field: keyof FreelancerFormData, value: string) => {
     setForm(p => ({ ...p, [field]: value }));
@@ -121,34 +189,67 @@ const FreelancerDashboard = () => {
   const toggleOtherLanguage = (lang: string) => {
     setForm(p => ({
       ...p,
-      otherLanguages: p.otherLanguages.includes(lang)
-        ? p.otherLanguages.filter(l => l !== lang)
-        : [...p.otherLanguages, lang],
+      otherLanguages: p.otherLanguages.includes(lang) ? p.otherLanguages.filter(l => l !== lang) : [...p.otherLanguages, lang],
     }));
   };
+
+  const slide = promoSlides[currentSlide];
+
+  const activeProjects = projects.filter(p => p.status === 'active');
+  const completedProjects = projects.filter(p => p.status === 'completed');
 
   return (
     <div className="min-h-screen bg-background">
       {/* Top Bar */}
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Briefcase className="h-5 w-5 text-primary-foreground" />
+            <div 
+              className="relative cursor-pointer group" 
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="h-10 w-10 rounded-full bg-muted border-2 border-primary/30 flex items-center justify-center overflow-hidden">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-5 w-5 text-muted-foreground" />
+                )}
+              </div>
+              <div className="absolute inset-0 rounded-full bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                <Camera className="h-4 w-4 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
             </div>
             <div>
               <h1 className="text-base font-bold text-foreground leading-tight">
-                {form.fullName || 'Freelancer Profile'}
+                {form.fullName || 'Freelancer'}
               </h1>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Online/Offline Toggle */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50">
+              {isOnline ? <Wifi className="h-4 w-4 text-emerald-500" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
+              <span className={`text-xs font-medium ${isOnline ? 'text-emerald-600' : 'text-muted-foreground'}`}>
+                {isOnline ? 'Online' : 'Offline'}
+              </span>
+              <Switch
+                checked={isOnline}
+                onCheckedChange={(checked) => {
+                  setIsOnline(checked);
+                  toast({
+                    title: checked ? '🟢 You are Online' : '⚫ You are Offline',
+                    description: checked ? 'You are now visible to clients and ready to receive work.' : 'You will not appear in client searches.',
+                  });
+                }}
+                className="data-[state=checked]:bg-emerald-500"
+              />
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
-                  <ChevronDown className="h-4 w-4" />
-                  Settings
+                  <ChevronDown className="h-4 w-4" /> Settings
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -164,41 +265,235 @@ const FreelancerDashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left: Avatar Upload */}
-          <div className="flex flex-col items-center gap-4 lg:w-56 shrink-0">
-            <div 
-              className="relative group cursor-pointer" 
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <div className="h-40 w-40 rounded-full bg-muted border-4 border-primary/20 shadow-xl flex items-center justify-center overflow-hidden transition-all group-hover:border-primary/50">
-                {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <User className="h-16 w-16 text-muted-foreground" />
-                )}
+      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* Promo Slider */}
+        <div className="relative overflow-hidden rounded-2xl shadow-lg">
+          <div className={`bg-gradient-to-r ${slide.gradient} p-8 md:p-10 text-primary-foreground transition-all duration-500`}>
+            <div className="flex items-start gap-6">
+              <div className="hidden md:flex h-16 w-16 rounded-2xl bg-primary-foreground/20 items-center justify-center shrink-0">
+                <slide.icon className="h-8 w-8" />
               </div>
-              <div className="absolute inset-0 rounded-full bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
-                <Camera className="h-8 w-8 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2">{slide.title}</h2>
+                <p className="text-primary-foreground/85 text-sm md:text-base max-w-2xl leading-relaxed">{slide.description}</p>
+                <Button 
+                  variant="secondary" 
+                  className="mt-4 bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground border-0"
+                  onClick={() => setActiveTab(slide.tab)}
+                >
+                  {slide.cta}
+                </Button>
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
             </div>
-            <p className="text-xs text-muted-foreground text-center">Click to upload photo<br />(Max 5MB)</p>
-            <Badge className={`${form.availability === 'available' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-muted text-muted-foreground'}`}>
-              {form.availability === 'available' ? '🟢 Available' : '⚫ Offline'}
-            </Badge>
+            {/* Dots */}
+            <div className="flex items-center justify-center gap-2 mt-6">
+              {promoSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentSlide(i)}
+                  className={`h-2 rounded-full transition-all ${i === currentSlide ? 'w-8 bg-primary-foreground' : 'w-2 bg-primary-foreground/40'}`}
+                />
+              ))}
+            </div>
           </div>
+          {/* Arrows */}
+          <button 
+            onClick={() => setCurrentSlide(p => (p - 1 + promoSlides.length) % promoSlides.length)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4 text-primary-foreground" />
+          </button>
+          <button 
+            onClick={() => setCurrentSlide(p => (p + 1) % promoSlides.length)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
+          >
+            <ChevronRight className="h-4 w-4 text-primary-foreground" />
+          </button>
+        </div>
 
-          {/* Right: Profile Form */}
-          <div className="flex-1 space-y-6">
+        {/* Stats Cards */}
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-primary/10 to-primary/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Earned</p>
+                    <p className="text-xl font-bold text-foreground">${stats.totalEarnings.toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-gradient-to-br from-emerald-500/10 to-emerald-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Settled</p>
+                    <p className="text-xl font-bold text-foreground">${stats.settledAmount.toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-gradient-to-br from-secondary/10 to-secondary/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-secondary/15 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Pending</p>
+                    <p className="text-xl font-bold text-foreground">${stats.pendingAmount.toLocaleString()}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-gradient-to-br from-amber-500/10 to-amber-500/5">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
+                    <Star className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Rating</p>
+                    <p className="text-xl font-bold text-foreground">{stats.averageRating.toFixed(1)} ⭐</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Tabs: Dashboard / Work History / Profile */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="dashboard" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TrendingUp className="h-4 w-4" /> Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Briefcase className="h-4 w-4" /> Work History
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <User className="h-4 w-4" /> Update Profile
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Active Engagements */}
+              <Card className="border-0 shadow-md">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Active Engagements ({activeProjects.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {activeProjects.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-6 text-center">No active engagements. Go online to receive work!</p>
+                  ) : (
+                    activeProjects.map(p => (
+                      <div key={p.id} className="p-3 rounded-xl border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
+                        <div className="flex justify-between items-start mb-1">
+                          <div>
+                            <p className="font-semibold text-sm text-foreground">{p.projectTitle}</p>
+                            <p className="text-xs text-muted-foreground">{p.clientName} · {p.clientCompany}</p>
+                          </div>
+                          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">Active</Badge>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-xs text-muted-foreground">{p.hoursWorked}h @ {p.hourlyRate}</span>
+                          <span className="text-sm font-bold text-foreground">${p.totalAmount.toLocaleString()}</span>
+                        </div>
+                        <Progress value={(p.settledAmount / p.totalAmount) * 100} className="h-1.5 mt-2" />
+                        <div className="flex justify-between text-xs mt-1">
+                          <span className="text-emerald-600">Settled: ${p.settledAmount.toLocaleString()}</span>
+                          <span className="text-secondary">Pending: ${p.pendingAmount.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Completed Summary */}
+              <Card className="border-0 shadow-md">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                    Completed Projects ({completedProjects.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {completedProjects.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-6 text-center">No completed projects yet.</p>
+                  ) : (
+                    completedProjects.map(p => (
+                      <div key={p.id} className="p-3 rounded-xl border border-border bg-muted/30">
+                        <div className="flex justify-between items-start mb-1">
+                          <div>
+                            <p className="font-semibold text-sm text-foreground">{p.projectTitle}</p>
+                            <p className="text-xs text-muted-foreground">{p.clientName}</p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                            <span className="text-sm font-bold text-foreground">{p.rating}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="text-xs text-muted-foreground">{p.hoursWorked}h @ {p.hourlyRate}</span>
+                          <span className="text-sm font-bold text-emerald-600">${p.settledAmount.toLocaleString()} ✓</span>
+                        </div>
+                        {p.feedback && (
+                          <p className="text-xs text-muted-foreground mt-2 italic border-t border-border pt-2">"{p.feedback}"</p>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Summary */}
+            {stats && (
+              <Card className="border-0 shadow-md bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                      <p className="text-3xl font-bold text-primary">{stats.totalClients}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total Clients</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold text-foreground">{stats.activeProjects + stats.completedProjects}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total Projects</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold text-emerald-600">${stats.settledAmount.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total Collected</p>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-bold text-secondary">${stats.pendingAmount.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Pending Amount</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Work History Tab */}
+          <TabsContent value="history">
+            <WorkHistoryTimeline projects={projects} />
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile">
             <Card className="border-0 shadow-lg">
               <CardContent className="p-6 space-y-5">
                 <div className="flex items-center justify-between">
@@ -208,6 +503,7 @@ const FreelancerDashboard = () => {
                 <Separator />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Full Name */}
                   <div>
                     <Label className="text-sm font-medium">Full Name *</Label>
                     <div className="relative mt-1">
@@ -216,6 +512,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName}</p>}
                   </div>
+                  {/* Email */}
                   <div>
                     <Label className="text-sm font-medium">Email *</Label>
                     <div className="relative mt-1">
@@ -224,6 +521,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                   </div>
+                  {/* Mobile */}
                   <div>
                     <Label className="text-sm font-medium">Mobile Number *</Label>
                     <div className="relative mt-1">
@@ -232,6 +530,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.mobile && <p className="text-xs text-destructive mt-1">{errors.mobile}</p>}
                   </div>
+                  {/* Location */}
                   <div>
                     <Label className="text-sm font-medium">Location *</Label>
                     <div className="relative mt-1">
@@ -240,6 +539,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.location && <p className="text-xs text-destructive mt-1">{errors.location}</p>}
                   </div>
+                  {/* Experience */}
                   <div>
                     <Label className="text-sm font-medium">Experience *</Label>
                     <div className="relative mt-1">
@@ -248,6 +548,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.experience && <p className="text-xs text-destructive mt-1">{errors.experience}</p>}
                   </div>
+                  {/* Hourly Rate */}
                   <div>
                     <Label className="text-sm font-medium">Hourly Rate *</Label>
                     <div className="relative mt-1">
@@ -256,6 +557,7 @@ const FreelancerDashboard = () => {
                     </div>
                     {errors.hourlyRate && <p className="text-xs text-destructive mt-1">{errors.hourlyRate}</p>}
                   </div>
+                  {/* Company Alias */}
                   <div>
                     <Label className="text-sm font-medium">Company / Alias</Label>
                     <div className="relative mt-1">
@@ -263,6 +565,7 @@ const FreelancerDashboard = () => {
                       <Input value={form.companyAlias} onChange={e => update('companyAlias', e.target.value)} placeholder="Company or brand name" className="pl-9" />
                     </div>
                   </div>
+                  {/* Primary Language */}
                   <div>
                     <Label className="text-sm font-medium">Primary Language *</Label>
                     <Select value={form.primaryLanguage} onValueChange={v => update('primaryLanguage', v)}>
@@ -271,9 +574,7 @@ const FreelancerDashboard = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {languageOptions.map(l => (
-                          <SelectItem key={l} value={l}>{l}</SelectItem>
-                        ))}
+                        {languageOptions.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     {errors.primaryLanguage && <p className="text-xs text-destructive mt-1">{errors.primaryLanguage}</p>}
@@ -285,12 +586,7 @@ const FreelancerDashboard = () => {
                   <Label className="text-sm font-medium mb-2 block">Other Languages</Label>
                   <div className="flex flex-wrap gap-2">
                     {languageOptions.filter(l => l !== form.primaryLanguage).map(lang => (
-                      <Badge
-                        key={lang}
-                        variant={form.otherLanguages.includes(lang) ? 'default' : 'outline'}
-                        className={`cursor-pointer transition-colors ${form.otherLanguages.includes(lang) ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-                        onClick={() => toggleOtherLanguage(lang)}
-                      >
+                      <Badge key={lang} variant={form.otherLanguages.includes(lang) ? 'default' : 'outline'} className={`cursor-pointer transition-colors ${form.otherLanguages.includes(lang) ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`} onClick={() => toggleOtherLanguage(lang)}>
                         {lang}
                       </Badge>
                     ))}
@@ -300,13 +596,7 @@ const FreelancerDashboard = () => {
                 {/* Bio */}
                 <div>
                   <Label className="text-sm font-medium">About Me / Bio *</Label>
-                  <Textarea
-                    value={form.bio}
-                    onChange={e => { update('bio', e.target.value); }}
-                    placeholder="Describe your expertise, work style, and what you bring to the table..."
-                    rows={3}
-                    className={`mt-1 ${errors.bio ? 'border-destructive' : ''}`}
-                  />
+                  <Textarea value={form.bio} onChange={e => update('bio', e.target.value)} placeholder="Describe your expertise..." rows={3} className={`mt-1 ${errors.bio ? 'border-destructive' : ''}`} />
                   {errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio}</p>}
                 </div>
 
@@ -317,38 +607,25 @@ const FreelancerDashboard = () => {
                     {form.skills.map(skill => (
                       <Badge key={skill} className="bg-primary/10 text-primary border-primary/20 gap-1 pr-1">
                         {skill}
-                        <button onClick={() => removeSkill(skill)} className="ml-1 hover:text-destructive rounded-full">
-                          <X className="h-3 w-3" />
-                        </button>
+                        <button onClick={() => removeSkill(skill)} className="ml-1 hover:text-destructive rounded-full"><X className="h-3 w-3" /></button>
                       </Badge>
                     ))}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Input
-                      value={newSkill}
-                      onChange={e => setNewSkill(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                      placeholder="Type a skill and press Enter"
-                      className={`max-w-xs ${errors.skills ? 'border-destructive' : ''}`}
-                    />
-                    <Button size="sm" variant="outline" onClick={addSkill} type="button">
-                      <Plus className="h-4 w-4 mr-1" /> Add
-                    </Button>
+                    <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Type a skill and press Enter" className={`max-w-xs ${errors.skills ? 'border-destructive' : ''}`} />
+                    <Button size="sm" variant="outline" onClick={addSkill} type="button"><Plus className="h-4 w-4 mr-1" /> Add</Button>
                   </div>
                   {errors.skills && <p className="text-xs text-destructive mt-1">{errors.skills}</p>}
                 </div>
 
                 <Separator />
-
                 <div className="flex justify-end">
-                  <Button onClick={handleSave} className="gap-2 px-8">
-                    <Save className="h-4 w-4" /> Save Profile
-                  </Button>
+                  <Button onClick={handleSave} className="gap-2 px-8"><Save className="h-4 w-4" /> Save Profile</Button>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
