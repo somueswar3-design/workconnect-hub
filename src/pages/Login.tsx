@@ -37,7 +37,7 @@ const Login = () => {
       });
       toast.success('Login successful!');
       const role = result.user?.role || 'freelancer';
-      navigate(role === 'client' ? '/client' : '/freelancer');
+      navigate(role === 'admin' ? '/admin' : role === 'client' ? '/client' : '/freelancer');
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {
         setShow2FA(true);

@@ -20,6 +20,7 @@ import ClientDashboard from "./pages/ClientDashboard";
 import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
 import GISComplaints from "./pages/GISComplaints";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             {/* Dashboard routes - no header/footer */}
             <Route path="/gis-complaints" element={<GISComplaints />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="/freelancer/*" element={<FreelancerDashboard />} />
             <Route path="/client/*" element={<ClientDashboard />} />
             
