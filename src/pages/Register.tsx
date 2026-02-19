@@ -53,7 +53,7 @@ const Register = () => {
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <div className="flex flex-col items-center gap-4 opacity-[0.03]">
           <Monitor className="w-32 h-32 text-white" />
-          <span className="text-7xl font-extrabold tracking-widest text-white">ITWorkHelp</span>
+          <span className="text-7xl font-extrabold tracking-widest text-white">WorkSupport360</span>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ const Register = () => {
           <CardHeader className="relative text-center space-y-3 pb-2">
             <div className="flex items-center justify-center gap-2">
               <Monitor className="h-5 w-5 text-cyan-400" />
-              <span className="text-sm font-semibold tracking-wide text-cyan-400">ITWorkHelp</span>
+              <span className="text-sm font-semibold tracking-wide text-cyan-400">WorkSupport360</span>
             </div>
             <CardTitle className="text-2xl font-bold text-white">Create Account</CardTitle>
             <CardDescription className="text-slate-400">Join our IT professional network</CardDescription>

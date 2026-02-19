@@ -8,9 +8,9 @@ const RegisterChoice = () => {
     <div className="container py-12">
       <div className="mx-auto max-w-3xl text-center mb-12">
         <h1 className="text-3xl font-bold mb-4">
-          Join <span className="text-primary">IT</span>
-          <span className="text-secondary">Work</span>
-          <span className="text-primary">Help</span>
+          Join <span className="text-primary">Work</span>
+          <span className="text-secondary">Support</span>
+          <span className="text-primary">360</span>
         </h1>
         <p className="text-lg text-muted-foreground">
           Choose how you want to use the platform

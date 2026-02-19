@@ -2,6 +2,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   User, Settings, History, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight
 } from 'lucide-react';
+import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -62,13 +63,11 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
       {/* Logo */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar-primary">
-            <Briefcase className="h-6 w-6 text-sidebar-primary-foreground" />
-          </div>
+          <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-lg" />
           <span className="text-lg font-bold">
-            <span className="text-sidebar-foreground">IT</span>
-            <span className="text-sidebar-primary">Work</span>
-            <span className="text-sidebar-foreground">Help</span>
+            <span className="text-sidebar-foreground">Work</span>
+            <span className="text-sidebar-primary">Support</span>
+            <span className="text-sidebar-foreground">360</span>
           </span>
         </div>
       </div>

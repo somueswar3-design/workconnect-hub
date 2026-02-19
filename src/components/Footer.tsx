@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import logo from '@/assets/worksupport360-logo.png';
 
 const Footer = () => {
   return (
@@ -9,23 +10,15 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <Briefcase className="h-6 w-6 text-primary-foreground" />
-              </div>
+              <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-lg" />
               <span className="text-xl font-bold tracking-tight">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">
-                  IT
-                </span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-                  Work
-                </span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">
-                  Help
-                </span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">Work</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Support</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">360</span>
               </span>
             </Link>
             <p className="text-background/70 text-sm">
-              Connecting IT professionals with quality projects. Privacy-first freelancing platform.
+              360° IT solutions — connecting professionals with quality projects. Privacy-first freelancing platform.
             </p>
           </div>
 
@@ -50,7 +43,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-primary" />
-                <a href="mailto:info@itworkhelp.com" className="hover:text-primary transition-colors">info@itworkhelp.com</a>
+                <a href="mailto:info@worksupport360.com" className="hover:text-primary transition-colors">info@worksupport360.com</a>
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -72,7 +65,7 @@ const Footer = () => {
 
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <p className="text-background/60 text-sm">
-            © {new Date().getFullYear()} ITWorkHelp. All rights reserved.
+            © {new Date().getFullYear()} WorkSupport360. All rights reserved.
           </p>
           <p className="text-background/50 text-xs mt-2">
             Developed by <span className="text-primary font-semibold">Mahvenx IT Solutions Pvt Ltd</span>
