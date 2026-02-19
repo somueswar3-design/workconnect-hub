@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from '@/assets/worksupport360-logo.png';
 
 const Header = () => {
   const location = useLocation();
@@ -19,13 +20,11 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-[#0f172a] text-slate-100 overflow-hidden">
       <div className="container flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-300">
-            <Briefcase className="h-6 w-6 text-white" />
-          </div>
+          <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-xl shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-300" />
           <span className="text-xl font-bold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">IT</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Work</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">Help</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">Work</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Support</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">360</span>
           </span>
         </Link>
 

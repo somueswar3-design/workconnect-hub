@@ -133,7 +133,7 @@ const BrowseWorkers = () => {
                   <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm">
                     <CurrentIcon className="h-7 w-7" />
                   </div>
-                  <Badge className="bg-white/20 text-white border-white/30 text-sm">ITWorkHelp</Badge>
+                  <Badge className="bg-white/20 text-white border-white/30 text-sm">WorkSupport360</Badge>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold leading-tight">{promoSlides[currentSlide].title}</h1>
                 <p className="text-lg text-white/90 font-medium">{promoSlides[currentSlide].subtitle}</p>
@@ -290,7 +290,7 @@ const BrowseWorkers = () => {
             Tell us your requirements and our team will find the perfect freelancer for you. Free consultation, zero commitment.
           </p>
           <Button variant="secondary" size="sm" className="font-semibold" onClick={() => {
-            const message = encodeURIComponent('Hi, I\'m interested in connecting with IT professionals on ITWorkHelp. Please help me find the right match.');
+            const message = encodeURIComponent('Hi, I\'m interested in connecting with IT professionals on WorkSupport360. Please help me find the right match.');
             window.open(`https://wa.me/+919441363687?text=${message}`, '_blank');
           }}>
             Talk to Our Team

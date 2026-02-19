@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 // Imports kept for reference, though images are removed from Hero section
 import heroImage from '@/assets/hero-freelancer.jpg';
+import wsLogo from '@/assets/worksupport360-logo.png';
 import teamImage from '@/assets/team-collaboration.jpg';
 import successImage from '@/assets/business-success.jpg';
 import developersTeamImage from '@/assets/developers-team.jpg';
@@ -82,7 +83,7 @@ const Home = () => {
       name: 'Rajesh K.',
       role: 'Full Stack Developer',
       company: 'Hyderabad',
-      text: 'ITWorkHelp connected me with amazing clients. The privacy features give me peace of mind while freelancing alongside my regular job.',
+      text: 'WorkSupport360 connected me with amazing clients. The privacy features give me peace of mind while freelancing alongside my regular job.',
       rating: 5,
     },
     {
@@ -193,13 +194,16 @@ const Home = () => {
             {/* Left Text */}
             <div className="text-center lg:text-left">
 
-              <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                <span className="bg-clip-text bg-gradient-to-r  text-slate-1000">IT</span>
-                <span className="bg-clip-text  bg-gradient-to-r text-slate-1000">Work</span>
-                <span className="bg-clip-text  bg-gradient-to-r text-slate-1000">Help</span>
+              <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl flex items-center gap-4 justify-center lg:justify-start">
+                <img src={wsLogo} alt="WorkSupport360" className="h-16 w-16 rounded-2xl shadow-lg" />
+                <span>
+                  <span className="bg-clip-text bg-gradient-to-r text-slate-100">Work</span>
+                  <span className="bg-clip-text bg-gradient-to-r text-cyan-400">Support</span>
+                  <span className="bg-clip-text bg-gradient-to-r text-slate-100">360</span>
+                </span>
               </h1>
               <p className="mb-4 text-2xl font-semibold text-slate-400 sm:text-3xl">
-                Connect IT Professionals with Projects
+                360° IT Solutions & Freelancing Platform
               </p>
               <p className="mb-8 text-lg text-slate-400">
                 The privacy-first freelancing platform for IT professionals. Work on your terms,
@@ -393,9 +397,9 @@ const Home = () => {
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="mb-4 text-3xl font-bold text-white">
-              Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">IT</span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Work</span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Help</span>?
+             Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Work</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Support</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">360</span>?
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
               We've built the platform IT professionals have been waiting for - privacy-focused,
@@ -640,7 +644,7 @@ const Home = () => {
               Ready to Start Your Freelancing Journey?
             </h2>
             <p className="mb-8 text-lg text-slate-300">
-              Join ITWorkHelp today and connect with IT projects that match your skills.
+              Join WorkSupport360 today and connect with IT projects that match your skills.
               Your privacy protected, your career elevated.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
@@ -679,7 +683,7 @@ const Home = () => {
               <h2 className="text-3xl font-bold mb-4 text-white">Empowering IT Professionals</h2>
               <p className="text-slate-400 mb-6">
                 We believe every IT professional deserves the opportunity to grow their career on their
-                own terms. ITWorkHelp bridges the gap between talented developers and businesses seeking
+                own terms. WorkSupport360 bridges the gap between talented developers and businesses seeking
                 quality IT support.
               </p>
 
