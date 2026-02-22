@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign, Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award, Laptop, BookOpen, Target, Heart, ThumbsUp, MessageSquare } from 'lucide-react';
+import { ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign, Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award, Laptop, BookOpen, Target, Heart, ThumbsUp, MessageSquare, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -190,83 +190,75 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative py-16 lg:py-28 z-10 min-h-[600px] flex items-center">
         <div className="container relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Text */}
-            <div className="text-center lg:text-left">
+          <div className="text-center mb-12">
+            <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl flex items-center gap-4 justify-center">
+              <img src={wsLogo} alt="WorkSupport360" className="h-16 w-16 rounded-2xl shadow-lg" />
+              <span>
+                <span className="text-slate-100">Work</span>
+                <span className="text-cyan-400">Support</span>
+                <span className="text-slate-100">360</span>
+              </span>
+            </h1>
+            <p className="mb-4 text-2xl font-semibold text-slate-400 sm:text-3xl">
+              360° IT Solutions & Freelancing Platform
+            </p>
+            <p className="mb-10 text-lg text-slate-400 max-w-2xl mx-auto">
+              The privacy-first freelancing platform for IT professionals. Work on your terms,
+              protect your identity, and connect with quality projects.
+            </p>
+          </div>
 
-              <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl flex items-center gap-4 justify-center lg:justify-start">
-                <img src={wsLogo} alt="WorkSupport360" className="h-16 w-16 rounded-2xl shadow-lg" />
-                <span>
-                  <span className="bg-clip-text bg-gradient-to-r text-slate-100">Work</span>
-                  <span className="bg-clip-text bg-gradient-to-r text-cyan-400">Support</span>
-                  <span className="bg-clip-text bg-gradient-to-r text-slate-100">360</span>
-                </span>
-              </h1>
-              <p className="mb-4 text-2xl font-semibold text-slate-400 sm:text-3xl">
-                360° IT Solutions & Freelancing Platform
-              </p>
-              <p className="mb-8 text-lg text-slate-400">
-                The privacy-first freelancing platform for IT professionals. Work on your terms,
-                protect your identity, and connect with quality projects that match your expertise.
-              </p>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                <Button asChild size="lg" className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white border-0">
-                  <Link to="/register">
-                    Become a Freelancer
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" className="gap-2  text-lg px-8 py-6 bg-gradient-to-r from-cyan-500 to-indigo-600  hover:bg-slate-800 background:transparent">
-                  <Link to="/browse">
-                    Need Work Support
-                    <Users className="h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Right Side: EXACT ANIMATION REPLACEMENT */}
-            <div className="hidden lg:block relative h-[400px] w-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-indigo-500/10 rounded-3xl blur-2xl animate-float-blob"></div>
-
-              {/* Animation Scene Container */}
-              <div className="relative w-full h-full">
-                {/* Floating Icons */}
-                <div className="absolute left-1/2 bottom-[150px] w-10 h-10 bg-[#1e293b] border border-cyan-500 rounded-lg flex items-center justify-center text-cyan-500 font-bold shadow-lg float-icon-anim z-20" style={{ animationDelay: '0s' }}>&lt;/&gt;</div>
-                <div className="absolute left-[55%] bottom-[180px] w-8 h-8 bg-[#1e293b] border border-indigo-500 rounded-lg flex items-center justify-center text-indigo-500 text-xs font-bold shadow-lg float-icon-anim z-20" style={{ animationDelay: '1.5s' }}>{'{...}'}</div>
-                <div className="absolute left-[45%] bottom-[200px] w-8 h-8 bg-[#1e293b] border border-indigo-500 rounded-lg flex items-center justify-center text-indigo-500 text-xs font-bold shadow-lg float-icon-anim z-20" style={{ animationDelay: '3s' }}>#CSS</div>
-
-                {/* Character */}
-                <div className="absolute bottom-5 left-[20%] w-20 h-36 z-10">
-                  <div className="w-[50px] h-[50px] bg-slate-200 rounded-full absolute top-0 left-[15px] z-20"></div>
-                  <div className="w-[60px] h-[70px] bg-indigo-600 rounded-t-3xl absolute top-[45px] left-[10px] z-10"></div>
-                  <div className="w-4 h-[60px] bg-indigo-600 rounded-lg absolute top-[50px] left-[50px] z-0 arm-anim"></div>
-                </div>
-
-                {/* Laptop */}
-                <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[260px] h-[160px] z-10">
-                  <div className="w-full h-[140px] bg-black rounded-t-xl border-4 border-slate-600 border-b-0 overflow-hidden relative">
-                    <div className="w-[90%] h-[80%] bg-slate-900 mx-auto mt-2 rounded relative overflow-hidden">
-                      {/* Code Lines */}
-                      <div className="h-1.5 bg-cyan-500/80 m-2 mt-3 rounded w-[40%] code-line-anim"></div>
-                      <div className="h-1.5 bg-slate-700/80 m-2 rounded w-[70%] code-line-anim" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="h-1.5 bg-cyan-500/80 m-2 rounded w-[50%] code-line-anim" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
+          {/* Role Selection Cards */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Become a Freelancer */}
+            <Link to="/register" className="group">
+              <div className="relative p-8 rounded-2xl border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-cyan-900/20 to-indigo-900/20 hover:border-cyan-400 hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-400/10 rounded-full blur-3xl group-hover:bg-cyan-400/20 transition-colors" />
+                <div className="relative">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mb-5 shadow-lg shadow-cyan-500/30">
+                    <Briefcase className="h-8 w-8 text-white" />
                   </div>
-                  <div className="w-[110%] h-3 bg-slate-500 absolute -bottom-3 -left-[5%] rounded-b-lg perspective-200 rotate-x-2"></div>
-                </div>
-
-                {/* Desk */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-5 bg-slate-700 rounded-lg shadow-2xl z-20"></div>
-
-                {/* Coffee */}
-                <div className="absolute bottom-5 right-[20%] w-8 h-10 bg-white rounded-b-md z-10">
-                  <div className="absolute -top-4 left-1/2 w-1.5 h-4 bg-white/40 rounded-full blur-sm steam-anim"></div>
-                  <div className="absolute -top-4 left-1/3 w-1.5 h-4 bg-white/40 rounded-full blur-sm steam-anim" style={{ animationDelay: '0.5s' }}></div>
-                  <div className="absolute -top-4 left-2/3 w-1.5 h-4 bg-white/40 rounded-full blur-sm steam-anim" style={{ animationDelay: '1s' }}></div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Become a Freelancer</h2>
+                  <p className="text-slate-400 mb-5">Offer your IT skills, set your rates, and earn on your terms</p>
+                  <ul className="space-y-2 mb-6">
+                    {['Create professional profile', 'Get matched with clients', 'Set your own schedule', 'Earn with transparency'].map(item => (
+                      <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                        <CheckCircle className="h-4 w-4 text-cyan-400 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center gap-2 text-cyan-400 font-semibold group-hover:gap-3 transition-all">
+                    Register as Freelancer <ArrowRight className="h-5 w-5" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
+
+            {/* Need Work Support */}
+            <Link to="/register" className="group">
+              <div className="relative p-8 rounded-2xl border-2 border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-indigo-900/20 to-purple-900/20 hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-400/10 rounded-full blur-3xl group-hover:bg-indigo-400/20 transition-colors" />
+                <div className="relative">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-indigo-500/30">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Need Work Support</h2>
+                  <p className="text-slate-400 mb-5">Find verified IT professionals to help with your projects</p>
+                  <ul className="space-y-2 mb-6">
+                    {['Browse skilled professionals', 'Search by skills & experience', 'Request free demos', 'Milestone-based payments'].map(item => (
+                      <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                        <CheckCircle className="h-4 w-4 text-indigo-400 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex items-center gap-2 text-indigo-400 font-semibold group-hover:gap-3 transition-all">
+                    Register as Client <ArrowRight className="h-5 w-5" />
+                  </div>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>

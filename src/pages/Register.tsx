@@ -35,8 +35,12 @@ const Register = () => {
     setIsLoading(true);
     try {
       await authApi.register({ email: data.email, password: data.password, role: data.role });
-      toast.success('Registration successful! Please login.');
-      navigate('/login');
+      toast.success('Registration successful!');
+      if (data.role === 'freelancer') {
+        navigate('/freelancer-profile');
+      } else {
+        navigate('/login');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Registration failed. Please try again.');
     } finally {
