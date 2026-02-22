@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, LogIn, Loader2, Monitor } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { authApi } from '@/services/authApi';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import wsLogo from '@/assets/worksupport360-logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -51,44 +52,38 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2b46 70%, #0a1628 100%)' }}>
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.1) 40px, rgba(255,255,255,0.1) 41px)' }} />
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-        <div className="flex flex-col items-center gap-4 opacity-[0.03]">
-          <Monitor className="w-32 h-32 text-white" />
-          <span className="text-7xl font-extrabold tracking-widest text-white">WorkSupport360</span>
-        </div>
-      </div>
-
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="relative z-10 w-full max-w-md px-4">
-        <Card className="relative border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-2xl shadow-black/40 rounded-2xl overflow-hidden">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
-
-          <CardHeader className="relative text-center space-y-3 pb-2">
-            <div className="flex items-center justify-center gap-2">
-              <Monitor className="h-5 w-5 text-cyan-400" />
-              <span className="text-sm font-semibold tracking-wide text-cyan-400">WorkSupport360</span>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 px-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
+        <Card className="border border-orange-100 bg-white shadow-xl shadow-orange-500/10 rounded-2xl overflow-hidden">
+          <CardHeader className="text-center space-y-3 pb-2">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <img src={wsLogo} alt="WorkSupport360" className="h-12 w-12 rounded-xl" />
+              <span className="text-lg font-bold">
+                <span className="text-orange-500">Work</span>
+                <span className="text-amber-500">Support</span>
+                <span className="text-blue-600">360</span>
+              </span>
             </div>
-            <CardTitle className="text-2xl font-bold text-white">Welcome Back</CardTitle>
-            <CardDescription className="text-slate-400">Sign in to access your dashboard</CardDescription>
+            <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
+            <CardDescription className="text-gray-500">Sign in to access your dashboard</CardDescription>
           </CardHeader>
 
-          <CardContent className="relative space-y-6">
+          <CardContent className="space-y-6">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email</Label>
+                <Label htmlFor="email" className="text-gray-700">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500" required />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500" required />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 pr-10 bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500" required />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 pr-10 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500" required />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
@@ -96,23 +91,23 @@ const Login = () => {
 
               {show2FA && (
                 <div className="space-y-2">
-                  <Label htmlFor="2fa" className="text-slate-300">Two-Factor Code</Label>
-                  <Input id="2fa" type="text" placeholder="Enter 2FA code" value={twoFactorCode} onChange={(e) => setTwoFactorCode(e.target.value)} className="bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500" />
+                  <Label htmlFor="2fa" className="text-gray-700">Two-Factor Code</Label>
+                  <Input id="2fa" type="text" placeholder="Enter 2FA code" value={twoFactorCode} onChange={(e) => setTwoFactorCode(e.target.value)} className="border-gray-200 focus-visible:ring-orange-500" />
                 </div>
               )}
 
               <div className="text-right">
-                <Link to="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline">Forgot password?</Link>
+                <Link to="/forgot-password" className="text-sm text-orange-500 hover:text-orange-600 hover:underline">Forgot password?</Link>
               </div>
 
-              <Button type="submit" className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white" size="lg" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25" size="lg" disabled={isLoading}>
                 {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : <><LogIn className="mr-2 h-4 w-4" /> Sign In</>}
               </Button>
             </form>
 
             <div className="text-center text-sm">
-              <span className="text-slate-400">Don't have an account? </span>
-              <Link to="/register" className="text-cyan-400 hover:text-cyan-300 font-medium hover:underline">Register here</Link>
+              <span className="text-gray-500">Don't have an account? </span>
+              <Link to="/register" className="text-orange-500 hover:text-orange-600 font-medium hover:underline">Register here</Link>
             </div>
           </CardContent>
         </Card>

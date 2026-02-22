@@ -80,18 +80,18 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
           placeholder={placeholder}
-          className="bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500"
+          className="border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500"
         />
-        <Button type="button" size="sm" onClick={addTag} className="bg-cyan-600 hover:bg-cyan-700 shrink-0">
+        <Button type="button" size="sm" onClick={addTag} className="bg-orange-500 hover:bg-orange-600 shrink-0">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map(tag => (
-            <Badge key={tag} className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 gap-1 pr-1">
+            <Badge key={tag} className="bg-orange-100 text-orange-700 border-orange-200 gap-1 pr-1">
               {tag}
-              <button type="button" onClick={() => removeTag(tag)} className="hover:text-white ml-1">
+              <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-900 ml-1">
                 <X className="h-3 w-3" />
               </button>
             </Badge>
@@ -132,16 +132,15 @@ const FreelancerProfileForm = () => {
     }
   };
 
-  const sectionClass = "space-y-4 p-5 rounded-xl bg-white/[0.02] border border-white/5";
-  const inputClass = "bg-slate-900/40 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-cyan-500 focus-visible:border-cyan-500";
-  const labelClass = "text-slate-300";
+  const sectionClass = "space-y-4 p-5 rounded-xl bg-orange-50/50 border border-orange-100";
+  const inputClass = "border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500 focus-visible:border-orange-500";
+  const labelClass = "text-gray-700";
 
   return (
     <div
-      className="relative min-h-screen py-8 px-4 overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2b46 70%, #0a1628 100%)' }}
+      className="relative min-h-screen py-8 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-blue-50"
     >
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.1) 40px, rgba(255,255,255,0.1) 41px)' }} />
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(0,0,0,0.05) 40px, rgba(0,0,0,0.05) 41px)' }} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -152,43 +151,39 @@ const FreelancerProfileForm = () => {
         {/* Header Banner */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-5">
-            <img src={wsLogo} alt="WorkSupport360" className="h-14 w-14 rounded-xl shadow-2xl shadow-orange-500/30 ring-2 ring-orange-400/20" />
+            <img src={wsLogo} alt="WorkSupport360" className="h-14 w-14 rounded-xl shadow-lg" />
             <span className="text-2xl font-bold">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500">Work</span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-400">Support</span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-300 to-blue-400">360</span>
+              <span className="text-orange-500">Work</span>
+              <span className="text-amber-500">Support</span>
+              <span className="text-blue-600">360</span>
             </span>
           </div>
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-yellow-500/20 border border-orange-500/30 mb-4 shadow-lg shadow-orange-500/10">
-            <Sparkles className="h-4 w-4 text-orange-400 animate-pulse" />
-            <span className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-300">Complete Your Profile</span>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 border border-orange-200 mb-4 shadow-sm">
+            <Sparkles className="h-4 w-4 text-orange-500 animate-pulse" />
+            <span className="text-sm font-semibold text-orange-600">Complete Your Profile</span>
           </div>
-          <h1 className="text-3xl font-bold mb-3">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-indigo-300">Build Your Freelancer Profile</span>
-          </h1>
-          <p className="text-slate-400 max-w-xl mx-auto">
+          <h1 className="text-3xl font-bold mb-3 text-gray-900">Build Your Freelancer Profile</h1>
+          <p className="text-gray-500 max-w-xl mx-auto">
             Please fill in your details so we can match you with the best clients. 
-            A complete profile increases your chances of getting assigned projects by <span className="text-orange-400 font-bold">5x</span>!
+            A complete profile increases your chances of getting assigned projects by <span className="text-orange-500 font-bold">5x</span>!
           </p>
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-cyan-500/10 border border-orange-500/20 flex items-start gap-3 shadow-lg shadow-orange-500/5">
-          <CheckCircle2 className="h-5 w-5 text-orange-400 mt-0.5 shrink-0" />
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-orange-50 via-amber-50 to-blue-50 border border-orange-200 flex items-start gap-3 shadow-sm">
+          <CheckCircle2 className="h-5 w-5 text-orange-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-slate-300">
-              <span className="font-semibold text-orange-300">Why fill this form?</span> Your profile details help us assign the right clients to you. 
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold text-orange-600">Why fill this form?</span> Your profile details help us assign the right clients to you. 
               The more information you provide, the better matches we find. We protect your privacy — your personal details are never shared without consent.
             </p>
           </div>
         </div>
 
-        <Card className="border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-2xl shadow-black/40 rounded-2xl overflow-hidden">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500/5 via-transparent to-indigo-500/5 pointer-events-none" />
-          
-          <CardHeader className="relative pb-2">
-            <CardTitle className="text-xl text-white">Profile Details</CardTitle>
-            <CardDescription className="text-slate-400">Fields marked with * are required</CardDescription>
+        <Card className="border border-orange-100 bg-white shadow-xl shadow-orange-500/10 rounded-2xl overflow-hidden">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xl text-gray-900">Profile Details</CardTitle>
+            <CardDescription className="text-gray-500">Fields marked with * are required</CardDescription>
           </CardHeader>
 
           <CardContent className="relative">
@@ -198,8 +193,8 @@ const FreelancerProfileForm = () => {
                 {/* Personal Information */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <User className="h-5 w-5 text-cyan-400" />
-                    <h3 className="font-semibold text-white">Personal Information</h3>
+                    <User className="h-5 w-5 text-orange-500" />
+                    <h3 className="font-semibold text-gray-900">Personal Information</h3>
                   </div>
                   
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -233,8 +228,8 @@ const FreelancerProfileForm = () => {
                 {/* Location */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="h-5 w-5 text-indigo-400" />
-                    <h3 className="font-semibold text-white">Location</h3>
+                    <MapPin className="h-5 w-5 text-blue-500" />
+                    <h3 className="font-semibold text-gray-900">Location</h3>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-3">
                     <FormField control={form.control} name="location" render={({ field }) => (
@@ -264,13 +259,13 @@ const FreelancerProfileForm = () => {
                 {/* Skills & Expertise */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Briefcase className="h-5 w-5 text-emerald-400" />
-                    <h3 className="font-semibold text-white">Skills & Expertise</h3>
+                    <Briefcase className="h-5 w-5 text-emerald-500" />
+                    <h3 className="font-semibold text-gray-900">Skills & Expertise</h3>
                   </div>
 
                   <FormField control={form.control} name="primarySkills" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Primary Skills * <span className="text-slate-500 text-xs">(Your strongest skills)</span></FormLabel>
+                      <FormLabel className={labelClass}>Primary Skills * <span className="text-gray-400 text-xs">(Your strongest skills)</span></FormLabel>
                       <FormControl>
                         <SkillTagInput value={field.value} onChange={field.onChange} placeholder="e.g. React, Java, AWS..." />
                       </FormControl>
@@ -280,7 +275,7 @@ const FreelancerProfileForm = () => {
 
                   <FormField control={form.control} name="secondarySkills" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Secondary Skills <span className="text-slate-500 text-xs">(Nice-to-have skills)</span></FormLabel>
+                      <FormLabel className={labelClass}>Secondary Skills <span className="text-gray-400 text-xs">(Nice-to-have skills)</span></FormLabel>
                       <FormControl>
                         <SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="e.g. Docker, Redis, GraphQL..." />
                       </FormControl>
@@ -302,8 +297,8 @@ const FreelancerProfileForm = () => {
                 {/* Experience */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Briefcase className="h-5 w-5 text-amber-400" />
-                    <h3 className="font-semibold text-white">Experience</h3>
+                    <Briefcase className="h-5 w-5 text-amber-500" />
+                    <h3 className="font-semibold text-gray-900">Experience</h3>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField control={form.control} name="experienceYears" render={({ field }) => (
@@ -347,14 +342,14 @@ const FreelancerProfileForm = () => {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField control={form.control} name="currentCompany" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={labelClass}>Current Company <span className="text-slate-500 text-xs">(Optional, kept private)</span></FormLabel>
+                        <FormLabel className={labelClass}>Current Company <span className="text-gray-400 text-xs">(Optional, kept private)</span></FormLabel>
                         <FormControl><Input placeholder="Company name" className={inputClass} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="currentRole" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={labelClass}>Current Role <span className="text-slate-500 text-xs">(Optional)</span></FormLabel>
+                        <FormLabel className={labelClass}>Current Role <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
                         <FormControl><Input placeholder="Senior Developer" className={inputClass} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -365,16 +360,16 @@ const FreelancerProfileForm = () => {
                 {/* Languages */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Languages className="h-5 w-5 text-pink-400" />
-                    <h3 className="font-semibold text-white">Languages</h3>
+                    <Languages className="h-5 w-5 text-pink-500" />
+                    <h3 className="font-semibold text-gray-900">Languages</h3>
                   </div>
                   
                   <FormField control={form.control} name="languagesKnown" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Languages Known * <span className="text-slate-500 text-xs">(Select all that apply)</span></FormLabel>
+                      <FormLabel className={labelClass}>Languages Known * <span className="text-gray-400 text-xs">(Select all that apply)</span></FormLabel>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {languageOptions.map(lang => (
-                          <label key={lang} className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-900/40 border border-white/5 hover:border-cyan-500/30 cursor-pointer transition-colors">
+                          <label key={lang} className="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 border border-gray-200 hover:border-orange-300 cursor-pointer transition-colors">
                             <Checkbox
                               checked={field.value?.includes(lang)}
                               onCheckedChange={(checked) => {
@@ -384,9 +379,9 @@ const FreelancerProfileForm = () => {
                                   field.onChange(field.value.filter((l: string) => l !== lang));
                                 }
                               }}
-                              className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                              className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                             />
-                            <span className="text-sm text-slate-300">{lang}</span>
+                            <span className="text-sm text-gray-700">{lang}</span>
                           </label>
                         ))}
                       </div>
@@ -415,8 +410,8 @@ const FreelancerProfileForm = () => {
                 {/* Availability & Timing */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-5 w-5 text-cyan-400" />
-                    <h3 className="font-semibold text-white">Availability & Timing</h3>
+                    <Clock className="h-5 w-5 text-blue-500" />
+                    <h3 className="font-semibold text-gray-900">Availability & Timing</h3>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField control={form.control} name="supportHours" render={({ field }) => (
@@ -469,10 +464,10 @@ const FreelancerProfileForm = () => {
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                            className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
                           />
                         </FormControl>
-                        <FormLabel className="text-slate-300 !mt-0">Available on Weekends</FormLabel>
+                        <FormLabel className="text-gray-700 !mt-0">Available on Weekends</FormLabel>
                       </FormItem>
                     )} />
                   </div>
@@ -481,8 +476,8 @@ const FreelancerProfileForm = () => {
                 {/* About & Links */}
                 <div className={sectionClass}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Monitor className="h-5 w-5 text-violet-400" />
-                    <h3 className="font-semibold text-white">About You</h3>
+                    <Monitor className="h-5 w-5 text-violet-500" />
+                    <h3 className="font-semibold text-gray-900">About You</h3>
                   </div>
                   <FormField control={form.control} name="bio" render={({ field }) => (
                     <FormItem>
@@ -496,14 +491,14 @@ const FreelancerProfileForm = () => {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField control={form.control} name="linkedinUrl" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={labelClass}>LinkedIn Profile <span className="text-slate-500 text-xs">(Optional)</span></FormLabel>
+                        <FormLabel className={labelClass}>LinkedIn Profile <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
                         <FormControl><Input placeholder="https://linkedin.com/in/..." className={inputClass} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="portfolioUrl" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={labelClass}>Portfolio URL <span className="text-slate-500 text-xs">(Optional)</span></FormLabel>
+                        <FormLabel className={labelClass}>Portfolio URL <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
                         <FormControl><Input placeholder="https://yoursite.com" className={inputClass} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -514,7 +509,7 @@ const FreelancerProfileForm = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white text-lg py-6"
+                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-lg py-6 shadow-lg shadow-orange-500/25"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -524,7 +519,7 @@ const FreelancerProfileForm = () => {
                   )}
                 </Button>
 
-                <p className="text-center text-xs text-slate-500">
+                <p className="text-center text-xs text-gray-400">
                   By submitting, you agree to our Terms of Service and Privacy Policy. 
                   Your information is kept confidential and only shared with matched clients.
                 </p>
