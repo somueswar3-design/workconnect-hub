@@ -151,27 +151,33 @@ const FreelancerProfileForm = () => {
       >
         {/* Header Banner */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <img src={wsLogo} alt="WorkSupport360" className="h-12 w-12 rounded-xl shadow-lg" />
-            <span className="text-xl font-bold text-white">WorkSupport360</span>
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <img src={wsLogo} alt="WorkSupport360" className="h-14 w-14 rounded-xl shadow-2xl shadow-orange-500/30 ring-2 ring-orange-400/20" />
+            <span className="text-2xl font-bold">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500">Work</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-400">Support</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-300 to-blue-400">360</span>
+            </span>
           </div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 border border-cyan-500/30 mb-4">
-            <Sparkles className="h-4 w-4 text-cyan-400" />
-            <span className="text-sm font-medium text-cyan-300">Complete Your Profile</span>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-yellow-500/20 border border-orange-500/30 mb-4 shadow-lg shadow-orange-500/10">
+            <Sparkles className="h-4 w-4 text-orange-400 animate-pulse" />
+            <span className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-amber-300">Complete Your Profile</span>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Build Your Freelancer Profile</h1>
+          <h1 className="text-3xl font-bold mb-3">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-indigo-300">Build Your Freelancer Profile</span>
+          </h1>
           <p className="text-slate-400 max-w-xl mx-auto">
             Please fill in your details so we can match you with the best clients. 
-            A complete profile increases your chances of getting assigned projects by <span className="text-cyan-400 font-semibold">5x</span>!
+            A complete profile increases your chances of getting assigned projects by <span className="text-orange-400 font-bold">5x</span>!
           </p>
         </div>
 
         {/* Info Banner */}
-        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-500/20 flex items-start gap-3">
-          <CheckCircle2 className="h-5 w-5 text-cyan-400 mt-0.5 shrink-0" />
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-cyan-500/10 border border-orange-500/20 flex items-start gap-3 shadow-lg shadow-orange-500/5">
+          <CheckCircle2 className="h-5 w-5 text-orange-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm text-slate-300">
-              <span className="font-semibold text-white">Why fill this form?</span> Your profile details help us assign the right clients to you. 
+              <span className="font-semibold text-orange-300">Why fill this form?</span> Your profile details help us assign the right clients to you. 
               The more information you provide, the better matches we find. We protect your privacy — your personal details are never shared without consent.
             </p>
           </div>
