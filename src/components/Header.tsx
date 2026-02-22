@@ -22,9 +22,9 @@ const Header = () => {
         <Link to="/" className="flex items-center gap-2 group">
           <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-xl shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-300" />
           <span className="text-xl font-bold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">Work</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Support</span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400">360</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500">Work</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-400">Support</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-300 to-blue-400">360</span>
           </span>
         </Link>
 
