@@ -18,13 +18,12 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import wsLogo from '@/assets/worksupport360-logo.png';
+import { countries, getCurrencySymbol } from '@/data/countries';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
   gender: z.string().min(1, 'Please select gender'),
-  location: z.string().min(2, 'Location is required'),
-  city: z.string().min(2, 'City is required'),
-  state: z.string().min(2, 'State is required'),
+  country: z.string().min(1, 'Please select a country'),
   primarySkills: z.string().min(1, 'Add at least one primary skill'),
   secondarySkills: z.string().optional(),
   skillSet: z.string().min(1, 'Please describe your skill set'),
@@ -109,7 +108,7 @@ const FreelancerProfileForm = () => {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: '', gender: '', location: '', city: '', state: '',
+      fullName: '', gender: '', country: '',
       primarySkills: '', secondarySkills: '', skillSet: '',
       experienceYears: '', freelancerExperience: '', currentCompany: '', currentRole: '',
       languagesKnown: [], speakingLanguage: '', supportHours: '',
@@ -231,29 +230,24 @@ const FreelancerProfileForm = () => {
                     <MapPin className="h-5 w-5 text-blue-500" />
                     <h3 className="font-semibold text-gray-900">Location</h3>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <FormField control={form.control} name="location" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={labelClass}>Country *</FormLabel>
-                        <FormControl><Input placeholder="India" className={inputClass} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="state" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={labelClass}>State *</FormLabel>
-                        <FormControl><Input placeholder="Telangana" className={inputClass} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="city" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={labelClass}>City *</FormLabel>
-                        <FormControl><Input placeholder="Hyderabad" className={inputClass} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
+                  <FormField control={form.control} name="country" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={labelClass}>Country *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className={inputClass}><SelectValue placeholder="Select your country" /></SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[300px]">
+                          {countries.map(c => (
+                            <SelectItem key={c.code} value={c.name}>
+                              {c.name} ({c.currencySymbol})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 </div>
 
                 {/* Skills & Expertise */}
@@ -451,13 +445,17 @@ const FreelancerProfileForm = () => {
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <FormField control={form.control} name="hourlyRate" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={labelClass}>Hourly Rate (₹/hr) *</FormLabel>
-                        <FormControl><Input placeholder="e.g. 500" className={inputClass} {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField control={form.control} name="hourlyRate" render={({ field }) => {
+                      const selectedCountry = form.watch('country');
+                      const symbol = getCurrencySymbol(selectedCountry);
+                      return (
+                        <FormItem>
+                          <FormLabel className={labelClass}>Hourly Rate ({symbol}/hr) *</FormLabel>
+                          <FormControl><Input placeholder="e.g. 500" className={inputClass} {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }} />
                     <FormField control={form.control} name="weekendAvailability" render={({ field }) => (
                       <FormItem className="flex items-center gap-3 pt-8">
                         <FormControl>

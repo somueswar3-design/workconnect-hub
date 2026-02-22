@@ -1,4 +1,5 @@
 import { WorkerProfile } from '@/types/profile';
+import { countries } from '@/data/countries';
 
 const firstNames = [
   'Tech', 'Code', 'Dev', 'Cloud', 'Data', 'Cyber', 'Net', 'Web', 'App', 'Smart',
@@ -42,16 +43,9 @@ const skillSets = [
   ['SAP', 'ABAP', 'S/4HANA', 'Fiori'],
 ];
 
-const locations = [
-  'San Francisco, CA', 'Austin, TX', 'New York, NY', 'Seattle, WA', 'Boston, MA',
-  'Chicago, IL', 'Denver, CO', 'Portland, OR', 'Atlanta, GA', 'Miami, FL',
-  'Los Angeles, CA', 'Dallas, TX', 'Phoenix, AZ', 'Minneapolis, MN', 'Detroit, MI',
-  'Hyderabad, India', 'Bangalore, India', 'Pune, India', 'Chennai, India', 'Mumbai, India',
-  'London, UK', 'Berlin, Germany', 'Toronto, Canada', 'Sydney, Australia', 'Singapore',
-];
+const countryNames = countries.map(c => c.name);
 
 const experiences = ['1 year', '2 years', '3 years', '4 years', '5 years', '6 years', '7 years', '8 years', '10+ years', '12+ years', '15+ years'];
-const rates = ['$25', '$30', '$35', '$40', '$45', '$50', '$55', '$60', '$65', '$70', '$75', '$80', '$85', '$90', '$95', '$100', '$110', '$120', '$130', '$150'];
 const availabilities: WorkerProfile['availability'][] = ['available', 'busy', 'offline'];
 
 const bios = [
@@ -90,6 +84,9 @@ export function generateMockFreelancers(count: number = 10000): WorkerProfile[] 
     const mobileLastTwo = String(10 + Math.floor(r3 * 90));
     const skills = skillSets[Math.floor(r4 * skillSets.length)];
     const avail = availabilities[Math.floor(r5 * 3)];
+    const countryName = countryNames[Math.floor(r8 * countryNames.length)];
+    const country = countries.find(c => c.name === countryName)!;
+    const rateNum = 20 + Math.floor(r9 * 130);
 
     profiles.push({
       id: String(i + 1),
@@ -99,9 +96,9 @@ export function generateMockFreelancers(count: number = 10000): WorkerProfile[] 
       companyAlias: companies[Math.floor(r6 * companies.length)],
       skills,
       experience: experiences[Math.floor(r7 * experiences.length)],
-      location: locations[Math.floor(r8 * locations.length)],
+      location: countryName,
       availability: avail,
-      hourlyRate: rates[Math.floor(r9 * rates.length)],
+      hourlyRate: `${country.currencySymbol}${rateNum}`,
       bio: bios[Math.floor(r1 * r2 * 100) % bios.length],
       createdAt: new Date(2024, Math.floor(r3 * 12), Math.floor(r4 * 28) + 1),
       lastActive: new Date(Date.now() - Math.floor(r5 * 86400000 * 30)),

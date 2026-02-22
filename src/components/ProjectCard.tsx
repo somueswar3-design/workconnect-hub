@@ -68,13 +68,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="p-3 rounded-lg bg-muted/50 space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Total Earned</span>
-            <span className="font-semibold">${project.totalAmount.toLocaleString()}</span>
+            <span className="font-semibold">{project.totalAmount.toLocaleString()}</span>
           </div>
           
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
-              <span className="text-green-600">Settled: ${project.settledAmount.toLocaleString()}</span>
-              <span className="text-secondary">Pending: ${project.pendingAmount.toLocaleString()}</span>
+              <span className="text-green-600">Settled: {project.settledAmount.toLocaleString()}</span>
+              <span className="text-secondary">Pending: {project.pendingAmount.toLocaleString()}</span>
             </div>
             <Progress value={paymentProgress} className="h-2" />
           </div>
