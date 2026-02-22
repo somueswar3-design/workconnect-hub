@@ -21,6 +21,7 @@ import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
 import GISComplaints from "./pages/GISComplaints";
 import AdminDashboard from "./pages/AdminDashboard";
+import FreelancerProfileForm from "./pages/FreelancerProfileForm";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/freelancer" element={<RegisterChoice />} />
+                    <Route path="/freelancer-profile" element={<FreelancerProfileForm />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
