@@ -5,18 +5,33 @@ interface AuthUser {
   role: string;
   fullName?: string;
   avatarUrl?: string;
+  userId?: string;
 }
 
 interface AuthContextType {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (token: string, user: AuthUser) => void;
+  login: (token: string, user?: Partial<AuthUser>) => void;
   logout: () => void;
   updateUser: (user: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Decode JWT payload without library
+const decodeJwt = (token: string): Record<string, any> | null => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+};
+
+const ROLE_CLAIM = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+const USERID_CLAIM = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -36,7 +51,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (newToken: string, newUser: AuthUser) => {
+  const login = (newToken: string, userOverrides?: Partial<AuthUser>) => {
+    const claims = decodeJwt(newToken);
+    const role = claims?.[ROLE_CLAIM] || userOverrides?.role || '1';
+    const userId = claims?.[USERID_CLAIM] || userOverrides?.userId || '';
+
+    const newUser: AuthUser = {
+      email: userOverrides?.email || '',
+      role: String(role),
+      fullName: userOverrides?.fullName,
+      avatarUrl: userOverrides?.avatarUrl,
+      userId,
+    };
+
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('auth_token', newToken);
