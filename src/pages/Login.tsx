@@ -30,15 +30,17 @@ const Login = () => {
         password,
         twoFactorCode: twoFactorCode || undefined,
       });
-      login(result.token, {
-        email: result.user?.email || email,
-        role: result.user?.role || 'freelancer',
-        fullName: result.user?.fullName,
-        avatarUrl: result.user?.avatarUrl,
-      });
+      // login() decodes the JWT to extract role & userId
+      login(result.token, { email });
       toast.success('Login successful!');
-      const role = result.user?.role || 'freelancer';
-      navigate(role === 'admin' ? '/admin' : role === 'client' ? '/client' : '/freelancer');
+
+      // Decode role from JWT for navigation
+      const claims = JSON.parse(atob(result.token.split('.')[1]));
+      const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '1');
+
+      if (role === '1') navigate('/freelancer');
+      else if (role === '2') navigate('/client');
+      else navigate('/admin');
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {
         setShow2FA(true);

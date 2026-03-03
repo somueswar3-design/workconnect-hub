@@ -101,7 +101,7 @@ const FreelancerProfileForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -121,7 +121,7 @@ const FreelancerProfileForm = () => {
     try {
       const payload = {
         id: 0,
-        userId: 0,
+        userId: parseInt(user?.userId || '0'),
         freelancerUserStatus: true,
         fullName: data.fullName,
         gender: genderMap[data.gender] ?? 0,
@@ -158,7 +158,9 @@ const FreelancerProfileForm = () => {
 
       if (!res.ok) throw new Error('Failed to save profile');
       toast.success('Profile saved successfully!');
-      navigate('/freelancer');
+      // Redirect based on role
+      const dashPath = user?.role === '2' ? '/client' : '/freelancer';
+      navigate(dashPath);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
     } finally {

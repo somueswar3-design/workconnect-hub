@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { authApi } from '@/services/authApi';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -17,7 +16,6 @@ import wsLogo from '@/assets/worksupport360-logo.png';
 const registerSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').max(255),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  role: z.string().min(1, 'Please select a role'),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -26,18 +24,23 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // role=1 for freelancer, role=2 for client
+  const role = searchParams.get('role') || '1';
+  const isFreelancer = role === '1';
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '', role: '' },
+    defaultValues: { email: '', password: '' },
   });
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      await authApi.register({ email: data.email, password: data.password, role: data.role });
+      await authApi.register({ email: data.email, password: data.password, role });
       toast.success('Registration successful!');
-      if (data.role === 'freelancer') {
+      if (isFreelancer) {
         navigate('/freelancer-profile');
       } else {
         navigate('/login');
@@ -62,8 +65,12 @@ const Register = () => {
                 <span className="text-blue-600">360</span>
               </span>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">Create Account</CardTitle>
-            <CardDescription className="text-gray-500">Join our IT professional network</CardDescription>
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              {isFreelancer ? 'Become a Freelancer' : 'Get Work Support'}
+            </CardTitle>
+            <CardDescription className="text-gray-500">
+              {isFreelancer ? 'Create your freelancer account' : 'Register as a client to find talent'}
+            </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -93,24 +100,6 @@ const Register = () => {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="role" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700">I am a</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="border-gray-200 focus:ring-orange-500">
-                          <Users className="h-4 w-4 mr-2 text-gray-400" />
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="freelancer">Freelancer</SelectItem>
-                        <SelectItem value="client">Client</SelectItem>
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )} />

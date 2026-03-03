@@ -1,8 +1,15 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard, MapPin } from 'lucide-react';
+import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard, MapPin, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/worksupport360-logo.png';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header = () => {
   const location = useLocation();
@@ -15,6 +22,11 @@ const Header = () => {
   };
 
   const isActive = (path: string) => location.pathname === path;
+
+  const getDashboardPath = () => {
+    if (user?.role === '2') return '/client';
+    return '/freelancer';
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[#0f172a] text-slate-100 overflow-hidden">
@@ -32,7 +44,7 @@ const Header = () => {
           {isAuthenticated ? (
             <>
               <Link
-                to={user?.role === 'client' ? '/client' : '/freelancer'}
+                to={getDashboardPath()}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   location.pathname.startsWith('/freelancer') || location.pathname.startsWith('/client') ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
@@ -49,20 +61,42 @@ const Header = () => {
                 <MapPin className="h-4 w-4" />
                 <span>GIS Portal</span>
               </Link>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-white/5 transition-all duration-200"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-              </button>
+
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 transition-all duration-200">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white text-sm font-bold">
+                      {user?.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <span className="text-sm font-medium text-slate-200 max-w-[120px] truncate">
+                      {user?.fullName || user?.email || 'User'}
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate(getDashboardPath())} className="cursor-pointer">
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    Update Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
               <Link
-                to="/register"
+                to="/register?role=1"
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md ${
-                  isActive('/register')
+                  isActive('/register') && new URLSearchParams(location.search).get('role') === '1'
                     ? 'bg-gradient-to-r from-cyan-600 to-indigo-700 text-white ring-2 ring-cyan-400/50'
                     : 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white hover:from-cyan-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-cyan-500/25 hover:-translate-y-0.5'
                 }`}
@@ -71,9 +105,9 @@ const Header = () => {
                 <span>Become a Freelancer</span>
               </Link>
               <Link
-                to="/register"
+                to="/register?role=2"
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                  isActive('/browse')
+                  isActive('/register') && new URLSearchParams(location.search).get('role') === '2'
                     ? 'bg-white/10 text-white border border-white/20'
                     : 'text-slate-300 border border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-white'
                 }`}
