@@ -279,7 +279,7 @@ const FreelancerDashboard = () => {
                 <Button 
                   variant="secondary" 
                   className="mt-4 bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground border-0"
-                  onClick={() => setActiveTab(slide.tab)}
+                  onClick={() => slide.tab === 'profile' ? navigate('/freelancer-profile') : setActiveTab(slide.tab)}
                 >
                   {slide.cta}
                 </Button>
@@ -378,9 +378,12 @@ const FreelancerDashboard = () => {
             <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Briefcase className="h-4 w-4" /> Work History
             </TabsTrigger>
-            <TabsTrigger value="profile" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <button
+              onClick={() => navigate('/freelancer-profile')}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 gap-1.5 hover:bg-primary hover:text-primary-foreground"
+            >
               <User className="h-4 w-4" /> Update Profile
-            </TabsTrigger>
+            </button>
           </TabsList>
 
           {/* Dashboard Tab */}
