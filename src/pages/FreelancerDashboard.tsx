@@ -19,9 +19,9 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { getAssignedProjects, getFreelancerStats } from '@/services/freelancerApi';
+import { getAssignments, getFreelancerStats, AssignmentDto } from '@/services/freelancerApi';
 import WorkHistoryTimeline from '@/components/WorkHistoryTimeline';
-import { AssignedProject, FreelancerStats } from '@/types/project';
+import { FreelancerStats } from '@/types/project';
 
 interface FreelancerFormData {
   fullName: string;
