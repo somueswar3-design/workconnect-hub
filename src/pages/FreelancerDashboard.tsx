@@ -203,8 +203,8 @@ const FreelancerDashboard = () => {
 
   const slide = promoSlides[currentSlide];
 
-  const activeProjects = projects.filter(p => p.status === 'active');
-  const completedProjects = projects.filter(p => p.status === 'completed');
+  const activeAssignments = assignments.filter(a => a.isActive);
+  const inactiveAssignments = assignments.filter(a => !a.isActive);
 
   return (
     <div className="min-h-screen bg-background">
