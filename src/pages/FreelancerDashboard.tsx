@@ -112,13 +112,21 @@ const FreelancerDashboard = () => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const [p, s] = await Promise.all([getAssignedProjects(), getFreelancerStats()]);
-      setProjects(p);
-      setStats(s);
+      try {
+        const userId = user?.userId || '';
+        const [a, s] = await Promise.all([
+          getAssignments(userId),
+          getFreelancerStats(),
+        ]);
+        setAssignments(a);
+        setStats(s);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      }
       setLoading(false);
     };
     load();
-  }, []);
+  }, [user?.userId]);
 
   // Auto-rotate slides
   useEffect(() => {
