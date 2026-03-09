@@ -208,7 +208,7 @@ const Home = () => {
           {/* Role Selection Cards */}
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Become a Freelancer */}
-            <Link to="/register?role=1" className="group">
+            <Link to="/register?role=FreeLancer" className="group">
               <div className="relative p-8 rounded-2xl border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-cyan-900/20 to-indigo-900/20 hover:border-cyan-400 hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-2 overflow-hidden">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-400/10 rounded-full blur-3xl group-hover:bg-cyan-400/20 transition-colors" />
                 <div className="relative">
