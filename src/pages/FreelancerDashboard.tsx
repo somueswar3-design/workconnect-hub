@@ -465,7 +465,7 @@ const FreelancerDashboard = () => {
 
           {/* Work History Tab */}
           <TabsContent value="history">
-            <WorkHistoryTimeline projects={projects} />
+            <WorkHistoryTimeline projects={[]} />
           </TabsContent>
 
           {/* Profile Tab */}
