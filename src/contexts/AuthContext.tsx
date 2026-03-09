@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = (newToken: string, userOverrides?: Partial<AuthUser>) => {
     const claims = decodeJwt(newToken);
-    const role = claims?.[ROLE_CLAIM] || userOverrides?.role || '1';
+    const role = claims?.[ROLE_CLAIM] || userOverrides?.role || 'FreeLancer';
     const userId = claims?.[USERID_CLAIM] || userOverrides?.userId || '';
 
     const newUser: AuthUser = {

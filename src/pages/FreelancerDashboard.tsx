@@ -19,9 +19,9 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { getAssignedProjects, getFreelancerStats } from '@/services/freelancerApi';
+import { getAssignments, getFreelancerStats, AssignmentDto } from '@/services/freelancerApi';
 import WorkHistoryTimeline from '@/components/WorkHistoryTimeline';
-import { AssignedProject, FreelancerStats } from '@/types/project';
+import { FreelancerStats } from '@/types/project';
 
 interface FreelancerFormData {
   fullName: string;
@@ -91,7 +91,7 @@ const FreelancerDashboard = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [projects, setProjects] = useState<AssignedProject[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [stats, setStats] = useState<FreelancerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -112,13 +112,21 @@ const FreelancerDashboard = () => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const [p, s] = await Promise.all([getAssignedProjects(), getFreelancerStats()]);
-      setProjects(p);
-      setStats(s);
+      try {
+        const userId = user?.userId || '';
+        const [a, s] = await Promise.all([
+          getAssignments(userId),
+          getFreelancerStats(),
+        ]);
+        setAssignments(a);
+        setStats(s);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      }
       setLoading(false);
     };
     load();
-  }, []);
+  }, [user?.userId]);
 
   // Auto-rotate slides
   useEffect(() => {
@@ -195,8 +203,8 @@ const FreelancerDashboard = () => {
 
   const slide = promoSlides[currentSlide];
 
-  const activeProjects = projects.filter(p => p.status === 'active');
-  const completedProjects = projects.filter(p => p.status === 'completed');
+  const activeAssignments = assignments.filter(a => a.isActive);
+  const inactiveAssignments = assignments.filter(a => !a.isActive);
 
   return (
     <div className="min-h-screen bg-background">
@@ -386,104 +394,69 @@ const FreelancerDashboard = () => {
             </button>
           </TabsList>
 
-          {/* Dashboard Tab */}
+          {/* Dashboard Tab - Current Assignments */}
           <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Active Engagements */}
-              <Card className="border-0 shadow-md">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Active Engagements ({activeProjects.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {activeProjects.length === 0 ? (
-                    <p className="text-sm text-muted-foreground py-6 text-center">No active engagements. Go online to receive work!</p>
-                  ) : (
-                    activeProjects.map(p => (
-                      <div key={p.id} className="p-3 rounded-xl border border-border bg-muted/30 hover:bg-muted/50 transition-colors">
-                        <div className="flex justify-between items-start mb-1">
-                          <div>
-                            <p className="font-semibold text-sm text-foreground">{p.projectTitle}</p>
-                            <p className="text-xs text-muted-foreground">{p.clientName} · {p.clientCompany}</p>
+            {/* Active Assignments */}
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Current Assignments ({activeAssignments.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {activeAssignments.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-8 text-center">No active assignments. Go online to receive work!</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activeAssignments.map(a => (
+                      <div key={a.projectId} className="p-4 rounded-xl border border-border bg-gradient-to-br from-emerald-500/5 to-transparent hover:shadow-md transition-all">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                            <Briefcase className="h-5 w-5 text-emerald-600" />
                           </div>
-                          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">Active</Badge>
+                          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">
+                            {a.status || 'Active'}
+                          </Badge>
                         </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-muted-foreground">{p.hoursWorked}h @ {p.hourlyRate}</span>
-                          <span className="text-sm font-bold text-foreground">${p.totalAmount.toLocaleString()}</span>
-                        </div>
-                        <Progress value={(p.settledAmount / p.totalAmount) * 100} className="h-1.5 mt-2" />
-                        <div className="flex justify-between text-xs mt-1">
-                          <span className="text-emerald-600">Settled: ${p.settledAmount.toLocaleString()}</span>
-                          <span className="text-secondary">Pending: ${p.pendingAmount.toLocaleString()}</span>
-                        </div>
+                        <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Users className="h-3 w-3" /> {a.clientName}
+                        </p>
                       </div>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Completed Summary */}
+            {/* Inactive/Completed Assignments */}
+            {inactiveAssignments.length > 0 && (
               <Card className="border-0 shadow-md">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary" />
-                    Completed Projects ({completedProjects.length})
+                    Past Assignments ({inactiveAssignments.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {completedProjects.length === 0 ? (
-                    <p className="text-sm text-muted-foreground py-6 text-center">No completed projects yet.</p>
-                  ) : (
-                    completedProjects.map(p => (
-                      <div key={p.id} className="p-3 rounded-xl border border-border bg-muted/30">
-                        <div className="flex justify-between items-start mb-1">
-                          <div>
-                            <p className="font-semibold text-sm text-foreground">{p.projectTitle}</p>
-                            <p className="text-xs text-muted-foreground">{p.clientName}</p>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {inactiveAssignments.map(a => (
+                      <div key={a.projectId} className="p-4 rounded-xl border border-border bg-muted/30">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
+                            <Briefcase className="h-5 w-5 text-muted-foreground" />
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
-                            <span className="text-sm font-bold text-foreground">{p.rating}</span>
-                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {a.status || 'Completed'}
+                          </Badge>
                         </div>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="text-xs text-muted-foreground">{p.hoursWorked}h @ {p.hourlyRate}</span>
-                          <span className="text-sm font-bold text-emerald-600">${p.settledAmount.toLocaleString()} ✓</span>
-                        </div>
-                        {p.feedback && (
-                          <p className="text-xs text-muted-foreground mt-2 italic border-t border-border pt-2">"{p.feedback}"</p>
-                        )}
+                        <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Users className="h-3 w-3" /> {a.clientName}
+                        </p>
                       </div>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Summary */}
-            {stats && (
-              <Card className="border-0 shadow-md bg-gradient-to-r from-primary/5 via-transparent to-secondary/5">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                    <div>
-                      <p className="text-3xl font-bold text-primary">{stats.totalClients}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total Clients</p>
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-foreground">{stats.activeProjects + stats.completedProjects}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total Projects</p>
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-emerald-600">${stats.settledAmount.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total Collected</p>
-                    </div>
-                    <div>
-                      <p className="text-3xl font-bold text-secondary">${stats.pendingAmount.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Pending Amount</p>
-                    </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -492,7 +465,7 @@ const FreelancerDashboard = () => {
 
           {/* Work History Tab */}
           <TabsContent value="history">
-            <WorkHistoryTimeline projects={projects} />
+            <WorkHistoryTimeline projects={[]} />
           </TabsContent>
 
           {/* Profile Tab */}

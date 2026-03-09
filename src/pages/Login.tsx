@@ -34,13 +34,32 @@ const Login = () => {
       login(result.token, { email });
       toast.success('Login successful!');
 
-      // Decode role from JWT for navigation
+      // Decode role & userId from JWT for navigation
       const claims = JSON.parse(atob(result.token.split('.')[1]));
-      const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '1');
+      const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'FreeLancer');
+      const userId = String(claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '');
 
-      if (role === '1') navigate('/freelancer');
-      else if (role === '2') navigate('/client');
-      else navigate('/admin');
+      if (role.toLowerCase() === 'freelancer') {
+        // Check profile status before redirecting
+        try {
+          const statusRes = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167'}/api/freelancer/profile-status?userId=${userId}`,
+            { headers: { 'Authorization': `Bearer ${result.token}` } }
+          );
+          const statusData = await statusRes.json();
+          if (!statusData.profileUpdated) {
+            navigate('/freelancer-profile');
+          } else {
+            navigate('/freelancer');
+          }
+        } catch {
+          navigate('/freelancer-profile');
+        }
+      } else if (role.toLowerCase() === 'client') {
+        navigate('/client');
+      } else {
+        navigate('/admin');
+      }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {
         setShow2FA(true);

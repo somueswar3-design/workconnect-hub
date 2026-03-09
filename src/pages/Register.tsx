@@ -26,9 +26,9 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // role=1 for freelancer, role=2 for client
-  const role = searchParams.get('role') || '1';
-  const isFreelancer = role === '1';
+  // role=FreeLancer or Client
+  const role = searchParams.get('role') || 'FreeLancer';
+  const isFreelancer = role.toLowerCase() === 'freelancer';
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
