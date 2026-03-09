@@ -91,7 +91,7 @@ const FreelancerDashboard = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [projects, setProjects] = useState<AssignedProject[]>([]);
+  const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [stats, setStats] = useState<FreelancerStats | null>(null);
   const [loading, setLoading] = useState(true);
 
