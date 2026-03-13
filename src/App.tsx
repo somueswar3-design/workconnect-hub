@@ -23,6 +23,8 @@ import NotFound from "./pages/NotFound";
 import GISComplaints from "./pages/GISComplaints";
 import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerProfileForm from "./pages/FreelancerProfileForm";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +58,8 @@ const App = () => (
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/browse" element={<BrowseWorkers />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>
