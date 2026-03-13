@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Briefcase, UserPlus, Users, LogIn, LogOut, LayoutDashboard, MapPin, User } from 'lucide-react';
+import { LogIn, LogOut, LayoutDashboard, MapPin, User, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/worksupport360-logo.png';
@@ -62,7 +62,6 @@ const Header = () => {
                 <span>GIS Portal</span>
               </Link>
 
-              {/* Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 transition-all duration-200">
@@ -93,27 +92,28 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link
-                to="/register?role=1"
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 shadow-md ${
-                  isActive('/register') && new URLSearchParams(location.search).get('role') === '1'
-                    ? 'bg-gradient-to-r from-cyan-600 to-indigo-700 text-white ring-2 ring-cyan-400/50'
-                    : 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white hover:from-cyan-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-cyan-500/25 hover:-translate-y-0.5'
-                }`}
+              <a
+                href="tel:9441363687"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-cyan-300 transition-colors"
               >
-                <Users className="h-4 w-4" />
-                <span>Become a Freelancer</span>
-              </Link>
-              <Link
-                to="/register?role=2"
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                  isActive('/register') && new URLSearchParams(location.search).get('role') === '2'
-                    ? 'bg-white/10 text-white border border-white/20'
-                    : 'text-slate-300 border border-slate-700 hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-white'
-                }`}
+                <Phone className="h-4 w-4 text-cyan-400" />
+                <span className="font-medium">9441363687</span>
+              </a>
+              <a
+                href="mailto:info@worksupport360.com"
+                className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-cyan-300 transition-colors"
               >
-                <Briefcase className="h-4 w-4" />
-                <span>Need Work Support</span>
+                <Mail className="h-4 w-4 text-cyan-400" />
+                <span className="font-medium hidden lg:inline">info@worksupport360.com</span>
+              </a>
+
+              <div className="w-px h-6 bg-slate-700 mx-1" />
+
+              <Link
+                to="/register"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-gradient-to-r from-cyan-500 to-indigo-600 text-white hover:from-cyan-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-cyan-500/25 hover:-translate-y-0.5 shadow-md"
+              >
+                <span>Get Started</span>
               </Link>
               <Link
                 to="/login"
