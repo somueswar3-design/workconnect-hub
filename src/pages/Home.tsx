@@ -133,17 +133,6 @@ const Home = () => {
             transition={{ duration: 0.9, ease: 'easeOut' }}
             className="flex flex-col items-center"
           >
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-6"
-            >
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_60px_rgba(0,212,255,0.3)] mx-auto">
-                <img src={wsLogo} alt="WorkSupport360" className="w-full h-full object-contain p-1" />
-              </div>
-            </motion.div>
 
             {/* Watch Demo Button */}
             <motion.div
