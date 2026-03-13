@@ -188,18 +188,12 @@ const FreelancerProfileForm = () => {
   const lc = "text-gray-700 text-sm";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 p-4">
+    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 p-3 overflow-hidden">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-4">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <img src={wsLogo} alt="WorkSupport360" className="h-10 w-10 rounded-lg shadow" />
-            <span className="text-xl font-bold">
-              <span className="text-orange-500">Work</span><span className="text-amber-500">Support</span><span className="text-blue-600">360</span>
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Build Your Freelancer Profile</h1>
-          <p className="text-gray-500 text-sm">Complete your profile to get matched with clients</p>
+        <div className="text-center mb-2">
+          <h1 className="text-xl font-bold text-gray-900">Build Your Freelancer Profile</h1>
+          <p className="text-gray-500 text-xs">Complete your profile to get matched with clients</p>
         </div>
 
         {/* Step Indicators */}

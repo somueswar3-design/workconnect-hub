@@ -55,10 +55,6 @@ const Header = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate(getDashboardPath())} className="cursor-pointer">
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
                     <User className="h-4 w-4 mr-2" />
                     Update Profile
