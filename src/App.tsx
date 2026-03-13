@@ -23,6 +23,8 @@ import NotFound from "./pages/NotFound";
 import GISComplaints from "./pages/GISComplaints";
 import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerProfileForm from "./pages/FreelancerProfileForm";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
