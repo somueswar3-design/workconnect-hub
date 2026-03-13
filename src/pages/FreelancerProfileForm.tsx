@@ -197,7 +197,7 @@ const FreelancerProfileForm = () => {
         </div>
 
         {/* Step Indicators */}
-        <div className="flex items-center justify-center gap-1 mb-4">
+        <div className="flex items-center justify-center gap-1 mb-3">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             const isActive = i === step;
