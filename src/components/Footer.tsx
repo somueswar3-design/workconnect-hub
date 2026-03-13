@@ -28,8 +28,8 @@ const Footer = () => {
             <ul className="space-y-2 text-background/70 text-sm">
               <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
               <li><Link to="/browse" className="hover:text-primary transition-colors">Find Talent</Link></li>
-              <li><Link to="/register" className="hover:text-primary transition-colors">Become a Freelancer</Link></li>
-              <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link to="/register?role=FreeLancer" className="hover:text-primary transition-colors">Become a Freelancer</Link></li>
+              <li><Link to="/register?role=Client" className="hover:text-primary transition-colors">Need Work Support</Link></li>
             </ul>
           </div>
 
@@ -52,13 +52,13 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Platform Info */}
           <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
+            <h3 className="font-semibold mb-4">Platform</h3>
             <ul className="space-y-2 text-background/70 text-sm">
-              <li><Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-              <li><Link to="/refund" className="hover:text-primary transition-colors">Refund Policy</Link></li>
+              <li><Link to="/login" className="hover:text-primary transition-colors">Login</Link></li>
+              <li><Link to="/register?role=FreeLancer" className="hover:text-primary transition-colors">Register as Freelancer</Link></li>
+              <li><Link to="/register?role=Client" className="hover:text-primary transition-colors">Register as Client</Link></li>
             </ul>
           </div>
         </div>

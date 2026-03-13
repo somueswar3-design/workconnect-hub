@@ -191,14 +191,12 @@ const Home = () => {
       <section className="relative py-16 lg:py-28 z-10 min-h-[600px] flex items-center">
         <div className="container relative">
           <div className="text-center mb-12">
-           <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl flex items-center gap-5 justify-center">
-              <img src={wsLogo} alt="WorkSupport360" className="h-20 w-20 rounded-2xl shadow-2xl shadow-orange-500/30 ring-2 ring-orange-400/20" />
-              <span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500">Work</span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-400">Support</span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-400 via-slate-300 to-blue-400">360</span>
-              </span>
+           <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white">
+              Your 360° IT Freelancing Platform
             </h1>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-2">
+              Connect. Collaborate. Deliver.
+            </p>
             <p className="mb-10 text-lg text-slate-400 max-w-2xl mx-auto">
               The privacy-first freelancing platform for IT professionals. Work on your terms,
               protect your identity, and connect with quality projects.
