@@ -43,25 +43,6 @@ const Header = () => {
         <nav className="hidden md:flex items-center gap-2">
           {isAuthenticated ? (
             <>
-              <Link
-                to={getDashboardPath()}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  location.pathname.startsWith('/freelancer') || location.pathname.startsWith('/client') ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                <span>Dashboard</span>
-              </Link>
-              <Link
-                to="/gis-complaints"
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  location.pathname === '/gis-complaints' ? 'text-white bg-white/10' : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <MapPin className="h-4 w-4" />
-                <span>GIS Portal</span>
-              </Link>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/15 transition-all duration-200">
@@ -74,10 +55,6 @@ const Header = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate(getDashboardPath())} className="cursor-pointer">
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
                     <User className="h-4 w-4 mr-2" />
                     Update Profile
