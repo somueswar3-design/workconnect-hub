@@ -145,15 +145,25 @@ const Home = () => {
               </div>
             </motion.div>
 
-            {/* Badge */}
+            {/* Watch Demo Button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Badge className="mb-6 bg-cyan-500/15 text-cyan-300 border-cyan-500/30 backdrop-blur-sm text-sm px-5 py-2 font-medium tracking-wide">
-                🚀 360° IT Solutions — On Demand
-              </Badge>
+              <a
+                href="/demo-explainer.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-white/10 border border-cyan-400/30 backdrop-blur-sm hover:bg-white/15 hover:border-cyan-400/50 transition-all cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                  <Play className="h-4 w-4 text-white ml-0.5" />
+                </div>
+                <span className="text-sm font-semibold text-cyan-200 group-hover:text-white transition-colors tracking-wide">
+                  Watch How It Works
+                </span>
+              </a>
             </motion.div>
 
             {/* Main title */}
