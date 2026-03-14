@@ -15,7 +15,6 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getAssignments, getFreelancerEarnings, getJobOpenings, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
 import {
   Dialog,
@@ -23,13 +22,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import DashboardLayout from '@/layouts/DashboardLayout';
 
-const FreelancerDashboard = () => {
+const FreelancerOverview = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || null);
   const [isOnline, setIsOnline] = useState(true);
   const [activeTab, setActiveTab] = useState('openings');
   const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
@@ -57,7 +55,6 @@ const FreelancerDashboard = () => {
       }
       setLoading(false);
 
-      // Load openings separately
       try {
         const userId = user?.userId || '';
         const o = await getJobOpenings(userId);
@@ -71,7 +68,6 @@ const FreelancerDashboard = () => {
     load();
   }, [user?.userId]);
 
-  // Show notify popup if no assignments after loading
   useEffect(() => {
     if (!loading) {
       const valid = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
@@ -81,21 +77,6 @@ const FreelancerDashboard = () => {
       }
     }
   }, [loading, assignments]);
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => setAvatarPreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleLogout = () => { logout(); navigate('/'); };
 
   const validAssignments = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
   const activeAssignments = validAssignments.filter(a => a.status?.toLowerCase() === 'active');
@@ -127,522 +108,319 @@ const FreelancerDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Bar */}
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
-              <div className="h-10 w-10 rounded-full bg-muted border-2 border-primary/30 flex items-center justify-center overflow-hidden">
-                {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <User className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <div className="absolute inset-0 rounded-full bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
-                <Camera className="h-4 w-4 text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-foreground leading-tight">{user?.fullName || 'Freelancer'}</h1>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {/* Online/Offline Toggle */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50">
-              {isOnline ? <Wifi className="h-4 w-4 text-primary" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
-              <span className={`text-xs font-medium ${isOnline ? 'text-primary' : 'text-muted-foreground'}`}>
-                {isOnline ? 'Available' : 'Not Available'}
-              </span>
-              <Switch
-                checked={isOnline}
-                onCheckedChange={async (checked) => {
-                  setIsOnline(checked);
-                  try {
-                    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
-                    const authToken = localStorage.getItem('auth_token');
-                    const statusText = checked ? 'Available' : 'Not Available';
-                    const userId = user?.userId || '';
-                    const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${encodeURIComponent(userId)}&status=${encodeURIComponent(statusText)}`, {
-                      method: 'POST',
-                      headers: {
-                        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-                      },
-                    });
-                    if (!res.ok) throw new Error('Failed to update availability');
-                    toast({
-                      title: checked ? '🟢 Available' : '⚫ Not Available',
-                      description: checked ? 'You are now visible to clients.' : 'You will not appear in searches.',
-                    });
-                  } catch (err: any) {
-                    setIsOnline(!checked);
-                    toast({ title: 'Error', description: err.message || 'Failed to update status', variant: 'destructive' });
-                  }
-                }}
-                className="data-[state=checked]:bg-primary"
-              />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
-                  <ChevronDown className="h-4 w-4" /> Settings
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate('/freelancer-profile')}>
-                  <User className="h-4 w-4 mr-2" /> Update Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/change-password')}>
-                  <Lock className="h-4 w-4 mr-2" /> Change Password
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="ghost" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" /> Logout
-            </Button>
-          </div>
+    <div className="p-6 space-y-5">
+      {/* Availability Toggle */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50">
+          {isOnline ? <Wifi className="h-4 w-4 text-primary" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
+          <span className={`text-xs font-medium ${isOnline ? 'text-primary' : 'text-muted-foreground'}`}>
+            {isOnline ? 'Available' : 'Not Available'}
+          </span>
+          <Switch
+            checked={isOnline}
+            onCheckedChange={async (checked) => {
+              setIsOnline(checked);
+              try {
+                const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+                const authToken = localStorage.getItem('auth_token');
+                const statusText = checked ? 'Available' : 'Not Available';
+                const userId = user?.userId || '';
+                const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${encodeURIComponent(userId)}&status=${encodeURIComponent(statusText)}`, {
+                  method: 'POST',
+                  headers: {
+                    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+                  },
+                });
+                if (!res.ok) throw new Error('Failed to update availability');
+                toast({
+                  title: checked ? '🟢 Available' : '⚫ Not Available',
+                  description: checked ? 'You are now visible to clients.' : 'You will not appear in searches.',
+                });
+              } catch (err: any) {
+                setIsOnline(!checked);
+                toast({ title: 'Error', description: err.message || 'Failed to update status', variant: 'destructive' });
+              }
+            }}
+            className="data-[state=checked]:bg-primary"
+          />
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-5 space-y-5">
-        {/* ===== COMPACT TOP STRIP: Earnings + Assignments Summary ===== */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Earnings Card - Compact */}
-          <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-                <DollarSign className="h-6 w-6 text-primary" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground font-medium">Total Earnings</p>
-                <p className="text-xl font-extrabold text-foreground truncate">
-                  {earnings ? `${getCurrencySymbol(earnings.currency)}${earnings.earnedAmount.toLocaleString()}` : '—'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Active Assignments - Compact */}
-          <Card className="border border-border shadow-sm">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
-                <Briefcase className="h-6 w-6 text-accent-foreground" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground font-medium">Active Projects</p>
-                <p className="text-xl font-extrabold text-foreground">{activeAssignments.length}</p>
-              </div>
-              {activeAssignments.length > 0 && (
-                <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('assignments')}>
-                  View <ArrowRight className="h-3 w-3 ml-1" />
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Completed - Compact */}
-          <Card className="border border-border shadow-sm">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                <CheckCircle2 className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-muted-foreground font-medium">Completed</p>
-                <p className="text-xl font-extrabold text-foreground">{completedAssignments.length}</p>
-              </div>
-              {completedAssignments.length > 0 && (
-                <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('history')}>
-                  View <ArrowRight className="h-3 w-3 ml-1" />
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ===== TABS: Openings / Assignments / History ===== */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="bg-muted/50 p-1">
-            <TabsTrigger value="openings" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Search className="h-4 w-4" /> Openings
-            </TabsTrigger>
-            <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-4 w-4" /> My Assignments
-            </TabsTrigger>
-            <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Clock className="h-4 w-4" /> Work History
-            </TabsTrigger>
-          </TabsList>
-
-          {/* ===== OPENINGS TAB - Naukri Style ===== */}
-          <TabsContent value="openings" className="space-y-4">
-            {/* Search Bar */}
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by skill, title, or keyword..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-card border-border"
-                />
-              </div>
-              <Badge variant="outline" className="px-3 py-2 text-xs shrink-0">
-                {filteredOpenings.length} openings
-              </Badge>
+      {/* Compact Stats Strip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+              <DollarSign className="h-6 w-6 text-primary" />
             </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium">Total Earnings</p>
+              <p className="text-xl font-extrabold text-foreground truncate">
+                {earnings ? `${getCurrencySymbol(earnings.currency)}${earnings.earnedAmount.toLocaleString()}` : '—'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-            {openingsLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <Card key={i} className="border border-border shadow-sm animate-pulse">
+        <Card className="border border-border shadow-sm">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+              <Briefcase className="h-6 w-6 text-accent-foreground" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium">Active Projects</p>
+              <p className="text-xl font-extrabold text-foreground">{activeAssignments.length}</p>
+            </div>
+            {activeAssignments.length > 0 && (
+              <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('assignments')}>
+                View <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="border border-border shadow-sm">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground font-medium">Completed</p>
+              <p className="text-xl font-extrabold text-foreground">{completedAssignments.length}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="bg-muted/50 p-1">
+          <TabsTrigger value="openings" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Search className="h-4 w-4" /> Openings
+          </TabsTrigger>
+          <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Briefcase className="h-4 w-4" /> My Assignments
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Clock className="h-4 w-4" /> Work History
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Openings Tab */}
+        <TabsContent value="openings" className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search by skill, title, or keyword..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 bg-card border-border" />
+            </div>
+            <Badge variant="outline" className="px-3 py-2 text-xs shrink-0">{filteredOpenings.length} openings</Badge>
+          </div>
+
+          {openingsLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="border border-border shadow-sm animate-pulse">
+                  <CardContent className="p-5"><div className="h-5 bg-muted rounded w-2/3 mb-3" /><div className="h-4 bg-muted rounded w-1/3 mb-4" /><div className="h-3 bg-muted rounded w-full mb-2" /><div className="h-3 bg-muted rounded w-3/4" /></CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredOpenings.length === 0 ? (
+            <Card className="border-0 shadow-lg overflow-hidden">
+              <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-accent" />
+              <CardContent className="py-16 text-center space-y-6">
+                <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
+                  <Search className="h-12 w-12 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground mb-2">No Openings Available Right Now</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
+                </div>
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                  <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {filteredOpenings.map((job, idx) => (
+                <motion.div key={job.id || idx} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                  <Card className="border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
                     <CardContent className="p-5">
-                      <div className="h-5 bg-muted rounded w-2/3 mb-3" />
-                      <div className="h-4 bg-muted rounded w-1/3 mb-4" />
-                      <div className="h-3 bg-muted rounded w-full mb-2" />
-                      <div className="h-3 bg-muted rounded w-3/4" />
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-foreground text-base group-hover:text-primary transition-colors truncate">{job.title}</h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm text-muted-foreground flex items-center gap-1"><Building2 className="h-3.5 w-3.5" /> {job.clientName}</span>
+                            {job.location && <span className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {job.location}</span>}
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          {job.postedDate && <span className="text-xs text-muted-foreground">{getTimeAgo(job.postedDate)}</span>}
+                          <Badge className={`block mt-1 text-[10px] ${job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground'}`}>{job.status || 'Open'}</Badge>
+                        </div>
+                      </div>
+                      {job.description && <p className="text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">{job.description}</p>}
+                      {job.skills && job.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {job.skills.map((skill, si) => <Badge key={si} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>)}
+                        </div>
+                      )}
+                      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-border">
+                        {job.budget && (
+                          <span className="text-sm font-semibold text-foreground flex items-center gap-1">
+                            {getCurrencySymbol(job.currency) === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> : <DollarSign className="h-3.5 w-3.5 text-primary" />}
+                            {job.budget}
+                          </span>
+                        )}
+                        {job.duration && <span className="text-xs text-muted-foreground flex items-center gap-1"><Timer className="h-3.5 w-3.5" /> {job.duration}</span>}
+                        {job.deadline && <span className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}</span>}
+                        {job.applicants !== undefined && job.applicants > 0 && <span className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {job.applicants} applicants</span>}
+                        {job.postedDate && <span className="text-xs text-muted-foreground flex items-center gap-1 ml-auto"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
+                      </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            ) : filteredOpenings.length === 0 ? (
-              <Card className="border-0 shadow-lg overflow-hidden">
-                <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-accent" />
-                <CardContent className="py-16 text-center space-y-6">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
-                  >
-                    <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
-                      <Search className="h-12 w-12 text-primary" />
-                    </div>
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">No Openings Available Right Now</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
-                      New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!
-                    </p>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Assignments Tab */}
+        <TabsContent value="assignments" className="space-y-4">
+          {loading ? (
+            <Card className="border-0 shadow-md"><CardContent className="py-12 text-center"><p className="text-muted-foreground">Loading assignments...</p></CardContent></Card>
+          ) : validAssignments.length === 0 ? (
+            <Card className="border-0 shadow-lg overflow-hidden">
+              <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+              <CardContent className="py-14 text-center space-y-5">
+                <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center"><Briefcase className="h-10 w-10 text-primary" /></div>
+                <div><h3 className="text-xl font-bold text-foreground mb-2">No Assignments Yet</h3><p className="text-muted-foreground max-w-md mx-auto">Once your profile is shortlisted, we'll assign you to the perfect project.</p></div>
+                <Button onClick={() => navigate('/freelancer-profile')} size="sm"><User className="h-4 w-4 mr-2" /> Complete Your Profile</Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {activeAssignments.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Active ({activeAssignments.length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {activeAssignments.map((a, idx) => (
+                      <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2"><div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center"><Briefcase className="h-4 w-4 text-primary" /></div><Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">{a.status || 'Active'}</Badge></div>
+                          <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
+                          {a.startDate && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.startDate).toLocaleDateString()}</p>}
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                    <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
+                </div>
+              )}
+              {completedAssignments.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Past ({completedAssignments.length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {completedAssignments.map((a, idx) => (
+                      <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm bg-muted/20">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2"><div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center"><Briefcase className="h-4 w-4 text-muted-foreground" /></div><Badge variant="outline" className="text-[10px]">{a.status || 'Completed'}</Badge></div>
+                          <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </TabsContent>
+
+        {/* Work History Tab */}
+        <TabsContent value="history" className="space-y-3">
+          {validAssignments.length === 0 ? (
+            <Card className="border-0 shadow-lg overflow-hidden">
+              <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+              <CardContent className="py-14 text-center space-y-4">
+                <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center"><Clock className="h-10 w-10 text-muted-foreground" /></div>
+                <h3 className="text-xl font-bold text-foreground">No Work History Yet</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">Your work history will appear here once you start working on projects.</p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium"><Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!</div>
+              </CardContent>
+            </Card>
+          ) : (
+            validAssignments.map((a, idx) => (
+              <Card key={`history-${a.projectId}-${idx}`} className="border border-border shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-2 w-2 rounded-full shrink-0" style={{ background: a.status?.toLowerCase() === 'active' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))' }} />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-foreground text-sm truncate">{a.projectName}</h4>
+                      <p className="text-xs text-muted-foreground">{a.clientName}</p>
+                    </div>
+                    <Badge className={a.status?.toLowerCase() === 'active' ? 'bg-primary/10 text-primary border-primary/20 text-[10px]' : 'text-[10px]'} variant={a.status?.toLowerCase() === 'active' ? 'default' : 'outline'}>{a.status}</Badge>
+                    <div className="text-right text-xs text-muted-foreground shrink-0">
+                      {a.startDate && <div>{new Date(a.startDate).toLocaleDateString()}</div>}
+                      {a.endDate && <div>→ {new Date(a.endDate).toLocaleDateString()}</div>}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              <div className="space-y-3">
-                {filteredOpenings.map((job, idx) => (
-                  <motion.div
-                    key={job.id || idx}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <Card className="border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
-                      <CardContent className="p-5">
-                        {/* Top Row: Title + Posted Time */}
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground text-base group-hover:text-primary transition-colors truncate">
-                              {job.title}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Building2 className="h-3.5 w-3.5" /> {job.clientName}
-                              </span>
-                              {job.location && (
-                                <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                  <MapPin className="h-3.5 w-3.5" /> {job.location}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-right shrink-0">
-                            {job.postedDate && (
-                              <span className="text-xs text-muted-foreground">
-                                {getTimeAgo(job.postedDate)}
-                              </span>
-                            )}
-                            <Badge className={`block mt-1 text-[10px] ${
-                              job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active'
-                                ? 'bg-primary/10 text-primary border-primary/20'
-                                : 'bg-muted text-muted-foreground'
-                            }`}>
-                              {job.status || 'Open'}
-                            </Badge>
-                          </div>
-                        </div>
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
 
-                        {/* Description */}
-                        {job.description && (
-                          <p className="text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">
-                            {job.description}
-                          </p>
-                        )}
-
-                        {/* Skills */}
-                        {job.skills && job.skills.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mb-3">
-                            {job.skills.map((skill, si) => (
-                              <Badge key={si} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Bottom Row: Budget, Duration, Deadline, Applicants */}
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-border">
-                          {job.budget && (
-                            <span className="text-sm font-semibold text-foreground flex items-center gap-1">
-                              {getCurrencySymbol(job.currency) === '₹' 
-                                ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> 
-                                : <DollarSign className="h-3.5 w-3.5 text-primary" />
-                              }
-                              {job.budget}
-                            </span>
-                          )}
-                          {job.duration && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Timer className="h-3.5 w-3.5" /> {job.duration}
-                            </span>
-                          )}
-                          {job.deadline && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}
-                            </span>
-                          )}
-                          {job.applicants !== undefined && job.applicants > 0 && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Users className="h-3.5 w-3.5" /> {job.applicants} applicants
-                            </span>
-                          )}
-                          {job.postedDate && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1 ml-auto">
-                              <Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* ===== ASSIGNMENTS TAB ===== */}
-          <TabsContent value="assignments" className="space-y-4">
-            {loading ? (
-              <Card className="border-0 shadow-md">
-                <CardContent className="py-12 text-center">
-                  <p className="text-muted-foreground">Loading assignments...</p>
-                </CardContent>
-              </Card>
-            ) : validAssignments.length === 0 ? (
-              <Card className="border-0 shadow-lg overflow-hidden">
-                <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-                <CardContent className="py-14 text-center space-y-5">
-                  <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                    <Briefcase className="h-10 w-10 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">No Assignments Yet</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto">
-                      Once your profile is shortlisted, we'll assign you to the perfect project.
-                    </p>
-                  </div>
-                  <Button onClick={() => navigate('/freelancer-profile')} size="sm">
-                    <User className="h-4 w-4 mr-2" /> Complete Your Profile
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <>
-                {activeAssignments.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Active ({activeAssignments.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {activeAssignments.map((a, idx) => (
-                        <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm hover:shadow-md transition-shadow">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                                <Briefcase className="h-4 w-4 text-primary" />
-                              </div>
-                              <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">{a.status || 'Active'}</Badge>
-                            </div>
-                            <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
-                            {a.startDate && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.startDate).toLocaleDateString()}</p>}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {completedAssignments.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Past ({completedAssignments.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {completedAssignments.map((a, idx) => (
-                        <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm bg-muted/20">
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
-                                <Briefcase className="h-4 w-4 text-muted-foreground" />
-                              </div>
-                              <Badge variant="outline" className="text-[10px]">{a.status || 'Completed'}</Badge>
-                            </div>
-                            <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </TabsContent>
-
-          {/* ===== WORK HISTORY TAB ===== */}
-          <TabsContent value="history" className="space-y-3">
-            {validAssignments.length === 0 ? (
-              <Card className="border-0 shadow-lg overflow-hidden">
-                <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-                <CardContent className="py-14 text-center space-y-4">
-                  <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center">
-                    <Clock className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">No Work History Yet</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    Your work history will appear here once you start working on projects.
-                  </p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                    <Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              validAssignments.map((a, idx) => (
-                <Card key={`history-${a.projectId}-${idx}`} className="border border-border shadow-sm">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-2 w-2 rounded-full shrink-0" style={{ background: a.status?.toLowerCase() === 'active' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))' }} />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-foreground text-sm truncate">{a.projectName}</h4>
-                        <p className="text-xs text-muted-foreground">{a.clientName}</p>
-                      </div>
-                      <Badge className={a.status?.toLowerCase() === 'active' ? 'bg-primary/10 text-primary border-primary/20 text-[10px]' : 'text-[10px]'} variant={a.status?.toLowerCase() === 'active' ? 'default' : 'outline'}>
-                        {a.status}
-                      </Badge>
-                      <div className="text-right text-xs text-muted-foreground shrink-0">
-                        {a.startDate && <div>{new Date(a.startDate).toLocaleDateString()}</div>}
-                        {a.endDate && <div>→ {new Date(a.endDate).toLocaleDateString()}</div>}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
-      </main>
-
-      {/* ===== BEAUTIFUL NOTIFICATION POPUP ===== */}
+      {/* Notification Popup */}
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
         <DialogContent className="sm:max-w-md border-0 shadow-2xl overflow-hidden p-0">
-          {/* Top gradient strip */}
           <div className="h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
-          
           <div className="p-8 text-center space-y-6">
-            {/* Animated icon */}
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            >
+            <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
               <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center relative">
                 <Bell className="h-10 w-10 text-primary" />
-                <motion.div
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary flex items-center justify-center"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
+                <motion.div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary flex items-center justify-center" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
                   <Sparkles className="h-3 w-3 text-secondary-foreground" />
                 </motion.div>
               </div>
             </motion.div>
-
             <div>
-              <h2 className="text-xl font-bold text-foreground mb-2">
-                🎉 Profile Under Review!
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Your profile is being reviewed. Once shortlisted for a matching project, we'll notify you immediately!
-              </p>
+              <h2 className="text-xl font-bold text-foreground mb-2">🎉 Profile Under Review!</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">Your profile is being reviewed. Once shortlisted for a matching project, we'll notify you immediately!</p>
             </div>
-
-            {/* Notification methods */}
             <div className="grid grid-cols-3 gap-3">
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20"
-              >
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Mail className="h-5 w-5 text-primary" />
-                </div>
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
                 <span className="text-xs font-medium text-primary">Email</span>
               </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/20 border border-secondary/30"
-              >
-                <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center">
-                  <Phone className="h-5 w-5 text-secondary-foreground" />
-                </div>
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/20 border border-secondary/30">
+                <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center"><Phone className="h-5 w-5 text-secondary-foreground" /></div>
                 <span className="text-xs font-medium text-secondary-foreground">Phone</span>
               </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/20 border border-accent/30"
-              >
-                <div className="h-10 w-10 rounded-full bg-accent/30 flex items-center justify-center">
-                  <MessageCircle className="h-5 w-5 text-accent-foreground" />
-                </div>
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/20 border border-accent/30">
+                <div className="h-10 w-10 rounded-full bg-accent/30 flex items-center justify-center"><MessageCircle className="h-5 w-5 text-accent-foreground" /></div>
                 <span className="text-xs font-medium text-accent-foreground">Chat</span>
               </motion.div>
             </div>
-
-            <p className="text-xs text-muted-foreground">
-              💡 Tip: Complete your profile and stay <strong>Available</strong> to get matched faster!
-            </p>
-
+            <p className="text-xs text-muted-foreground">💡 Tip: Complete your profile and stay <strong>Available</strong> to get matched faster!</p>
             <div className="flex gap-3">
-              <Button onClick={() => { setShowNotifyPopup(false); navigate('/freelancer-profile'); }} className="flex-1 gap-2">
-                <User className="h-4 w-4" /> Update Profile
-              </Button>
-              <Button variant="outline" onClick={() => setShowNotifyPopup(false)} className="flex-1">
-                Got It!
-              </Button>
+              <Button onClick={() => { setShowNotifyPopup(false); navigate('/freelancer-profile'); }} className="flex-1 gap-2"><User className="h-4 w-4" /> Update Profile</Button>
+              <Button variant="outline" onClick={() => setShowNotifyPopup(false)} className="flex-1">Got It!</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
     </div>
+  );
+};
+
+const FreelancerDashboard = () => {
+  return (
+    <DashboardLayout userType="freelancer">
+      <FreelancerOverview />
+    </DashboardLayout>
   );
 };
 

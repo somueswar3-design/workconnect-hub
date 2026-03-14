@@ -1,5 +1,14 @@
 import { WorkerProfile } from '@/types/profile';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+
+const getAuthHeaders = (): Record<string, string> => {
+  const token = localStorage.getItem('auth_token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return headers;
+};
+
 export interface HiredFreelancer {
   id: string;
   freelancerName: string;
@@ -27,103 +36,58 @@ export interface ClientStats {
   averageRating: number;
 }
 
-// Mock hired freelancers for clients
-const hiredFreelancers: HiredFreelancer[] = [
-  {
-    id: '1',
-    freelancerName: 'Alex Johnson',
-    freelancerAlias: 'alexj_dev',
-    projectTitle: 'React Dashboard Development',
-    description: 'Building analytics dashboard with real-time data visualization',
-    hiredDate: new Date('2024-01-15'),
-    status: 'active',
-    hourlyRate: '$80',
-    hoursWorked: 52,
-    totalAmount: 4160,
-    paidAmount: 3000,
-    pendingAmount: 1160,
-    skills: ['React', 'TypeScript', 'D3.js'],
-  },
-  {
-    id: '2',
-    freelancerName: 'Sarah Chen',
-    freelancerAlias: 'sarah_backend',
-    projectTitle: 'API Integration & Backend Support',
-    description: 'Node.js backend development and third-party API integrations',
-    hiredDate: new Date('2024-02-01'),
-    status: 'active',
-    hourlyRate: '$90',
-    hoursWorked: 35,
-    totalAmount: 3150,
-    paidAmount: 2000,
-    pendingAmount: 1150,
-    skills: ['Node.js', 'PostgreSQL', 'REST APIs'],
-  },
-  {
-    id: '3',
-    freelancerName: 'Mike Brown',
-    freelancerAlias: 'mike_cloud',
-    projectTitle: 'AWS Infrastructure Setup',
-    description: 'Cloud infrastructure setup and DevOps automation',
-    hiredDate: new Date('2023-10-01'),
-    endDate: new Date('2023-12-15'),
-    status: 'completed',
-    hourlyRate: '$100',
-    hoursWorked: 80,
-    totalAmount: 8000,
-    paidAmount: 8000,
-    pendingAmount: 0,
-    rating: 5,
-    skills: ['AWS', 'Terraform', 'Docker'],
-  },
-  {
-    id: '4',
-    freelancerName: 'Emily Davis',
-    freelancerAlias: 'emily_mobile',
-    projectTitle: 'Mobile App Development',
-    description: 'React Native mobile application for iOS and Android',
-    hiredDate: new Date('2023-08-15'),
-    endDate: new Date('2023-11-30'),
-    status: 'completed',
-    hourlyRate: '$85',
-    hoursWorked: 120,
-    totalAmount: 10200,
-    paidAmount: 10200,
-    pendingAmount: 0,
-    rating: 4.8,
-    skills: ['React Native', 'iOS', 'Android'],
-  },
-];
+// Freelancer profile DTO from the browse API
+export interface FreelancerProfileDto {
+  id: number;
+  userId: number;
+  fullName: string;
+  gender: number;
+  country: string;
+  phoneNumber: string;
+  companyName: string;
+  experienceYears: number;
+  primarySkills: string;
+  secondarySkills: string;
+  skillSetDesc: string;
+  anyFreelnacingExperience: number;
+  currentCompany: string;
+  currentCompanyRole: string;
+  languagesKnown: string;
+  speakingLanguage: string;
+  hoursAvailablePerDay: string;
+  hourRate: string;
+  isAvailbleInweeknds: boolean;
+  bioDescption: string;
+  linkedInProfile: string;
+  portfolioURL: string;
+  freelancerUserStatus: boolean;
+  createdOn: string;
+  updatedOn: string;
+}
 
-// Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Get all freelancer profiles for client browse
+export const getFreelancerProfiles = async (): Promise<FreelancerProfileDto[]> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/profiles`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch freelancer profiles');
+  return res.json();
+};
 
 // Get hired freelancers for a client
 export const getHiredFreelancers = async (): Promise<HiredFreelancer[]> => {
-  await delay(500);
-  return [...hiredFreelancers];
+  // TODO: Replace with real API
+  return [];
 };
 
 // Get client statistics
 export const getClientStats = async (): Promise<ClientStats> => {
-  await delay(300);
-  
-  const totalSpent = hiredFreelancers.reduce((sum, f) => sum + f.totalAmount, 0);
-  const paidAmount = hiredFreelancers.reduce((sum, f) => sum + f.paidAmount, 0);
-  const pendingAmount = hiredFreelancers.reduce((sum, f) => sum + f.pendingAmount, 0);
-  const activeFreelancers = hiredFreelancers.filter(f => f.status === 'active').length;
-  const completedProjects = hiredFreelancers.filter(f => f.status === 'completed').length;
-  const ratedProjects = hiredFreelancers.filter(f => f.rating);
-  const averageRating = ratedProjects.length > 0 
-    ? ratedProjects.reduce((sum, f) => sum + (f.rating || 0), 0) / ratedProjects.length 
-    : 0;
-  
   return {
-    totalSpent,
-    paidAmount,
-    pendingAmount,
-    activeFreelancers,
-    completedProjects,
-    averageRating,
+    totalSpent: 0,
+    paidAmount: 0,
+    pendingAmount: 0,
+    activeFreelancers: 0,
+    completedProjects: 0,
+    averageRating: 0,
   };
 };

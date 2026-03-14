@@ -121,7 +121,6 @@ const FreelancerProfileForm = () => {
     },
   });
 
-  // Fetch existing profile and pre-populate form
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.userId) return;
@@ -201,7 +200,6 @@ const FreelancerProfileForm = () => {
 
       if (!res.ok) throw new Error('Failed to save profile');
       toast.success('Profile saved successfully!');
-      // Redirect to freelancer dashboard
       navigate('/freelancer');
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
@@ -210,7 +208,6 @@ const FreelancerProfileForm = () => {
     }
   };
 
-  // Validate current step fields before proceeding
   const stepFields: Record<number, (keyof ProfileFormData)[]> = {
     0: ['fullName', 'gender', 'country', 'phoneNumber'],
     1: ['primarySkills', 'skillSetDesc', 'experienceYears', 'anyFreelancingExperience'],
@@ -230,276 +227,279 @@ const FreelancerProfileForm = () => {
   const lc = "text-gray-700 text-sm";
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 p-3 overflow-hidden">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-2">
-          <h1 className="text-xl font-bold text-gray-900">Build Your Freelancer Profile</h1>
-          <p className="text-gray-500 text-xs">Complete your profile to get matched with clients</p>
-        </div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-white to-blue-50">
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-auto p-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-3">
+            <h1 className="text-xl font-bold text-gray-900">Build Your Freelancer Profile</h1>
+            <p className="text-gray-500 text-xs">Complete your profile to get matched with clients</p>
+          </div>
 
-        {/* Step Indicators */}
-        <div className="flex items-center justify-center gap-1 mb-3">
-          {STEPS.map((s, i) => {
-            const Icon = s.icon;
-            const isActive = i === step;
-            const isDone = i < step;
-            return (
-              <button key={s.id} type="button" onClick={() => i < step && setStep(i)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  isActive ? 'bg-orange-500 text-white shadow-md' :
-                  isDone ? 'bg-orange-100 text-orange-700 cursor-pointer' :
-                  'bg-gray-100 text-gray-400'
-                }`}
-              >
-                {isDone ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">{s.label}</span>
-              </button>
-            );
-          })}
-        </div>
+          {/* Step Indicators */}
+          <div className="flex items-center justify-center gap-1 mb-3">
+            {STEPS.map((s, i) => {
+              const Icon = s.icon;
+              const isActive = i === step;
+              const isDone = i < step;
+              return (
+                <button key={s.id} type="button" onClick={() => i < step && setStep(i)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    isActive ? 'bg-orange-500 text-white shadow-md' :
+                    isDone ? 'bg-orange-100 text-orange-700 cursor-pointer' :
+                    'bg-gray-100 text-gray-400'
+                  }`}
+                >
+                  {isDone ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
+                  <span className="hidden sm:inline">{s.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-orange-500/10 border border-orange-100 p-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <AnimatePresence mode="wait">
-                <motion.div key={step} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
+          {/* Form Card */}
+          <div className="bg-white rounded-2xl shadow-xl shadow-orange-500/10 border border-orange-100 p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)}>
+                <AnimatePresence mode="wait">
+                  <motion.div key={step} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
 
-                  {/* Step 0: Personal */}
-                  {step === 0 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <User className="h-5 w-5 text-orange-500" />
-                        <h3 className="font-semibold text-gray-900">Personal Information</h3>
+                    {/* Step 0: Personal */}
+                    {step === 0 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <User className="h-5 w-5 text-orange-500" />
+                          <h3 className="font-semibold text-gray-900">Personal Information</h3>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormField control={form.control} name="fullName" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Full Name *</FormLabel>
+                              <FormControl><Input placeholder="John Doe" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="gender" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Gender *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                  <SelectItem value="male">Male</SelectItem>
+                                  <SelectItem value="female">Female</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                  <SelectItem value="prefer-not">Prefer not to say</SelectItem>
+                                </SelectContent>
+                              </Select><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="country" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Country *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select country" /></SelectTrigger></FormControl>
+                                <SelectContent className="max-h-[250px]">
+                                  {countries.map(c => (
+                                    <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol})</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="phoneNumber" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Phone Number *</FormLabel>
+                              <FormControl><Input placeholder="7306549295" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="companyName" render={({ field }) => (
+                            <FormItem className="sm:col-span-2"><FormLabel className={lc}>Company Name <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
+                              <FormControl><Input placeholder="Your company" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                        </div>
                       </div>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField control={form.control} name="fullName" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Full Name *</FormLabel>
-                            <FormControl><Input placeholder="John Doe" className={ic} {...field} /></FormControl>
+                    )}
+
+                    {/* Step 1: Skills & Experience */}
+                    {step === 1 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Briefcase className="h-5 w-5 text-emerald-500" />
+                          <h3 className="font-semibold text-gray-900">Skills & Experience</h3>
+                        </div>
+                        <FormField control={form.control} name="primarySkills" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Primary Skills *</FormLabel>
+                            <FormControl><SkillTagInput value={field.value} onChange={field.onChange} placeholder="e.g. React, Java, AWS..." /></FormControl>
                             <FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name="gender" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Gender *</FormLabel>
+                        <FormField control={form.control} name="secondarySkills" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Secondary Skills</FormLabel>
+                            <FormControl><SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="e.g. Docker, Redis..." /></FormControl>
+                            <FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="skillSetDesc" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Skill Set Description *</FormLabel>
+                            <FormControl><Textarea placeholder="Describe your expertise..." className={`${ic} min-h-[60px]`} {...field} /></FormControl>
+                            <FormMessage /></FormItem>
+                        )} />
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormField control={form.control} name="experienceYears" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Total IT Experience (Years) *</FormLabel>
+                              <FormControl><Input type="number" placeholder="e.g. 5" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Freelancing Experience *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                  <SelectItem value="new">New to Freelancing</SelectItem>
+                                  <SelectItem value="0-1">Less than 1 Year</SelectItem>
+                                  <SelectItem value="1-3">1 - 3 Years</SelectItem>
+                                  <SelectItem value="3-5">3 - 5 Years</SelectItem>
+                                  <SelectItem value="5+">5+ Years</SelectItem>
+                                </SelectContent>
+                              </Select><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="currentCompany" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Current Company</FormLabel>
+                              <FormControl><Input placeholder="Company name" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="currentCompanyRole" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Current Role</FormLabel>
+                              <FormControl><Input placeholder="Senior Developer" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 2: Languages & Availability */}
+                    {step === 2 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Clock className="h-5 w-5 text-blue-500" />
+                          <h3 className="font-semibold text-gray-900">Languages & Availability</h3>
+                        </div>
+                        <FormField control={form.control} name="languagesKnown" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Languages Known *</FormLabel>
+                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                              {languageOptions.map(lang => {
+                                const selected = field.value ? field.value.split(',').map(s => s.trim()).includes(lang) : false;
+                                return (
+                                  <button key={lang} type="button"
+                                    onClick={() => {
+                                      const current = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                                      field.onChange(selected ? current.filter(l => l !== lang).join(', ') : [...current, lang].join(', '));
+                                    }}
+                                    className={`px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                                      selected ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300'
+                                    }`}
+                                  >{lang}</button>
+                                );
+                              })}
+                            </div>
+                            <FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="speakingLanguage" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Preferred Speaking Language *</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
                               <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                                <SelectItem value="prefer-not">Prefer not to say</SelectItem>
-                              </SelectContent>
-                            </Select><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="country" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Country *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select country" /></SelectTrigger></FormControl>
-                              <SelectContent className="max-h-[250px]">
-                                {countries.map(c => (
-                                  <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol})</SelectItem>
+                                {languageOptions.map(lang => (
+                                  <SelectItem key={lang} value={lang}>{lang}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select><FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name="phoneNumber" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Phone Number *</FormLabel>
-                            <FormControl><Input placeholder="7306549295" className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="companyName" render={({ field }) => (
-                          <FormItem className="sm:col-span-2"><FormLabel className={lc}>Company Name <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
-                            <FormControl><Input placeholder="Your company" className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          <FormField control={form.control} name="hoursAvailablePerDay" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Hours/Day *</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                  <SelectItem value="1-2">1 - 2 Hours</SelectItem>
+                                  <SelectItem value="2-4">2 - 4 Hours</SelectItem>
+                                  <SelectItem value="4-6">4 - 6 Hours</SelectItem>
+                                  <SelectItem value="6-8">6 - 8 Hours</SelectItem>
+                                  <SelectItem value="8+">8+ Hours</SelectItem>
+                                </SelectContent>
+                              </Select><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="hourRate" render={({ field }) => {
+                            const selectedCountry = form.watch('country');
+                            const symbol = getCurrencySymbol(selectedCountry);
+                            return (
+                              <FormItem><FormLabel className={lc}>Rate ({symbol}/hr) *</FormLabel>
+                                <FormControl><Input placeholder="e.g. 500" className={ic} {...field} /></FormControl>
+                                <FormMessage /></FormItem>
+                            );
+                          }} />
+                          <FormField control={form.control} name="isAvailableInWeekends" render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 pt-7">
+                              <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange}
+                                  className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500" />
+                              </FormControl>
+                              <FormLabel className="text-gray-700 text-sm !mt-0">Weekends</FormLabel>
+                            </FormItem>
+                          )} />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Step 1: Skills & Experience */}
-                  {step === 1 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Briefcase className="h-5 w-5 text-emerald-500" />
-                        <h3 className="font-semibold text-gray-900">Skills & Experience</h3>
-                      </div>
-                      <FormField control={form.control} name="primarySkills" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Primary Skills *</FormLabel>
-                          <FormControl><SkillTagInput value={field.value} onChange={field.onChange} placeholder="e.g. React, Java, AWS..." /></FormControl>
-                          <FormMessage /></FormItem>
-                      )} />
-                      <FormField control={form.control} name="secondarySkills" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Secondary Skills</FormLabel>
-                          <FormControl><SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="e.g. Docker, Redis..." /></FormControl>
-                          <FormMessage /></FormItem>
-                      )} />
-                      <FormField control={form.control} name="skillSetDesc" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Skill Set Description *</FormLabel>
-                          <FormControl><Textarea placeholder="Describe your expertise..." className={`${ic} min-h-[60px]`} {...field} /></FormControl>
-                          <FormMessage /></FormItem>
-                      )} />
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField control={form.control} name="experienceYears" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Total IT Experience (Years) *</FormLabel>
-                            <FormControl><Input type="number" placeholder="e.g. 5" className={ic} {...field} /></FormControl>
+                    {/* Step 3: About & Links */}
+                    {step === 3 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Monitor className="h-5 w-5 text-violet-500" />
+                          <h3 className="font-semibold text-gray-900">About You</h3>
+                        </div>
+                        <FormField control={form.control} name="bioDescription" render={({ field }) => (
+                          <FormItem><FormLabel className={lc}>Bio / About *</FormLabel>
+                            <FormControl><Textarea placeholder="Tell us about yourself..." className={`${ic} min-h-[80px]`} {...field} /></FormControl>
                             <FormMessage /></FormItem>
                         )} />
-                        <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Freelancing Experience *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                              <SelectContent>
-                                <SelectItem value="new">New to Freelancing</SelectItem>
-                                <SelectItem value="0-1">Less than 1 Year</SelectItem>
-                                <SelectItem value="1-3">1 - 3 Years</SelectItem>
-                                <SelectItem value="3-5">3 - 5 Years</SelectItem>
-                                <SelectItem value="5+">5+ Years</SelectItem>
-                              </SelectContent>
-                            </Select><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="currentCompany" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Current Company</FormLabel>
-                            <FormControl><Input placeholder="Company name" className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="currentCompanyRole" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Current Role</FormLabel>
-                            <FormControl><Input placeholder="Senior Developer" className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 2: Languages & Availability */}
-                  {step === 2 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Clock className="h-5 w-5 text-blue-500" />
-                        <h3 className="font-semibold text-gray-900">Languages & Availability</h3>
-                      </div>
-                      <FormField control={form.control} name="languagesKnown" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Languages Known *</FormLabel>
-                          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                            {languageOptions.map(lang => {
-                              const selected = field.value ? field.value.split(',').map(s => s.trim()).includes(lang) : false;
-                              return (
-                                <button key={lang} type="button"
-                                  onClick={() => {
-                                    const current = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
-                                    field.onChange(selected ? current.filter(l => l !== lang).join(', ') : [...current, lang].join(', '));
-                                  }}
-                                  className={`px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                                    selected ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300'
-                                  }`}
-                                >{lang}</button>
-                              );
-                            })}
-                          </div>
-                          <FormMessage /></FormItem>
-                      )} />
-                      <FormField control={form.control} name="speakingLanguage" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Preferred Speaking Language *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              {languageOptions.map(lang => (
-                                <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select><FormMessage /></FormItem>
-                      )} />
-                      <div className="grid gap-4 sm:grid-cols-3">
-                        <FormField control={form.control} name="hoursAvailablePerDay" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Hours/Day *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                              <SelectContent>
-                                <SelectItem value="1-2">1 - 2 Hours</SelectItem>
-                                <SelectItem value="2-4">2 - 4 Hours</SelectItem>
-                                <SelectItem value="4-6">4 - 6 Hours</SelectItem>
-                                <SelectItem value="6-8">6 - 8 Hours</SelectItem>
-                                <SelectItem value="8+">8+ Hours</SelectItem>
-                              </SelectContent>
-                            </Select><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="hourRate" render={({ field }) => {
-                          const selectedCountry = form.watch('country');
-                          const symbol = getCurrencySymbol(selectedCountry);
-                          return (
-                            <FormItem><FormLabel className={lc}>Rate ({symbol}/hr) *</FormLabel>
-                              <FormControl><Input placeholder="e.g. 500" className={ic} {...field} /></FormControl>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>LinkedIn Profile</FormLabel>
+                              <FormControl><Input placeholder="https://linkedin.com/in/..." className={ic} {...field} /></FormControl>
                               <FormMessage /></FormItem>
-                          );
-                        }} />
-                        <FormField control={form.control} name="isAvailableInWeekends" render={({ field }) => (
-                          <FormItem className="flex items-center gap-2 pt-7">
-                            <FormControl>
-                              <Checkbox checked={field.value} onCheckedChange={field.onChange}
-                                className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500" />
-                            </FormControl>
-                            <FormLabel className="text-gray-700 text-sm !mt-0">Weekends</FormLabel>
-                          </FormItem>
-                        )} />
+                          )} />
+                          <FormField control={form.control} name="portfolioURL" render={({ field }) => (
+                            <FormItem><FormLabel className={lc}>Portfolio URL</FormLabel>
+                              <FormControl><Input placeholder="https://yoursite.com" className={ic} {...field} /></FormControl>
+                              <FormMessage /></FormItem>
+                          )} />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </motion.div>
+                </AnimatePresence>
 
-                  {/* Step 3: About & Links */}
-                  {step === 3 && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Monitor className="h-5 w-5 text-violet-500" />
-                        <h3 className="font-semibold text-gray-900">About You</h3>
-                      </div>
-                      <FormField control={form.control} name="bioDescription" render={({ field }) => (
-                        <FormItem><FormLabel className={lc}>Bio / About *</FormLabel>
-                          <FormControl><Textarea placeholder="Tell us about yourself..." className={`${ic} min-h-[80px]`} {...field} /></FormControl>
-                          <FormMessage /></FormItem>
-                      )} />
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>LinkedIn Profile</FormLabel>
-                            <FormControl><Input placeholder="https://linkedin.com/in/..." className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="portfolioURL" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Portfolio URL</FormLabel>
-                            <FormControl><Input placeholder="https://yoursite.com" className={ic} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Navigation Buttons */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-                <Button type="button" variant="outline" onClick={goBack} disabled={step === 0}
-                  className="gap-1.5 text-sm">
-                  <ChevronLeft className="h-4 w-4" /> Back
-                </Button>
-
-                <span className="text-xs text-gray-400">Step {step + 1} of {STEPS.length}</span>
-
-                {step < STEPS.length - 1 ? (
-                  <Button type="button" onClick={goNext}
-                    className="gap-1.5 bg-orange-500 hover:bg-orange-600 text-sm">
-                    Next <ChevronRight className="h-4 w-4" />
+                {/* Navigation Buttons - always visible at bottom */}
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                  <Button type="button" variant="outline" onClick={goBack} disabled={step === 0}
+                    className="gap-1.5 text-sm">
+                    <ChevronLeft className="h-4 w-4" /> Back
                   </Button>
-                ) : (
-                  <Button type="submit" disabled={isLoading}
-                    className="gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-sm">
-                    {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> :
-                      <>Submit Profile <CheckCircle2 className="h-4 w-4" /></>}
-                  </Button>
-                )}
-              </div>
-            </form>
-          </Form>
+
+                  <span className="text-xs text-gray-400">Step {step + 1} of {STEPS.length}</span>
+
+                  {step < STEPS.length - 1 ? (
+                    <Button type="button" onClick={goNext}
+                      className="gap-1.5 bg-orange-500 hover:bg-orange-600 text-sm">
+                      Next <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button type="submit" disabled={isLoading}
+                      className="gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-sm">
+                      {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> :
+                        <>Submit Profile <CheckCircle2 className="h-4 w-4" /></>}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
