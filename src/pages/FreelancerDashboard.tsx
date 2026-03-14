@@ -129,10 +129,10 @@ const FreelancerDashboard = () => {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const slide = promoSlides[currentSlide];
-  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() === 'active') : [];
-  const completedAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
-  // Projects with projectId 0 are current/demo projects from API
-  const currentProjects = Array.isArray(assignments) ? assignments.filter(a => a.projectId === 0 || a.status?.toLowerCase() === 'active') : [];
+  // Filter out projectId === 0 (placeholder/demo records from API)
+  const validAssignments = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
+  const activeAssignments = validAssignments.filter(a => a.status?.toLowerCase() === 'active');
+  const completedAssignments = validAssignments.filter(a => a.status?.toLowerCase() !== 'active');
 
   return (
     <div className="min-h-screen bg-background">
