@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getFreelancerProfile } from '@/services/freelancerApi';
 import {
   Loader2, User, Briefcase, Clock, Languages, X, Plus,
   Monitor, ChevronRight, ChevronLeft, CheckCircle2, Sparkles,

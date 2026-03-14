@@ -20,6 +20,15 @@ export interface AssignmentDto {
   isActive: boolean;
 }
 
+// Get freelancer profile data
+export const getFreelancerProfile = async (userId: string): Promise<any | null> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/profile?userId=${userId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) return null;
+  return res.json();
+};
+
 // Check if freelancer profile is updated
 export const getProfileStatus = async (userId: string): Promise<{ profileUpdated: boolean }> => {
   const res = await fetch(`${API_BASE}/api/freelancer/profile-status?userId=${userId}`, {
