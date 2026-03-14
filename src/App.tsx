@@ -8,6 +8,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import FloatingContact from "./components/FloatingContact";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
@@ -37,11 +38,11 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Routes>
-            {/* Dashboard routes - no header/footer */}
-            <Route path="/gis-complaints" element={<GISComplaints />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
-            <Route path="/freelancer/*" element={<FreelancerDashboard />} />
-            <Route path="/client/*" element={<ClientDashboard />} />
+            {/* Protected dashboard routes - no header/footer */}
+            <Route path="/gis-complaints" element={<ProtectedRoute><GISComplaints /></ProtectedRoute>} />
+            <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/freelancer/*" element={<ProtectedRoute><FreelancerDashboard /></ProtectedRoute>} />
+            <Route path="/client/*" element={<ProtectedRoute><ClientDashboard /></ProtectedRoute>} />
             
             {/* Public routes - with header/footer */}
             <Route path="/*" element={
@@ -50,15 +51,15 @@ const App = () => (
                 <main className="flex-1">
                   <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/freelancer" element={<RegisterChoice />} />
-                    <Route path="/freelancer-profile" element={<FreelancerProfileForm />} />
+                    <Route path="/freelancer-profile" element={<ProtectedRoute><FreelancerProfileForm /></ProtectedRoute>} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/change-password" element={<ChangePassword />} />
-                    <Route path="/browse" element={<BrowseWorkers />} />
+                    <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+                    <Route path="/browse" element={<ProtectedRoute><BrowseWorkers /></ProtectedRoute>} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />
