@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
-  Languages, Lock, ChevronDown, Star, DollarSign, TrendingUp, Users, CheckCircle2,
-  Wifi, WifiOff, ChevronLeft, ChevronRight, Shield, Zap, Award, Target
+  Languages, Lock, ChevronDown, DollarSign, TrendingUp, Users, CheckCircle2,
+  Wifi, WifiOff, Zap, Award, Target, Sparkles, Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,67 +16,61 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getAssignments, getFreelancerEarnings, AssignmentDto, EarningsDto } from '@/services/freelancerApi';
-import WorkHistoryTimeline from '@/components/WorkHistoryTimeline';
-
-interface FreelancerFormData {
-  fullName: string;
-  email: string;
-  mobile: string;
-  location: string;
-  experience: string;
-  hourlyRate: string;
-  bio: string;
-  skills: string[];
-  primaryLanguage: string;
-  otherLanguages: string[];
-  companyAlias: string;
-}
 
 const promoSlides = [
   {
-    title: "Complete Your Profile Today",
-    description: "Freelancers with complete profiles get 3x more work opportunities. Update your skills, experience, and hourly rate to stand out.",
+    title: "Complete Your Profile",
+    description: "Freelancers with complete profiles get 3x more opportunities.",
     icon: User,
-    gradient: "from-[hsl(217,91%,50%)] to-[hsl(217,91%,35%)]",
+    accent: "hsl(var(--primary))",
+    bgPattern: "radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%)",
+    emoji: "✨",
     cta: "Update Profile",
-    tab: "profile",
+    action: "profile",
   },
   {
     title: "Set Your Hourly Rate",
-    description: "Define your worth! We match you with clients looking for your exact skill set and budget range. Fair rates attract quality projects.",
+    description: "Define your worth! Fair rates attract quality projects.",
     icon: DollarSign,
-    gradient: "from-[hsl(160,84%,39%)] to-[hsl(160,84%,25%)]",
-    cta: "Set Rate Now",
-    tab: "profile",
+    accent: "hsl(142 71% 45%)",
+    bgPattern: "radial-gradient(circle at 80% 30%, hsl(142 71% 45% / 0.15) 0%, transparent 50%)",
+    emoji: "💰",
+    cta: "Set Rate",
+    action: "profile",
   },
   {
-    title: "We Find Work For You",
-    description: "Once your profile is complete, our system matches you with clients. You'll be notified via email or phone when a matching opportunity arises.",
+    title: "We Match You With Clients",
+    description: "Our system finds the perfect projects for your skills.",
     icon: Target,
-    gradient: "from-[hsl(25,95%,53%)] to-[hsl(25,95%,40%)]",
+    accent: "hsl(25 95% 53%)",
+    bgPattern: "radial-gradient(circle at 50% 80%, hsl(25 95% 53% / 0.15) 0%, transparent 50%)",
+    emoji: "🎯",
     cta: "Learn More",
-    tab: "dashboard",
+    action: "stay",
   },
   {
     title: "Go Online & Get Noticed",
-    description: "Toggle your status to 'Online' to let clients know you're available. Offline freelancers won't appear in search results.",
+    description: "Toggle your status to let clients know you're available.",
     icon: Zap,
-    gradient: "from-[hsl(270,70%,55%)] to-[hsl(270,70%,40%)]",
+    accent: "hsl(270 70% 55%)",
+    bgPattern: "radial-gradient(circle at 30% 20%, hsl(270 70% 55% / 0.15) 0%, transparent 50%)",
+    emoji: "⚡",
     cta: "Go Online",
-    tab: "dashboard",
+    action: "stay",
   },
   {
-    title: "Quality Work = Better Ratings",
-    description: "Deliver excellent work consistently to build your reputation. Top-rated freelancers earn 40% more and get priority matching.",
+    title: "Quality = Better Ratings",
+    description: "Top-rated freelancers earn 40% more with priority matching.",
     icon: Award,
-    gradient: "from-[hsl(340,75%,55%)] to-[hsl(340,75%,40%)]",
-    cta: "View Ratings",
-    tab: "history",
+    accent: "hsl(340 75% 55%)",
+    bgPattern: "radial-gradient(circle at 70% 60%, hsl(340 75% 55% / 0.15) 0%, transparent 50%)",
+    emoji: "🏆",
+    cta: "View History",
+    action: "history",
   },
 ];
 
@@ -85,28 +80,12 @@ const FreelancerDashboard = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || null);
-  const [newSkill, setNewSkill] = useState('');
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isOnline, setIsOnline] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('assignments');
   const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [earnings, setEarnings] = useState<EarningsDto | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [form, setForm] = useState<FreelancerFormData>({
-    fullName: user?.fullName || '',
-    email: user?.email || '',
-    mobile: '',
-    location: '',
-    experience: '',
-    hourlyRate: '',
-    bio: '',
-    skills: [],
-    primaryLanguage: 'English',
-    otherLanguages: [],
-    companyAlias: '',
-  });
 
   useEffect(() => {
     const load = async () => {
@@ -127,7 +106,6 @@ const FreelancerDashboard = () => {
     load();
   }, [user?.userId]);
 
-  // Auto-rotate slides
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % promoSlides.length);
@@ -148,62 +126,13 @@ const FreelancerDashboard = () => {
     }
   };
 
-  const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    if (!form.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (!form.email.trim()) newErrors.email = 'Email is required';
-    if (!form.mobile.trim()) newErrors.mobile = 'Mobile number is required';
-    if (!form.location.trim()) newErrors.location = 'Location is required';
-    if (!form.experience.trim()) newErrors.experience = 'Experience is required';
-    if (!form.hourlyRate.trim()) newErrors.hourlyRate = 'Hourly rate is required';
-    if (!form.primaryLanguage) newErrors.primaryLanguage = 'Primary language is required';
-    if (form.skills.length === 0) newErrors.skills = 'At least one skill is required';
-    if (!form.bio.trim()) newErrors.bio = 'Bio is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = () => {
-    if (!validate()) {
-      toast({ title: 'Validation Error', description: 'Please fill all mandatory fields', variant: 'destructive' });
-      return;
-    }
-    updateUser({ fullName: form.fullName, avatarUrl: avatarPreview || undefined });
-    toast({ title: 'Profile Saved', description: 'Your profile has been updated successfully.' });
-  };
-
-  const addSkill = () => {
-    if (newSkill.trim() && !form.skills.includes(newSkill.trim())) {
-      setForm(p => ({ ...p, skills: [...p.skills, newSkill.trim()] }));
-      setNewSkill('');
-      if (errors.skills) setErrors(e => ({ ...e, skills: '' }));
-    }
-  };
-
-  const removeSkill = (skill: string) => {
-    setForm(p => ({ ...p, skills: p.skills.filter(s => s !== skill) }));
-  };
-
   const handleLogout = () => { logout(); navigate('/'); };
 
-  const update = (field: keyof FreelancerFormData, value: string) => {
-    setForm(p => ({ ...p, [field]: value }));
-    if (errors[field]) setErrors(e => ({ ...e, [field]: '' }));
-  };
-
-  const languageOptions = ['English', 'Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Bengali', 'Marathi', 'Gujarati', 'Urdu'];
-
-  const toggleOtherLanguage = (lang: string) => {
-    setForm(p => ({
-      ...p,
-      otherLanguages: p.otherLanguages.includes(lang) ? p.otherLanguages.filter(l => l !== lang) : [...p.otherLanguages, lang],
-    }));
-  };
-
   const slide = promoSlides[currentSlide];
-
   const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() === 'active') : [];
-  const inactiveAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
+  const completedAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
+  // Projects with projectId 0 are current/demo projects from API
+  const currentProjects = Array.isArray(assignments) ? assignments.filter(a => a.projectId === 0 || a.status?.toLowerCase() === 'active') : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -211,10 +140,7 @@ const FreelancerDashboard = () => {
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div 
-              className="relative cursor-pointer group" 
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <div className="relative cursor-pointer group" onClick={() => fileInputRef.current?.click()}>
               <div className="h-10 w-10 rounded-full bg-muted border-2 border-primary/30 flex items-center justify-center overflow-hidden">
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
@@ -228,18 +154,16 @@ const FreelancerDashboard = () => {
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
             </div>
             <div>
-              <h1 className="text-base font-bold text-foreground leading-tight">
-                {form.fullName || 'Freelancer'}
-              </h1>
+              <h1 className="text-base font-bold text-foreground leading-tight">{user?.fullName || 'Freelancer'}</h1>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Online/Offline Toggle */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50">
-              {isOnline ? <Wifi className="h-4 w-4 text-emerald-500" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
-              <span className={`text-xs font-medium ${isOnline ? 'text-emerald-600' : 'text-muted-foreground'}`}>
-                {isOnline ? 'Online' : 'Offline'}
+              {isOnline ? <Wifi className="h-4 w-4 text-primary" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
+              <span className={`text-xs font-medium ${isOnline ? 'text-primary' : 'text-muted-foreground'}`}>
+                {isOnline ? 'Available' : 'Not Available'}
               </span>
               <Switch
                 checked={isOnline}
@@ -255,21 +179,21 @@ const FreelancerDashboard = () => {
                         ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
                       },
                       body: JSON.stringify({
-                        status: checked ? 'Available' : 'Unavailable',
-                        userId: user?.userId || '',
+                        status: checked ? 'Available' : 'Not Available',
+                        userId: user?.userId ? Number(user.userId) : 0,
                       }),
                     });
                     if (!res.ok) throw new Error('Failed to update availability');
                     toast({
-                      title: checked ? '🟢 You are Online' : '⚫ You are Offline',
-                      description: checked ? 'You are now visible to clients and ready to receive work.' : 'You will not appear in client searches.',
+                      title: checked ? '🟢 Available' : '⚫ Not Available',
+                      description: checked ? 'You are now visible to clients.' : 'You will not appear in searches.',
                     });
                   } catch (err: any) {
-                    setIsOnline(!checked); // revert on failure
+                    setIsOnline(!checked);
                     toast({ title: 'Error', description: err.message || 'Failed to update status', variant: 'destructive' });
                   }
                 }}
-                className="data-[state=checked]:bg-emerald-500"
+                className="data-[state=checked]:bg-primary"
               />
             </div>
             <DropdownMenu>
@@ -292,49 +216,109 @@ const FreelancerDashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Promo Slider */}
-        <div className="relative overflow-hidden rounded-2xl shadow-lg">
-          <div className={`bg-gradient-to-r ${slide.gradient} p-8 md:p-10 text-primary-foreground transition-all duration-500`}>
-            <div className="flex items-start gap-6">
-              <div className="hidden md:flex h-16 w-16 rounded-2xl bg-primary-foreground/20 items-center justify-center shrink-0">
-                <slide.icon className="h-8 w-8" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2">{slide.title}</h2>
-                <p className="text-primary-foreground/85 text-sm md:text-base max-w-2xl leading-relaxed">{slide.description}</p>
-                <Button 
-                  variant="secondary" 
-                  className="mt-4 bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground border-0"
-                  onClick={() => slide.tab === 'profile' ? navigate('/freelancer-profile') : setActiveTab(slide.tab)}
-                >
-                  {slide.cta}
-                </Button>
-              </div>
-            </div>
-            {/* Dots */}
-            <div className="flex items-center justify-center gap-2 mt-6">
+        {/* ===== NEW UNIQUE SLIDER ===== */}
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-60" style={{ background: slide.bgPattern }} />
+          
+          {/* Floating decorative elements */}
+          <div className="absolute top-4 right-4 opacity-20">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            >
+              <Sparkles className="h-24 w-24 text-primary" />
+            </motion.div>
+          </div>
+
+          <div className="relative p-8 md:p-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.4 }}
+                className="flex items-center gap-8"
+              >
+                {/* Left: Icon with glow */}
+                <div className="hidden md:block relative shrink-0">
+                  <div 
+                    className="h-20 w-20 rounded-3xl flex items-center justify-center text-4xl shadow-lg"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent}88)`,
+                    }}
+                  >
+                    <span className="drop-shadow-md">{slide.emoji}</span>
+                  </div>
+                  <div 
+                    className="absolute -inset-2 rounded-3xl blur-xl opacity-30"
+                    style={{ background: slide.accent }}
+                  />
+                </div>
+
+                {/* Right: Content */}
+                <div className="flex-1 min-w-0">
+                  <motion.h2 
+                    className="text-2xl md:text-3xl font-bold text-foreground mb-2"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    {slide.title}
+                  </motion.h2>
+                  <motion.p 
+                    className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed mb-4"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {slide.description}
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Button 
+                      size="sm"
+                      className="shadow-md"
+                      onClick={() => {
+                        if (slide.action === 'profile') navigate('/freelancer-profile');
+                        else if (slide.action === 'history') setActiveTab('history');
+                      }}
+                    >
+                      {slide.cta}
+                    </Button>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Progress bar style indicators */}
+            <div className="flex items-center gap-2 mt-8">
               {promoSlides.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentSlide(i)}
-                  className={`h-2 rounded-full transition-all ${i === currentSlide ? 'w-8 bg-primary-foreground' : 'w-2 bg-primary-foreground/40'}`}
-                />
+                  className="relative h-1.5 flex-1 rounded-full bg-muted overflow-hidden"
+                >
+                  {i === currentSlide && (
+                    <motion.div
+                      className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                      initial={{ width: '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 5, ease: 'linear' }}
+                      key={`progress-${currentSlide}`}
+                    />
+                  )}
+                  {i < currentSlide && (
+                    <div className="absolute inset-0 rounded-full bg-primary" />
+                  )}
+                </button>
               ))}
             </div>
           </div>
-          {/* Arrows */}
-          <button 
-            onClick={() => setCurrentSlide(p => (p - 1 + promoSlides.length) % promoSlides.length)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4 text-primary-foreground" />
-          </button>
-          <button 
-            onClick={() => setCurrentSlide(p => (p + 1) % promoSlides.length)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
-          >
-            <ChevronRight className="h-4 w-4 text-primary-foreground" />
-          </button>
         </div>
 
         {/* Earnings Card */}
@@ -365,14 +349,14 @@ const FreelancerDashboard = () => {
           </Card>
         )}
 
-        {/* Tabs: Dashboard / Work History / Profile */}
+        {/* Tabs: Assignments / Work History */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="bg-muted/50 p-1">
-            <TabsTrigger value="dashboard" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <TrendingUp className="h-4 w-4" /> Dashboard
+            <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Briefcase className="h-4 w-4" /> Assignments
             </TabsTrigger>
             <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-4 w-4" /> Work History
+              <Clock className="h-4 w-4" /> Work History
             </TabsTrigger>
             <button
               onClick={() => navigate('/freelancer-profile')}
@@ -382,217 +366,167 @@ const FreelancerDashboard = () => {
             </button>
           </TabsList>
 
-          {/* Dashboard Tab - Current Assignments */}
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Active Assignments */}
-            <Card className="border-0 shadow-md">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Current Assignments ({activeAssignments.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {activeAssignments.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-8 text-center">No active assignments. Go online to receive work!</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {activeAssignments.map(a => (
-                      <div key={a.projectId} className="p-4 rounded-xl border border-border bg-gradient-to-br from-emerald-500/5 to-transparent hover:shadow-md transition-all">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                            <Briefcase className="h-5 w-5 text-emerald-600" />
-                          </div>
-                          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">
-                            {a.status || 'Active'}
-                          </Badge>
-                        </div>
-                        <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Users className="h-3 w-3" /> {a.clientName}
-                        </p>
-                        {a.startDate && (
-                          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            <Clock className="h-3 w-3" /> Started: {new Date(a.startDate).toLocaleDateString()}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Inactive/Completed Assignments */}
-            {inactiveAssignments.length > 0 && (
+          {/* Assignments Tab - All assignments */}
+          <TabsContent value="assignments" className="space-y-6">
+            {loading ? (
               <Card className="border-0 shadow-md">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                    Past Assignments ({inactiveAssignments.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {inactiveAssignments.map(a => (
-                      <div key={a.projectId} className="p-4 rounded-xl border border-border bg-muted/30">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                            <Briefcase className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {a.status || 'Completed'}
-                          </Badge>
-                        </div>
-                        <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Users className="h-3 w-3" /> {a.clientName}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                <CardContent className="py-12 text-center">
+                  <p className="text-muted-foreground">Loading assignments...</p>
                 </CardContent>
               </Card>
+            ) : assignments.length === 0 ? (
+              <Card className="border-0 shadow-md">
+                <CardContent className="py-12 text-center">
+                  <Briefcase className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-muted-foreground">No assignments yet. Go online to receive work!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Active Assignments */}
+                {activeAssignments.length > 0 && (
+                  <Card className="border-0 shadow-md">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        Active Assignments ({activeAssignments.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {activeAssignments.map((a, idx) => (
+                          <motion.div 
+                            key={`${a.projectId}-${idx}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="p-4 rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent hover:shadow-md transition-all"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <Briefcase className="h-5 w-5 text-primary" />
+                              </div>
+                              <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
+                                {a.status || 'Active'}
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users className="h-3 w-3" /> {a.clientName}
+                            </p>
+                            {a.startDate && (
+                              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                <Calendar className="h-3 w-3" /> Started: {new Date(a.startDate).toLocaleDateString()}
+                              </p>
+                            )}
+                            {a.endDate && (
+                              <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> Due: {new Date(a.endDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Completed / Inactive Assignments */}
+                {completedAssignments.length > 0 && (
+                  <Card className="border-0 shadow-md">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                        Past Assignments ({completedAssignments.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {completedAssignments.map((a, idx) => (
+                          <div key={`${a.projectId}-${idx}`} className="p-4 rounded-xl border border-border bg-muted/30">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
+                                <Briefcase className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {a.status || 'Completed'}
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users className="h-3 w-3" /> {a.clientName}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
           </TabsContent>
 
-          {/* Work History Tab */}
-          <TabsContent value="history">
-            <WorkHistoryTimeline projects={[]} />
-          </TabsContent>
-
-          {/* Profile Tab */}
-          <TabsContent value="profile">
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6 space-y-5">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-foreground">Personal Details</h2>
-                  <Badge variant="outline" className="text-xs">All fields mandatory *</Badge>
-                </div>
-                <Separator />
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Full Name */}
-                  <div>
-                    <Label className="text-sm font-medium">Full Name *</Label>
-                    <div className="relative mt-1">
-                      <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.fullName} onChange={e => update('fullName', e.target.value)} placeholder="Your full name" className={`pl-9 ${errors.fullName ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName}</p>}
-                  </div>
-                  {/* Email */}
-                  <div>
-                    <Label className="text-sm font-medium">Email *</Label>
-                    <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.email} onChange={e => update('email', e.target.value)} placeholder="your@email.com" className={`pl-9 ${errors.email ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
-                  </div>
-                  {/* Mobile */}
-                  <div>
-                    <Label className="text-sm font-medium">Mobile Number *</Label>
-                    <div className="relative mt-1">
-                      <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.mobile} onChange={e => update('mobile', e.target.value)} placeholder="+91-XXX-XXX-XXXX" className={`pl-9 ${errors.mobile ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.mobile && <p className="text-xs text-destructive mt-1">{errors.mobile}</p>}
-                  </div>
-                  {/* Location */}
-                  <div>
-                    <Label className="text-sm font-medium">Location *</Label>
-                    <div className="relative mt-1">
-                      <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.location} onChange={e => update('location', e.target.value)} placeholder="City, Country" className={`pl-9 ${errors.location ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.location && <p className="text-xs text-destructive mt-1">{errors.location}</p>}
-                  </div>
-                  {/* Experience */}
-                  <div>
-                    <Label className="text-sm font-medium">Experience *</Label>
-                    <div className="relative mt-1">
-                      <Clock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.experience} onChange={e => update('experience', e.target.value)} placeholder="e.g. 5+ Years" className={`pl-9 ${errors.experience ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.experience && <p className="text-xs text-destructive mt-1">{errors.experience}</p>}
-                  </div>
-                  {/* Hourly Rate */}
-                  <div>
-                    <Label className="text-sm font-medium">Hourly Rate *</Label>
-                    <div className="relative mt-1">
-                      <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.hourlyRate} onChange={e => update('hourlyRate', e.target.value)} placeholder="e.g. $75" className={`pl-9 ${errors.hourlyRate ? 'border-destructive' : ''}`} />
-                    </div>
-                    {errors.hourlyRate && <p className="text-xs text-destructive mt-1">{errors.hourlyRate}</p>}
-                  </div>
-                  {/* Company Alias */}
-                  <div>
-                    <Label className="text-sm font-medium">Company / Alias</Label>
-                    <div className="relative mt-1">
-                      <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input value={form.companyAlias} onChange={e => update('companyAlias', e.target.value)} placeholder="Company or brand name" className="pl-9" />
-                    </div>
-                  </div>
-                  {/* Primary Language */}
-                  <div>
-                    <Label className="text-sm font-medium">Primary Language *</Label>
-                    <Select value={form.primaryLanguage} onValueChange={v => update('primaryLanguage', v)}>
-                      <SelectTrigger className={`mt-1 ${errors.primaryLanguage ? 'border-destructive' : ''}`}>
-                        <Languages className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {languageOptions.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    {errors.primaryLanguage && <p className="text-xs text-destructive mt-1">{errors.primaryLanguage}</p>}
-                  </div>
-                </div>
-
-                {/* Other Languages */}
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Other Languages</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {languageOptions.filter(l => l !== form.primaryLanguage).map(lang => (
-                      <Badge key={lang} variant={form.otherLanguages.includes(lang) ? 'default' : 'outline'} className={`cursor-pointer transition-colors ${form.otherLanguages.includes(lang) ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`} onClick={() => toggleOtherLanguage(lang)}>
-                        {lang}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <Label className="text-sm font-medium">About Me / Bio *</Label>
-                  <Textarea value={form.bio} onChange={e => update('bio', e.target.value)} placeholder="Describe your expertise..." rows={3} className={`mt-1 ${errors.bio ? 'border-destructive' : ''}`} />
-                  {errors.bio && <p className="text-xs text-destructive mt-1">{errors.bio}</p>}
-                </div>
-
-                {/* Skills */}
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Skills & Technologies *</Label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {form.skills.map(skill => (
-                      <Badge key={skill} className="bg-primary/10 text-primary border-primary/20 gap-1 pr-1">
-                        {skill}
-                        <button onClick={() => removeSkill(skill)} className="ml-1 hover:text-destructive rounded-full"><X className="h-3 w-3" /></button>
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())} placeholder="Type a skill and press Enter" className={`max-w-xs ${errors.skills ? 'border-destructive' : ''}`} />
-                    <Button size="sm" variant="outline" onClick={addSkill} type="button"><Plus className="h-4 w-4 mr-1" /> Add</Button>
-                  </div>
-                  {errors.skills && <p className="text-xs text-destructive mt-1">{errors.skills}</p>}
-                </div>
-
-                <Separator />
-                <div className="flex justify-end">
-                  <Button onClick={handleSave} className="gap-2 px-8"><Save className="h-4 w-4" /> Save Profile</Button>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Work History Tab - shows current projects (projectId 0 = current from API) */}
+          <TabsContent value="history" className="space-y-4">
+            {currentProjects.length === 0 ? (
+              <Card className="border-0 shadow-md">
+                <CardContent className="py-12 text-center">
+                  <Clock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-muted-foreground">No work history yet</p>
+                </CardContent>
+              </Card>
+            ) : (
+              currentProjects.map((a, idx) => (
+                <motion.div
+                  key={`history-${a.projectId}-${idx}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="border-0 shadow-md overflow-hidden">
+                    <div className="h-1 bg-primary" />
+                    <CardContent className="p-5">
+                      <div className="flex flex-col md:flex-row md:items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h3 className="font-semibold text-foreground text-base">{a.projectName}</h3>
+                              <p className="text-sm text-muted-foreground">{a.clientName}</p>
+                            </div>
+                            <Badge className={
+                              a.status?.toLowerCase() === 'active' 
+                                ? 'bg-primary/10 text-primary border-primary/20' 
+                                : 'bg-muted text-muted-foreground'
+                            }>
+                              {a.projectId === 0 ? 'Current Project' : a.status}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mt-3">
+                            {a.startDate && (
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3.5 w-3.5" />
+                                Started: {new Date(a.startDate).toLocaleDateString()}
+                              </span>
+                            )}
+                            {a.endDate && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5" />
+                                Ends: {new Date(a.endDate).toLocaleDateString()}
+                              </span>
+                            )}
+                            {!a.endDate && a.status?.toLowerCase() === 'active' && (
+                              <span className="flex items-center gap-1 text-primary font-medium">
+                                <Zap className="h-3.5 w-3.5" /> In Progress
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </main>
