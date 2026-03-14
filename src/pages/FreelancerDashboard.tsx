@@ -113,12 +113,12 @@ const FreelancerDashboard = () => {
       setLoading(true);
       try {
         const userId = user?.userId || '';
-        const [a, s] = await Promise.all([
+        const [a, e] = await Promise.all([
           getAssignments(userId),
-          getFreelancerStats(),
+          getFreelancerEarnings(userId),
         ]);
         setAssignments(a);
-        setStats(s);
+        setEarnings(e);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       }
