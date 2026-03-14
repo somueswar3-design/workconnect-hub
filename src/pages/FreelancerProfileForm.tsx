@@ -56,7 +56,9 @@ const STEPS = [
 ];
 
 const genderMap: Record<string, number> = { male: 0, female: 1, other: 2, 'prefer-not': 3 };
+const reverseGenderMap: Record<number, string> = { 0: 'male', 1: 'female', 2: 'other', 3: 'prefer-not' };
 const freelancingExpMap: Record<string, number> = { new: 0, '0-1': 1, '1-3': 2, '3-5': 3, '5+': 4 };
+const reverseFreelancingExpMap: Record<number, string> = { 0: 'new', 1: '0-1', 2: '1-3', 3: '3-5', 4: '5+' };
 
 const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => {
   const [input, setInput] = useState('');
