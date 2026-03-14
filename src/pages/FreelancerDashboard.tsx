@@ -203,8 +203,8 @@ const FreelancerDashboard = () => {
 
   const slide = promoSlides[currentSlide];
 
-  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.isActive) : [];
-  const inactiveAssignments = Array.isArray(assignments) ? assignments.filter(a => !a.isActive) : [];
+  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() === 'active') : [];
+  const inactiveAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
 
   return (
     <div className="min-h-screen bg-background">

@@ -17,7 +17,8 @@ export interface AssignmentDto {
   clientId: number;
   clientName: string;
   status: string;
-  isActive: boolean;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 // Get freelancer profile data
