@@ -106,6 +106,8 @@ const FreelancerProfileForm = () => {
   const navigate = useNavigate();
   const { token, user } = useAuth();
 
+  const [profileId, setProfileId] = useState<number>(0);
+
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -118,6 +120,44 @@ const FreelancerProfileForm = () => {
       bioDescription: '', linkedInProfile: '', portfolioURL: '',
     },
   });
+
+  // Fetch existing profile and pre-populate form
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.userId) return;
+      try {
+        const data = await getFreelancerProfile(user.userId);
+        if (data && data.id) {
+          setProfileId(data.id);
+          form.reset({
+            fullName: data.fullName || '',
+            gender: reverseGenderMap[data.gender] || '',
+            country: data.country || '',
+            phoneNumber: data.phoneNumber || '',
+            companyName: data.companyName || '',
+            experienceYears: data.experienceYears?.toString() || '',
+            primarySkills: data.primarySkills || '',
+            secondarySkills: data.secondarySkills || '',
+            skillSetDesc: data.skillSetDesc || '',
+            anyFreelancingExperience: reverseFreelancingExpMap[data.anyFreelnacingExperience] || '',
+            currentCompany: data.currentCompany || '',
+            currentCompanyRole: data.currentCompanyRole || '',
+            languagesKnown: data.languagesKnown || '',
+            speakingLanguage: data.speakingLanguage || '',
+            hoursAvailablePerDay: data.hoursAvailablePerDay || '',
+            hourRate: data.hourRate || '',
+            isAvailableInWeekends: data.isAvailbleInweeknds || false,
+            bioDescription: data.bioDescption || '',
+            linkedInProfile: data.linkedInProfile || '',
+            portfolioURL: data.portfolioURL || '',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+    fetchProfile();
+  }, [user?.userId]);
 
   const handleSubmit = async (data: ProfileFormData) => {
     setIsLoading(true);
