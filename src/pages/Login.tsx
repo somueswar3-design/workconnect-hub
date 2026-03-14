@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,21 @@ import wsLogo from '@/assets/worksupport360-logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [show2FA, setShow2FA] = useState(false);
+
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    const role = user?.role?.toLowerCase() || '';
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'client') return <Navigate to="/client" replace />;
+    return <Navigate to="/freelancer" replace />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,17 +38,14 @@ const Login = () => {
         password,
         twoFactorCode: twoFactorCode || undefined,
       });
-      // login() decodes the JWT to extract role & userId
       login(result.token, { email });
       toast.success('Login successful!');
 
-      // Decode role & userId from JWT for navigation
       const claims = JSON.parse(atob(result.token.split('.')[1]));
       const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'FreeLancer');
       const userId = String(claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '');
 
       if (role.toLowerCase() === 'freelancer') {
-        // Check profile status before redirecting
         try {
           const statusRes = await fetch(
             `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167'}/api/freelancer/profile-status?userId=${userId}`,

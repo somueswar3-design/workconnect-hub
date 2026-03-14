@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { authApi } from '@/services/authApi';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import wsLogo from '@/assets/worksupport360-logo.png';
@@ -25,8 +26,16 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { login, isAuthenticated, user } = useAuth();
 
-  // role=FreeLancer or Client
+  // Redirect if already logged in
+  if (isAuthenticated) {
+    const role = user?.role?.toLowerCase() || '';
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'client') return <Navigate to="/client" replace />;
+    return <Navigate to="/freelancer" replace />;
+  }
+
   const role = searchParams.get('role') || 'FreeLancer';
   const isFreelancer = role.toLowerCase() === 'freelancer';
 
@@ -40,9 +49,20 @@ const Register = () => {
     try {
       await authApi.register({ email: data.email, password: data.password, role });
       toast.success('Registration successful!');
-      if (isFreelancer) {
-        navigate('/freelancer-profile');
-      } else {
+
+      // Auto-login after registration
+      try {
+        const result = await authApi.login({ email: data.email, password: data.password });
+        login(result.token, { email: data.email });
+
+        if (isFreelancer) {
+          navigate('/freelancer-profile');
+        } else {
+          navigate('/client');
+        }
+      } catch {
+        // If auto-login fails, redirect to login page
+        toast.info('Please log in with your new credentials.');
         navigate('/login');
       }
     } catch (error: any) {

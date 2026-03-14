@@ -109,42 +109,10 @@ const FreelancerOverview = () => {
 
   return (
     <div className="p-6 space-y-5">
-      {/* Availability Toggle */}
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div>
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-muted/50">
-          {isOnline ? <Wifi className="h-4 w-4 text-primary" /> : <WifiOff className="h-4 w-4 text-muted-foreground" />}
-          <span className={`text-xs font-medium ${isOnline ? 'text-primary' : 'text-muted-foreground'}`}>
-            {isOnline ? 'Available' : 'Not Available'}
-          </span>
-          <Switch
-            checked={isOnline}
-            onCheckedChange={async (checked) => {
-              setIsOnline(checked);
-              try {
-                const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
-                const authToken = localStorage.getItem('auth_token');
-                const statusText = checked ? 'Available' : 'Not Available';
-                const userId = user?.userId || '';
-                const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${encodeURIComponent(userId)}&status=${encodeURIComponent(statusText)}`, {
-                  method: 'POST',
-                  headers: {
-                    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-                  },
-                });
-                if (!res.ok) throw new Error('Failed to update availability');
-                toast({
-                  title: checked ? '🟢 Available' : '⚫ Not Available',
-                  description: checked ? 'You are now visible to clients.' : 'You will not appear in searches.',
-                });
-              } catch (err: any) {
-                setIsOnline(!checked);
-                toast({ title: 'Error', description: err.message || 'Failed to update status', variant: 'destructive' });
-              }
-            }}
-            className="data-[state=checked]:bg-primary"
-          />
-        </div>
+        <p className="text-sm text-muted-foreground">Welcome back, {user?.fullName || user?.email || 'User'}!</p>
       </div>
 
       {/* Compact Stats Strip */}
