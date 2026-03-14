@@ -48,22 +48,23 @@ export const getAssignments = async (userId: string): Promise<AssignmentDto[]> =
   return res.json();
 };
 
+// Earnings DTO from backend
+export interface EarningsDto {
+  currency: string;
+  earnedAmount: number;
+}
+
+// Get freelancer earnings
+export const getFreelancerEarnings = async (userId: string): Promise<EarningsDto> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/earnings?userId=${userId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch earnings');
+  return res.json();
+};
+
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Get freelancer statistics (mock for now)
-export const getFreelancerStats = async (): Promise<FreelancerStats> => {
-  await delay(300);
-  return {
-    totalEarnings: 0,
-    settledAmount: 0,
-    pendingAmount: 0,
-    activeProjects: 0,
-    completedProjects: 0,
-    averageRating: 0,
-    totalClients: 0,
-  };
-};
 
 // Update freelancer availability status
 export const updateFreelancerStatus = async (
