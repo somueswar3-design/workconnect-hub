@@ -32,7 +32,7 @@ const ChangePassword = () => {
   const onSubmit = async (data: { oldPassword: string; newPassword: string; confirmPassword: string }) => {
     setIsLoading(true);
     try {
-      await authApi.changePassword({ ...data, userId: user?.userId || '' });
+      await authApi.changePassword({ ...data, userId: Number(user?.userId) || 0 });
       toast.success('Password changed successfully!');
       navigate(-1);
     } catch (error: any) {
