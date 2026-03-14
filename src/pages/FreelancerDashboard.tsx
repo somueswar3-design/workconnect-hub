@@ -129,10 +129,10 @@ const FreelancerDashboard = () => {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const slide = promoSlides[currentSlide];
-  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() === 'active') : [];
-  const completedAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
-  // Projects with projectId 0 are current/demo projects from API
-  const currentProjects = Array.isArray(assignments) ? assignments.filter(a => a.projectId === 0 || a.status?.toLowerCase() === 'active') : [];
+  // Filter out projectId === 0 (placeholder/demo records from API)
+  const validAssignments = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
+  const activeAssignments = validAssignments.filter(a => a.status?.toLowerCase() === 'active');
+  const completedAssignments = validAssignments.filter(a => a.status?.toLowerCase() !== 'active');
 
   return (
     <div className="min-h-screen bg-background">
@@ -371,11 +371,70 @@ const FreelancerDashboard = () => {
                   <p className="text-muted-foreground">Loading assignments...</p>
                 </CardContent>
               </Card>
-            ) : assignments.length === 0 ? (
-              <Card className="border-0 shadow-md">
-                <CardContent className="py-12 text-center">
-                  <Briefcase className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                  <p className="text-muted-foreground">No assignments yet. Go online to receive work!</p>
+            ) : validAssignments.length === 0 ? (
+              <Card className="border-0 shadow-lg overflow-hidden">
+                <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+                <CardContent className="py-16 text-center space-y-6">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                  >
+                    <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4">
+                      <Briefcase className="h-12 w-12 text-primary" />
+                    </div>
+                  </motion.div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No Assignments Yet</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                      Your journey is about to begin! Once your profile is shortlisted, we'll match you with the perfect project.
+                    </p>
+                  </div>
+                  
+                  <div className="max-w-lg mx-auto">
+                    <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-6">
+                      <p className="text-sm font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        How you'll be notified
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20"
+                        >
+                          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                            <Mail className="h-5 w-5 text-primary" />
+                          </div>
+                          <span className="text-xs font-medium text-primary">Email</span>
+                        </motion.div>
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/10 border border-accent/20"
+                        >
+                          <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
+                            <Phone className="h-5 w-5 text-accent-foreground" />
+                          </div>
+                          <span className="text-xs font-medium text-accent-foreground">Phone Call</span>
+                        </motion.div>
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 border border-secondary"
+                        >
+                          <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
+                            <Sparkles className="h-5 w-5 text-secondary-foreground" />
+                          </div>
+                          <span className="text-xs font-medium text-secondary-foreground">Chat</span>
+                        </motion.div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
+                        🎉 When your profile is shortlisted for a project, we'll notify you via <strong>email</strong>, <strong>phone call</strong>, or <strong>chat</strong> — so you never miss an opportunity!
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => navigate('/freelancer-profile')} className="mt-2">
+                    <User className="h-4 w-4 mr-2" /> Complete Your Profile
+                  </Button>
                 </CardContent>
               </Card>
             ) : (
@@ -463,17 +522,28 @@ const FreelancerDashboard = () => {
             )}
           </TabsContent>
 
-          {/* Work History Tab - shows current projects (projectId 0 = current from API) */}
+          {/* Work History Tab */}
           <TabsContent value="history" className="space-y-4">
-            {currentProjects.length === 0 ? (
-              <Card className="border-0 shadow-md">
-                <CardContent className="py-12 text-center">
-                  <Clock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                  <p className="text-muted-foreground">No work history yet</p>
+            {validAssignments.length === 0 ? (
+              <Card className="border-0 shadow-lg overflow-hidden">
+                <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+                <CardContent className="py-16 text-center space-y-5">
+                  <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-muted to-accent/10 flex items-center justify-center">
+                    <Clock className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No Work History Yet</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                      Your work history will appear here once you start working on projects. Keep your profile updated and stay online!
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    <Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!
+                  </div>
                 </CardContent>
               </Card>
             ) : (
-              currentProjects.map((a, idx) => (
+              validAssignments.map((a, idx) => (
                 <motion.div
                   key={`history-${a.projectId}-${idx}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -495,7 +565,7 @@ const FreelancerDashboard = () => {
                                 ? 'bg-primary/10 text-primary border-primary/20' 
                                 : 'bg-muted text-muted-foreground'
                             }>
-                              {a.projectId === 0 ? 'Current Project' : a.status}
+                              {a.status}
                             </Badge>
                           </div>
                           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mt-3">

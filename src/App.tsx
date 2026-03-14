@@ -2,8 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -29,6 +29,18 @@ import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
+// Redirect logged-in users to their dashboard, show Home for guests
+const AuthRedirectHome = () => {
+  const { isAuthenticated, user } = useAuth();
+  if (isAuthenticated) {
+    const role = user?.role?.toLowerCase() || '';
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'client') return <Navigate to="/client" replace />;
+    return <Navigate to="/freelancer" replace />;
+  }
+  return <Home />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -50,7 +62,7 @@ const App = () => (
                 <Header />
                 <main className="flex-1">
                   <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={<AuthRedirectHome />} />
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/freelancer" element={<RegisterChoice />} />
