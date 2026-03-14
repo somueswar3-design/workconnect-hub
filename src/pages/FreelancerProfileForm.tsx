@@ -158,9 +158,8 @@ const FreelancerProfileForm = () => {
 
       if (!res.ok) throw new Error('Failed to save profile');
       toast.success('Profile saved successfully!');
-      // Redirect based on role
-      const dashPath = user?.role === '2' ? '/client' : '/freelancer';
-      navigate(dashPath);
+      // Redirect to freelancer dashboard
+      navigate('/freelancer');
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
     } finally {

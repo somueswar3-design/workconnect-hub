@@ -244,12 +244,31 @@ const FreelancerDashboard = () => {
               </span>
               <Switch
                 checked={isOnline}
-                onCheckedChange={(checked) => {
+                onCheckedChange={async (checked) => {
                   setIsOnline(checked);
-                  toast({
-                    title: checked ? '🟢 You are Online' : '⚫ You are Offline',
-                    description: checked ? 'You are now visible to clients and ready to receive work.' : 'You will not appear in client searches.',
-                  });
+                  try {
+                    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+                    const authToken = localStorage.getItem('auth_token');
+                    const res = await fetch(`${API_BASE}/api/freelancer/availability`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+                      },
+                      body: JSON.stringify({
+                        status: checked ? 'Available' : 'Unavailable',
+                        userId: user?.userId || '',
+                      }),
+                    });
+                    if (!res.ok) throw new Error('Failed to update availability');
+                    toast({
+                      title: checked ? '🟢 You are Online' : '⚫ You are Offline',
+                      description: checked ? 'You are now visible to clients and ready to receive work.' : 'You will not appear in client searches.',
+                    });
+                  } catch (err: any) {
+                    setIsOnline(!checked); // revert on failure
+                    toast({ title: 'Error', description: err.message || 'Failed to update status', variant: 'destructive' });
+                  }
                 }}
                 className="data-[state=checked]:bg-emerald-500"
               />
@@ -261,7 +280,7 @@ const FreelancerDashboard = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate('/freelancer/settings/password')}>
+                <DropdownMenuItem onClick={() => navigate('/change-password')}>
                   <Lock className="h-4 w-4 mr-2" /> Change Password
                 </DropdownMenuItem>
               </DropdownMenuContent>

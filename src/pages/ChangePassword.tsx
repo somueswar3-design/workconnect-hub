@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { authApi } from '@/services/authApi';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 const schema = z.object({
@@ -21,6 +22,7 @@ const ChangePassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -30,7 +32,7 @@ const ChangePassword = () => {
   const onSubmit = async (data: { oldPassword: string; newPassword: string; confirmPassword: string }) => {
     setIsLoading(true);
     try {
-      await authApi.changePassword(data);
+      await authApi.changePassword({ ...data, userId: user?.userId || '' });
       toast.success('Password changed successfully!');
       navigate(-1);
     } catch (error: any) {
