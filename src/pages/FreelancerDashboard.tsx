@@ -203,8 +203,8 @@ const FreelancerDashboard = () => {
 
   const slide = promoSlides[currentSlide];
 
-  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.isActive) : [];
-  const inactiveAssignments = Array.isArray(assignments) ? assignments.filter(a => !a.isActive) : [];
+  const activeAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() === 'active') : [];
+  const inactiveAssignments = Array.isArray(assignments) ? assignments.filter(a => a.status?.toLowerCase() !== 'active') : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -442,6 +442,11 @@ const FreelancerDashboard = () => {
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
                           <Users className="h-3 w-3" /> {a.clientName}
                         </p>
+                        {a.startDate && (
+                          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> Started: {new Date(a.startDate).toLocaleDateString()}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
