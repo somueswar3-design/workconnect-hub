@@ -280,7 +280,7 @@ const FreelancerDashboard = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate('/freelancer/settings/password')}>
+                <DropdownMenuItem onClick={() => navigate('/change-password')}>
                   <Lock className="h-4 w-4 mr-2" /> Change Password
                 </DropdownMenuItem>
               </DropdownMenuContent>

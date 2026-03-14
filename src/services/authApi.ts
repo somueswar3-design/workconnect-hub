@@ -38,6 +38,7 @@ export interface ResetPasswordRequest {
 }
 
 export interface ChangePasswordRequest {
+  userId: string;
   oldPassword: string;
   newPassword: string;
   confirmPassword: string;
