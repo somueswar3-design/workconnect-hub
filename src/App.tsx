@@ -50,7 +50,7 @@ const App = () => (
                 <Header />
                 <main className="flex-1">
                   <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={<AuthRedirectHome />} />
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/freelancer" element={<RegisterChoice />} />
