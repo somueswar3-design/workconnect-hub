@@ -29,6 +29,18 @@ import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
+// Redirect logged-in users to their dashboard, show Home for guests
+const AuthRedirectHome = () => {
+  const { isAuthenticated, user } = useAuth();
+  if (isAuthenticated) {
+    const role = user?.role?.toLowerCase() || '';
+    if (role === 'admin') return <Navigate to="/admin" replace />;
+    if (role === 'client') return <Navigate to="/client" replace />;
+    return <Navigate to="/freelancer" replace />;
+  }
+  return <Home />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
