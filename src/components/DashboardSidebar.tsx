@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, History, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight
+  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard
 } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
@@ -36,66 +36,82 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   };
 
   const freelancerMenuItems = [
-    { icon: User, label: 'My Profile', path: '/freelancer' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer' },
+    { icon: User, label: 'My Profile', path: '/freelancer-profile' },
     { icon: Users, label: 'Engaged Clients', path: '/freelancer/clients' },
-    { icon: History, label: 'Work History', path: '/freelancer/history' },
-    { icon: Briefcase, label: 'Skills & Experience', path: '/freelancer/skills' },
   ];
 
   const clientMenuItems = [
-    { icon: User, label: 'My Profile', path: '/client' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
+    { icon: User, label: 'My Profile', path: '/client/profile' },
     { icon: Users, label: 'Hired Freelancers', path: '/client/freelancers' },
-    { icon: History, label: 'Project History', path: '/client/history' },
   ];
 
   const menuItems = userType === 'freelancer' ? freelancerMenuItems : clientMenuItems;
-
   const basePath = userType === 'freelancer' ? '/freelancer' : '/client';
 
   const settingsItems = [
-    { icon: Languages, label: 'Language Preference', path: `${basePath}/settings/language` },
+    { icon: Languages, label: 'Language', path: `${basePath}/settings/language` },
     { icon: Camera, label: 'Update Photo', path: `${basePath}/settings/photo` },
     { icon: Lock, label: 'Change Password', path: `${basePath}/settings/password` },
   ];
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col">
+    <aside className="w-56 min-h-screen bg-gradient-to-b from-background to-muted/30 border-r border-border flex flex-col shrink-0">
       {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border">
+      <div className="p-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-lg" />
-          <span className="text-lg font-bold">
-            <span className="text-sidebar-foreground">Work</span>
-            <span className="text-sidebar-primary">Support</span>
-            <span className="text-sidebar-foreground">360</span>
+          <img src={logo} alt="WorkSupport360" className="h-8 w-8 rounded-lg" />
+          <span className="text-sm font-bold">
+            <span className="text-primary">Work</span>
+            <span className="text-secondary">Support</span>
+            <span className="text-primary">360</span>
           </span>
+        </div>
+      </div>
+
+      {/* User Info */}
+      <div className="px-3 py-3 border-b border-border">
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              <User className="h-4 w-4 text-primary" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate">{user?.fullName || user?.email || 'User'}</p>
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
+              {userType === 'freelancer' ? 'Freelancer' : 'Client'}
+            </Badge>
+          </div>
         </div>
       </div>
 
       {/* Availability Status */}
       {userType === 'freelancer' && (
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="px-3 py-2.5 border-b border-border">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {activeStatus ? <Power className="h-4 w-4 text-green-400" /> : <PowerOff className="h-4 w-4 text-sidebar-foreground/60" />}
-              <span className="text-sm font-medium">{activeStatus ? 'Online' : 'Offline'}</span>
+            <div className="flex items-center gap-1.5">
+              {activeStatus ? <Power className="h-3.5 w-3.5 text-green-500" /> : <PowerOff className="h-3.5 w-3.5 text-muted-foreground" />}
+              <span className="text-xs font-medium text-foreground">{activeStatus ? 'Online' : 'Offline'}</span>
             </div>
-            <Switch checked={activeStatus} onCheckedChange={handleStatusToggle} className="data-[state=checked]:bg-green-500" />
+            <Switch checked={activeStatus} onCheckedChange={handleStatusToggle} className="data-[state=checked]:bg-green-500 scale-90" />
           </div>
-          <p className="text-xs text-sidebar-foreground/60 mt-1">{activeStatus ? 'Available for new projects' : 'Not accepting new work'}</p>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-2 space-y-0.5">
         {menuItems.map((item) => {
           const isActivePath = location.pathname === item.path;
           return (
             <NavLink key={item.path} to={item.path} className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              isActivePath ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+              'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              isActivePath ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             )}>
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4" />
               {item.label}
             </NavLink>
           );
@@ -103,22 +119,22 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
 
         {/* Settings Collapsible */}
         <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors">
-            <div className="flex items-center gap-3">
-              <Settings className="h-5 w-5" />
-              Profile Settings
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+            <div className="flex items-center gap-2.5">
+              <Settings className="h-4 w-4" />
+              Settings
             </div>
-            <ChevronRight className={cn('h-4 w-4 transition-transform', settingsOpen && 'rotate-90')} />
+            <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', settingsOpen && 'rotate-90')} />
           </CollapsibleTrigger>
-          <CollapsibleContent className="pl-4 space-y-1 mt-1">
+          <CollapsibleContent className="pl-3 space-y-0.5 mt-0.5">
             {settingsItems.map((item) => {
               const isActivePath = location.pathname === item.path;
               return (
                 <NavLink key={item.path} to={item.path} className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                  isActivePath ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                  'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs transition-colors',
+                  isActivePath ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}>
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-3.5 w-3.5" />
                   {item.label}
                 </NavLink>
               );
@@ -127,24 +143,9 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
         </Collapsible>
       </nav>
 
-      {/* User Info & Logout */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-full bg-sidebar-accent flex items-center justify-center overflow-hidden">
-            {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-5 w-5" />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.fullName || user?.email || 'User'}</p>
-            <Badge variant="outline" className="text-xs border-sidebar-border text-sidebar-foreground/70">
-              {userType === 'freelancer' ? 'Freelancer' : 'Client'}
-            </Badge>
-          </div>
-        </div>
-        <Button variant="ghost" className="w-full justify-start gap-2 text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50" onClick={handleLogout}>
+      {/* Logout */}
+      <div className="p-2 border-t border-border">
+        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-sm" onClick={handleLogout}>
           <LogOut className="h-4 w-4" />
           Logout
         </Button>
