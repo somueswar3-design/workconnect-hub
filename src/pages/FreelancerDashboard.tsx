@@ -522,17 +522,28 @@ const FreelancerDashboard = () => {
             )}
           </TabsContent>
 
-          {/* Work History Tab - shows current projects (projectId 0 = current from API) */}
+          {/* Work History Tab */}
           <TabsContent value="history" className="space-y-4">
-            {currentProjects.length === 0 ? (
-              <Card className="border-0 shadow-md">
-                <CardContent className="py-12 text-center">
-                  <Clock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-                  <p className="text-muted-foreground">No work history yet</p>
+            {validAssignments.length === 0 ? (
+              <Card className="border-0 shadow-lg overflow-hidden">
+                <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
+                <CardContent className="py-16 text-center space-y-5">
+                  <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-muted to-accent/10 flex items-center justify-center">
+                    <Clock className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No Work History Yet</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                      Your work history will appear here once you start working on projects. Keep your profile updated and stay online!
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    <Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!
+                  </div>
                 </CardContent>
               </Card>
             ) : (
-              currentProjects.map((a, idx) => (
+              validAssignments.map((a, idx) => (
                 <motion.div
                   key={`history-${a.projectId}-${idx}`}
                   initial={{ opacity: 0, y: 10 }}
@@ -554,7 +565,7 @@ const FreelancerDashboard = () => {
                                 ? 'bg-primary/10 text-primary border-primary/20' 
                                 : 'bg-muted text-muted-foreground'
                             }>
-                              {a.projectId === 0 ? 'Current Project' : a.status}
+                              {a.status}
                             </Badge>
                           </div>
                           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mt-3">
