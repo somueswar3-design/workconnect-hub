@@ -337,62 +337,32 @@ const FreelancerDashboard = () => {
           </button>
         </div>
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="border-0 shadow-md bg-gradient-to-br from-primary/10 to-primary/5">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                    <DollarSign className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total Earned</p>
-                    <p className="text-xl font-bold text-foreground">${stats.totalEarnings.toLocaleString()}</p>
+        {/* Earnings Card */}
+        {earnings && (
+          <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-primary/15 flex items-center justify-center shadow-sm">
+                  <DollarSign className="h-7 w-7 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground font-medium">Total Earnings</p>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-3xl font-extrabold text-foreground tracking-tight">
+                      {earnings.currency === 'India' ? '₹' : '$'}{earnings.earnedAmount.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-muted-foreground font-medium">{earnings.currency}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-md bg-gradient-to-br from-emerald-500/10 to-emerald-500/5">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Settled</p>
-                    <p className="text-xl font-bold text-foreground">${stats.settledAmount.toLocaleString()}</p>
-                  </div>
+                <div className="hidden sm:flex flex-col items-end gap-1">
+                  <Badge className="bg-primary/10 text-primary border-primary/20">
+                    <TrendingUp className="h-3 w-3 mr-1" /> Earnings
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-md bg-gradient-to-br from-secondary/10 to-secondary/5">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-secondary/15 flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-secondary" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Pending</p>
-                    <p className="text-xl font-bold text-foreground">${stats.pendingAmount.toLocaleString()}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-md bg-gradient-to-br from-amber-500/10 to-amber-500/5">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
-                    <Star className="h-5 w-5 text-amber-500" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Rating</p>
-                    <p className="text-xl font-bold text-foreground">{stats.averageRating.toFixed(1)} ⭐</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Tabs: Dashboard / Work History / Profile */}
