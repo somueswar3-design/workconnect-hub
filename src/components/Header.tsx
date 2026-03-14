@@ -24,7 +24,8 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const getDashboardPath = () => {
-    if (user?.role === '2') return '/client';
+    if (user?.role?.toLowerCase() === 'client') return '/client';
+    if (user?.role?.toLowerCase() === 'admin') return '/admin';
     return '/freelancer';
   };
 
