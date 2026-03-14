@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
   Languages, Lock, ChevronDown, Star, DollarSign, TrendingUp, Users, CheckCircle2,
-  Wifi, WifiOff, ChevronLeft, ChevronRight, Shield, Zap, Award, Target
+  Wifi, WifiOff, ChevronLeft, ChevronRight, Shield, Zap, Award, Target, Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +21,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getAssignments, getFreelancerEarnings, AssignmentDto, EarningsDto } from '@/services/freelancerApi';
-import WorkHistoryTimeline from '@/components/WorkHistoryTimeline';
 
 interface FreelancerFormData {
   fullName: string;
