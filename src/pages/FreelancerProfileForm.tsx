@@ -163,7 +163,7 @@ const FreelancerProfileForm = () => {
     setIsLoading(true);
     try {
       const payload = {
-        id: 0,
+        id: profileId,
         userId: parseInt(user?.userId || '0'),
         freelancerUserStatus: true,
         fullName: data.fullName,
