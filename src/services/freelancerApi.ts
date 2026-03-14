@@ -63,23 +63,35 @@ export const getFreelancerEarnings = async (userId: string): Promise<EarningsDto
   return res.json();
 };
 
-// Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Job Opening DTO from backend
+export interface JobOpeningDto {
+  id: number;
+  title: string;
+  clientName: string;
+  description: string;
+  skills: string[];
+  budget: string;
+  currency: string;
+  duration: string;
+  location: string;
+  postedDate: string;
+  deadline: string | null;
+  status: string;
+  applicants: number;
+}
 
-// Update freelancer availability status
-export const updateFreelancerStatus = async (
-  isActive: boolean
-): Promise<{ success: boolean; message: string }> => {
-  await delay(400);
-  return {
-    success: true,
-    message: isActive ? 'Status set to Active - You can receive new work' : 'Status set to Inactive - Not accepting new work',
-  };
+// Get freelancing openings/requirements posted by clients
+export const getJobOpenings = async (userId: string): Promise<JobOpeningDto[]> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/openings?userId=${userId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch openings');
+  return res.json();
 };
 
 // Submit interest form
 export const submitInterestForm = async (data: InterestFormData): Promise<{ success: boolean; message: string }> => {
-  await delay(600);
+  await new Promise(resolve => setTimeout(resolve, 600));
   console.log('Interest form submitted:', data);
   return {
     success: true,

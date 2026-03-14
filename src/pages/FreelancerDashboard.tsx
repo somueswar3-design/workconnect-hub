@@ -4,75 +4,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
   Languages, Lock, ChevronDown, DollarSign, TrendingUp, Users, CheckCircle2,
-  Wifi, WifiOff, Zap, Award, Target, Sparkles, Calendar
+  Wifi, WifiOff, Zap, Award, Target, Sparkles, Calendar, Search, Filter,
+  Building2, IndianRupee, Timer, Eye, Send, Bell, MessageCircle, ArrowRight
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { getAssignments, getFreelancerEarnings, AssignmentDto, EarningsDto } from '@/services/freelancerApi';
-
-const promoSlides = [
-  {
-    title: "Complete Your Profile",
-    description: "Freelancers with complete profiles get 3x more opportunities.",
-    icon: User,
-    accent: "hsl(var(--primary))",
-    bgPattern: "radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%)",
-    emoji: "✨",
-    cta: "Update Profile",
-    action: "profile",
-  },
-  {
-    title: "Set Your Hourly Rate",
-    description: "Define your worth! Fair rates attract quality projects.",
-    icon: DollarSign,
-    accent: "hsl(142 71% 45%)",
-    bgPattern: "radial-gradient(circle at 80% 30%, hsl(142 71% 45% / 0.15) 0%, transparent 50%)",
-    emoji: "💰",
-    cta: "Set Rate",
-    action: "profile",
-  },
-  {
-    title: "We Match You With Clients",
-    description: "Our system finds the perfect projects for your skills.",
-    icon: Target,
-    accent: "hsl(25 95% 53%)",
-    bgPattern: "radial-gradient(circle at 50% 80%, hsl(25 95% 53% / 0.15) 0%, transparent 50%)",
-    emoji: "🎯",
-    cta: "Learn More",
-    action: "stay",
-  },
-  {
-    title: "Go Online & Get Noticed",
-    description: "Toggle your status to let clients know you're available.",
-    icon: Zap,
-    accent: "hsl(270 70% 55%)",
-    bgPattern: "radial-gradient(circle at 30% 20%, hsl(270 70% 55% / 0.15) 0%, transparent 50%)",
-    emoji: "⚡",
-    cta: "Go Online",
-    action: "stay",
-  },
-  {
-    title: "Quality = Better Ratings",
-    description: "Top-rated freelancers earn 40% more with priority matching.",
-    icon: Award,
-    accent: "hsl(340 75% 55%)",
-    bgPattern: "radial-gradient(circle at 70% 60%, hsl(340 75% 55% / 0.15) 0%, transparent 50%)",
-    emoji: "🏆",
-    cta: "View History",
-    action: "history",
-  },
-];
+import { getAssignments, getFreelancerEarnings, getJobOpenings, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const FreelancerDashboard = () => {
   const { user, logout, updateUser } = useAuth();
@@ -81,15 +31,19 @@ const FreelancerDashboard = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl || null);
   const [isOnline, setIsOnline] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [activeTab, setActiveTab] = useState('assignments');
+  const [activeTab, setActiveTab] = useState('openings');
   const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [earnings, setEarnings] = useState<EarningsDto | null>(null);
+  const [openings, setOpenings] = useState<JobOpeningDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openingsLoading, setOpeningsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+      setOpeningsLoading(true);
       try {
         const userId = user?.userId || '';
         const [a, e] = await Promise.all([
@@ -102,16 +56,31 @@ const FreelancerDashboard = () => {
         console.error('Failed to load dashboard data:', err);
       }
       setLoading(false);
+
+      // Load openings separately
+      try {
+        const userId = user?.userId || '';
+        const o = await getJobOpenings(userId);
+        setOpenings(o);
+      } catch (err) {
+        console.error('Failed to load openings:', err);
+        setOpenings([]);
+      }
+      setOpeningsLoading(false);
     };
     load();
   }, [user?.userId]);
 
+  // Show notify popup if no assignments after loading
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % promoSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+    if (!loading) {
+      const valid = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
+      if (valid.length === 0) {
+        const timer = setTimeout(() => setShowNotifyPopup(true), 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [loading, assignments]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -128,11 +97,34 @@ const FreelancerDashboard = () => {
 
   const handleLogout = () => { logout(); navigate('/'); };
 
-  const slide = promoSlides[currentSlide];
-  // Filter out projectId === 0 (placeholder/demo records from API)
   const validAssignments = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
   const activeAssignments = validAssignments.filter(a => a.status?.toLowerCase() === 'active');
   const completedAssignments = validAssignments.filter(a => a.status?.toLowerCase() !== 'active');
+
+  const filteredOpenings = openings.filter(o =>
+    o.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    o.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    o.skills?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const getTimeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  };
+
+  const getCurrencySymbol = (currency?: string) => {
+    if (!currency) return '$';
+    const c = currency.toLowerCase();
+    if (c.includes('india') || c.includes('inr') || c.includes('rupee')) return '₹';
+    if (c.includes('eur')) return '€';
+    if (c.includes('gbp') || c.includes('pound')) return '£';
+    return '$';
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -200,6 +192,9 @@ const FreelancerDashboard = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate('/freelancer-profile')}>
+                  <User className="h-4 w-4 mr-2" /> Update Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/change-password')}>
                   <Lock className="h-4 w-4 mr-2" /> Change Password
                 </DropdownMenuItem>
@@ -212,159 +207,234 @@ const FreelancerDashboard = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* ===== NEW UNIQUE SLIDER ===== */}
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-60" style={{ background: slide.bgPattern }} />
-          
-          {/* Floating decorative elements */}
-          <div className="absolute top-4 right-4 opacity-20">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            >
-              <Sparkles className="h-24 w-24 text-primary" />
-            </motion.div>
-          </div>
-
-          <div className="relative p-8 md:p-10">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentSlide}
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.4 }}
-                className="flex items-center gap-8"
-              >
-                {/* Left: Icon with glow */}
-                <div className="hidden md:block relative shrink-0">
-                  <div 
-                    className="h-20 w-20 rounded-3xl flex items-center justify-center text-4xl shadow-lg"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent}88)`,
-                    }}
-                  >
-                    <span className="drop-shadow-md">{slide.emoji}</span>
-                  </div>
-                  <div 
-                    className="absolute -inset-2 rounded-3xl blur-xl opacity-30"
-                    style={{ background: slide.accent }}
-                  />
-                </div>
-
-                {/* Right: Content */}
-                <div className="flex-1 min-w-0">
-                  <motion.h2 
-                    className="text-2xl md:text-3xl font-bold text-foreground mb-2"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    {slide.title}
-                  </motion.h2>
-                  <motion.p 
-                    className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed mb-4"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    {slide.description}
-                  </motion.p>
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Button 
-                      size="sm"
-                      className="shadow-md"
-                      onClick={() => {
-                        if (slide.action === 'profile') navigate('/freelancer-profile');
-                        else if (slide.action === 'history') setActiveTab('history');
-                      }}
-                    >
-                      {slide.cta}
-                    </Button>
-                  </motion.div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Progress bar style indicators */}
-            <div className="flex items-center gap-2 mt-8">
-              {promoSlides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentSlide(i)}
-                  className="relative h-1.5 flex-1 rounded-full bg-muted overflow-hidden"
-                >
-                  {i === currentSlide && (
-                    <motion.div
-                      className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 5, ease: 'linear' }}
-                      key={`progress-${currentSlide}`}
-                    />
-                  )}
-                  {i < currentSlide && (
-                    <div className="absolute inset-0 rounded-full bg-primary" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Earnings Card */}
-        {earnings && (
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 rounded-2xl bg-primary/15 flex items-center justify-center shadow-sm">
-                  <DollarSign className="h-7 w-7 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground font-medium">Total Earnings</p>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-foreground tracking-tight">
-                      {earnings.currency === 'India' ? '₹' : '$'}{earnings.earnedAmount.toLocaleString()}
-                    </span>
-                    <span className="text-sm text-muted-foreground font-medium">{earnings.currency}</span>
-                  </div>
-                </div>
-                <div className="hidden sm:flex flex-col items-end gap-1">
-                  <Badge className="bg-primary/10 text-primary border-primary/20">
-                    <TrendingUp className="h-3 w-3 mr-1" /> Earnings
-                  </Badge>
-                </div>
+      <main className="max-w-7xl mx-auto px-4 py-5 space-y-5">
+        {/* ===== COMPACT TOP STRIP: Earnings + Assignments Summary ===== */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Earnings Card - Compact */}
+          <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <DollarSign className="h-6 w-6 text-primary" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground font-medium">Total Earnings</p>
+                <p className="text-xl font-extrabold text-foreground truncate">
+                  {earnings ? `${getCurrencySymbol(earnings.currency)}${earnings.earnedAmount.toLocaleString()}` : '—'}
+                </p>
               </div>
             </CardContent>
           </Card>
-        )}
 
-        {/* Tabs: Assignments / Work History */}
+          {/* Active Assignments - Compact */}
+          <Card className="border border-border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
+                <Briefcase className="h-6 w-6 text-accent-foreground" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground font-medium">Active Projects</p>
+                <p className="text-xl font-extrabold text-foreground">{activeAssignments.length}</p>
+              </div>
+              {activeAssignments.length > 0 && (
+                <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('assignments')}>
+                  View <ArrowRight className="h-3 w-3 ml-1" />
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Completed - Compact */}
+          <Card className="border border-border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                <CheckCircle2 className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground font-medium">Completed</p>
+                <p className="text-xl font-extrabold text-foreground">{completedAssignments.length}</p>
+              </div>
+              {completedAssignments.length > 0 && (
+                <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('history')}>
+                  View <ArrowRight className="h-3 w-3 ml-1" />
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ===== TABS: Openings / Assignments / History ===== */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="openings" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Search className="h-4 w-4" /> Openings
+            </TabsTrigger>
             <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-4 w-4" /> Assignments
+              <Briefcase className="h-4 w-4" /> My Assignments
             </TabsTrigger>
             <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Clock className="h-4 w-4" /> Work History
             </TabsTrigger>
-            <button
-              onClick={() => navigate('/freelancer-profile')}
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 gap-1.5 hover:bg-primary hover:text-primary-foreground"
-            >
-              <User className="h-4 w-4" /> Update Profile
-            </button>
           </TabsList>
 
-          {/* Assignments Tab - All assignments */}
-          <TabsContent value="assignments" className="space-y-6">
+          {/* ===== OPENINGS TAB - Naukri Style ===== */}
+          <TabsContent value="openings" className="space-y-4">
+            {/* Search Bar */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by skill, title, or keyword..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-card border-border"
+                />
+              </div>
+              <Badge variant="outline" className="px-3 py-2 text-xs shrink-0">
+                {filteredOpenings.length} openings
+              </Badge>
+            </div>
+
+            {openingsLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <Card key={i} className="border border-border shadow-sm animate-pulse">
+                    <CardContent className="p-5">
+                      <div className="h-5 bg-muted rounded w-2/3 mb-3" />
+                      <div className="h-4 bg-muted rounded w-1/3 mb-4" />
+                      <div className="h-3 bg-muted rounded w-full mb-2" />
+                      <div className="h-3 bg-muted rounded w-3/4" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredOpenings.length === 0 ? (
+              <Card className="border-0 shadow-lg overflow-hidden">
+                <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-accent" />
+                <CardContent className="py-16 text-center space-y-6">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                  >
+                    <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
+                      <Search className="h-12 w-12 text-primary" />
+                    </div>
+                  </motion.div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No Openings Available Right Now</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+                      New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {filteredOpenings.map((job, idx) => (
+                  <motion.div
+                    key={job.id || idx}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <Card className="border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
+                      <CardContent className="p-5">
+                        {/* Top Row: Title + Posted Time */}
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground text-base group-hover:text-primary transition-colors truncate">
+                              {job.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Building2 className="h-3.5 w-3.5" /> {job.clientName}
+                              </span>
+                              {job.location && (
+                                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                  <MapPin className="h-3.5 w-3.5" /> {job.location}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            {job.postedDate && (
+                              <span className="text-xs text-muted-foreground">
+                                {getTimeAgo(job.postedDate)}
+                              </span>
+                            )}
+                            <Badge className={`block mt-1 text-[10px] ${
+                              job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active'
+                                ? 'bg-primary/10 text-primary border-primary/20'
+                                : 'bg-muted text-muted-foreground'
+                            }`}>
+                              {job.status || 'Open'}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        {job.description && (
+                          <p className="text-sm text-muted-foreground leading-relaxed mb-3 line-clamp-2">
+                            {job.description}
+                          </p>
+                        )}
+
+                        {/* Skills */}
+                        {job.skills && job.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {job.skills.map((skill, si) => (
+                              <Badge key={si} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Bottom Row: Budget, Duration, Deadline, Applicants */}
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-border">
+                          {job.budget && (
+                            <span className="text-sm font-semibold text-foreground flex items-center gap-1">
+                              {getCurrencySymbol(job.currency) === '₹' 
+                                ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> 
+                                : <DollarSign className="h-3.5 w-3.5 text-primary" />
+                              }
+                              {job.budget}
+                            </span>
+                          )}
+                          {job.duration && (
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Timer className="h-3.5 w-3.5" /> {job.duration}
+                            </span>
+                          )}
+                          {job.deadline && (
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}
+                            </span>
+                          )}
+                          {job.applicants !== undefined && job.applicants > 0 && (
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users className="h-3.5 w-3.5" /> {job.applicants} applicants
+                            </span>
+                          )}
+                          {job.postedDate && (
+                            <span className="text-xs text-muted-foreground flex items-center gap-1 ml-auto">
+                              <Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* ===== ASSIGNMENTS TAB ===== */}
+          <TabsContent value="assignments" className="space-y-4">
             {loading ? (
               <Card className="border-0 shadow-md">
                 <CardContent className="py-12 text-center">
@@ -374,169 +444,87 @@ const FreelancerDashboard = () => {
             ) : validAssignments.length === 0 ? (
               <Card className="border-0 shadow-lg overflow-hidden">
                 <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-                <CardContent className="py-16 text-center space-y-6">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 200 }}
-                  >
-                    <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-4">
-                      <Briefcase className="h-12 w-12 text-primary" />
-                    </div>
-                  </motion.div>
+                <CardContent className="py-14 text-center space-y-5">
+                  <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <Briefcase className="h-10 w-10 text-primary" />
+                  </div>
                   <div>
                     <h3 className="text-xl font-bold text-foreground mb-2">No Assignments Yet</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
-                      Your journey is about to begin! Once your profile is shortlisted, we'll match you with the perfect project.
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                      Once your profile is shortlisted, we'll assign you to the perfect project.
                     </p>
                   </div>
-                  
-                  <div className="max-w-lg mx-auto">
-                    <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-6">
-                      <p className="text-sm font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        How you'll be notified
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20"
-                        >
-                          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                            <Mail className="h-5 w-5 text-primary" />
-                          </div>
-                          <span className="text-xs font-medium text-primary">Email</span>
-                        </motion.div>
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/10 border border-accent/20"
-                        >
-                          <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
-                            <Phone className="h-5 w-5 text-accent-foreground" />
-                          </div>
-                          <span className="text-xs font-medium text-accent-foreground">Phone Call</span>
-                        </motion.div>
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                          className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/50 border border-secondary"
-                        >
-                          <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
-                            <Sparkles className="h-5 w-5 text-secondary-foreground" />
-                          </div>
-                          <span className="text-xs font-medium text-secondary-foreground">Chat</span>
-                        </motion.div>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
-                        🎉 When your profile is shortlisted for a project, we'll notify you via <strong>email</strong>, <strong>phone call</strong>, or <strong>chat</strong> — so you never miss an opportunity!
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button onClick={() => navigate('/freelancer-profile')} className="mt-2">
+                  <Button onClick={() => navigate('/freelancer-profile')} size="sm">
                     <User className="h-4 w-4 mr-2" /> Complete Your Profile
                   </Button>
                 </CardContent>
               </Card>
             ) : (
               <>
-                {/* Active Assignments */}
                 {activeAssignments.length > 0 && (
-                  <Card className="border-0 shadow-md">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                        Active Assignments ({activeAssignments.length})
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {activeAssignments.map((a, idx) => (
-                          <motion.div 
-                            key={`${a.projectId}-${idx}`}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="p-4 rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent hover:shadow-md transition-all"
-                          >
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Briefcase className="h-5 w-5 text-primary" />
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Active ({activeAssignments.length})
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {activeAssignments.map((a, idx) => (
+                        <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Briefcase className="h-4 w-4 text-primary" />
                               </div>
-                              <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
-                                {a.status || 'Active'}
-                              </Badge>
+                              <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">{a.status || 'Active'}</Badge>
                             </div>
-                            <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Users className="h-3 w-3" /> {a.clientName}
-                            </p>
-                            {a.startDate && (
-                              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                                <Calendar className="h-3 w-3" /> Started: {new Date(a.startDate).toLocaleDateString()}
-                              </p>
-                            )}
-                            {a.endDate && (
-                              <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                                <Clock className="h-3 w-3" /> Due: {new Date(a.endDate).toLocaleDateString()}
-                              </p>
-                            )}
-                          </motion.div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                            <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
+                            {a.startDate && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.startDate).toLocaleDateString()}</p>}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
                 )}
-
-                {/* Completed / Inactive Assignments */}
                 {completedAssignments.length > 0 && (
-                  <Card className="border-0 shadow-md">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                        Past Assignments ({completedAssignments.length})
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {completedAssignments.map((a, idx) => (
-                          <div key={`${a.projectId}-${idx}`} className="p-4 rounded-xl border border-border bg-muted/30">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center">
-                                <Briefcase className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Past ({completedAssignments.length})
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {completedAssignments.map((a, idx) => (
+                        <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm bg-muted/20">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
+                                <Briefcase className="h-4 w-4 text-muted-foreground" />
                               </div>
-                              <Badge variant="outline" className="text-xs">
-                                {a.status || 'Completed'}
-                              </Badge>
+                              <Badge variant="outline" className="text-[10px]">{a.status || 'Completed'}</Badge>
                             </div>
-                            <h3 className="font-semibold text-foreground text-sm mb-1">{a.projectName}</h3>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Users className="h-3 w-3" /> {a.clientName}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                            <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </>
             )}
           </TabsContent>
 
-          {/* Work History Tab */}
-          <TabsContent value="history" className="space-y-4">
+          {/* ===== WORK HISTORY TAB ===== */}
+          <TabsContent value="history" className="space-y-3">
             {validAssignments.length === 0 ? (
               <Card className="border-0 shadow-lg overflow-hidden">
                 <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-                <CardContent className="py-16 text-center space-y-5">
-                  <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-muted to-accent/10 flex items-center justify-center">
+                <CardContent className="py-14 text-center space-y-4">
+                  <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center">
                     <Clock className="h-10 w-10 text-muted-foreground" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">No Work History Yet</h3>
-                    <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
-                      Your work history will appear here once you start working on projects. Keep your profile updated and stay online!
-                    </p>
-                  </div>
+                  <h3 className="text-xl font-bold text-foreground">No Work History Yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Your work history will appear here once you start working on projects.
+                  </p>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
                     <Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!
                   </div>
@@ -544,59 +532,116 @@ const FreelancerDashboard = () => {
               </Card>
             ) : (
               validAssignments.map((a, idx) => (
-                <motion.div
-                  key={`history-${a.projectId}-${idx}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card className="border-0 shadow-md overflow-hidden">
-                    <div className="h-1 bg-primary" />
-                    <CardContent className="p-5">
-                      <div className="flex flex-col md:flex-row md:items-center gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-semibold text-foreground text-base">{a.projectName}</h3>
-                              <p className="text-sm text-muted-foreground">{a.clientName}</p>
-                            </div>
-                            <Badge className={
-                              a.status?.toLowerCase() === 'active' 
-                                ? 'bg-primary/10 text-primary border-primary/20' 
-                                : 'bg-muted text-muted-foreground'
-                            }>
-                              {a.status}
-                            </Badge>
-                          </div>
-                          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mt-3">
-                            {a.startDate && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3.5 w-3.5" />
-                                Started: {new Date(a.startDate).toLocaleDateString()}
-                              </span>
-                            )}
-                            {a.endDate && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3.5 w-3.5" />
-                                Ends: {new Date(a.endDate).toLocaleDateString()}
-                              </span>
-                            )}
-                            {!a.endDate && a.status?.toLowerCase() === 'active' && (
-                              <span className="flex items-center gap-1 text-primary font-medium">
-                                <Zap className="h-3.5 w-3.5" /> In Progress
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                <Card key={`history-${a.projectId}-${idx}`} className="border border-border shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-2 w-2 rounded-full shrink-0" style={{ background: a.status?.toLowerCase() === 'active' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))' }} />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-foreground text-sm truncate">{a.projectName}</h4>
+                        <p className="text-xs text-muted-foreground">{a.clientName}</p>
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      <Badge className={a.status?.toLowerCase() === 'active' ? 'bg-primary/10 text-primary border-primary/20 text-[10px]' : 'text-[10px]'} variant={a.status?.toLowerCase() === 'active' ? 'default' : 'outline'}>
+                        {a.status}
+                      </Badge>
+                      <div className="text-right text-xs text-muted-foreground shrink-0">
+                        {a.startDate && <div>{new Date(a.startDate).toLocaleDateString()}</div>}
+                        {a.endDate && <div>→ {new Date(a.endDate).toLocaleDateString()}</div>}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))
             )}
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* ===== BEAUTIFUL NOTIFICATION POPUP ===== */}
+      <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
+        <DialogContent className="sm:max-w-md border-0 shadow-2xl overflow-hidden p-0">
+          {/* Top gradient strip */}
+          <div className="h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
+          
+          <div className="p-8 text-center space-y-6">
+            {/* Animated icon */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+            >
+              <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center relative">
+                <Bell className="h-10 w-10 text-primary" />
+                <motion.div
+                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary flex items-center justify-center"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <Sparkles className="h-3 w-3 text-secondary-foreground" />
+                </motion.div>
+              </div>
+            </motion.div>
+
+            <div>
+              <h2 className="text-xl font-bold text-foreground mb-2">
+                🎉 Profile Under Review!
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your profile is being reviewed. Once shortlisted for a matching project, we'll notify you immediately!
+              </p>
+            </div>
+
+            {/* Notification methods */}
+            <div className="grid grid-cols-3 gap-3">
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20"
+              >
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <span className="text-xs font-medium text-primary">Email</span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/20 border border-secondary/30"
+              >
+                <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center">
+                  <Phone className="h-5 w-5 text-secondary-foreground" />
+                </div>
+                <span className="text-xs font-medium text-secondary-foreground">Phone</span>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/20 border border-accent/30"
+              >
+                <div className="h-10 w-10 rounded-full bg-accent/30 flex items-center justify-center">
+                  <MessageCircle className="h-5 w-5 text-accent-foreground" />
+                </div>
+                <span className="text-xs font-medium text-accent-foreground">Chat</span>
+              </motion.div>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              💡 Tip: Complete your profile and stay <strong>Available</strong> to get matched faster!
+            </p>
+
+            <div className="flex gap-3">
+              <Button onClick={() => { setShowNotifyPopup(false); navigate('/freelancer-profile'); }} className="flex-1 gap-2">
+                <User className="h-4 w-4" /> Update Profile
+              </Button>
+              <Button variant="outline" onClick={() => setShowNotifyPopup(false)} className="flex-1">
+                Got It!
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
