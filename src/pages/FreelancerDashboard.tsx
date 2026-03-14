@@ -172,16 +172,13 @@ const FreelancerDashboard = () => {
                   try {
                     const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
                     const authToken = localStorage.getItem('auth_token');
-                    const res = await fetch(`${API_BASE}/api/freelancer/availability`, {
+                    const statusText = checked ? 'Available' : 'Not Available';
+                    const userId = user?.userId || '';
+                    const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${encodeURIComponent(userId)}&status=${encodeURIComponent(statusText)}`, {
                       method: 'POST',
                       headers: {
-                        'Content-Type': 'application/json',
                         ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
                       },
-                      body: JSON.stringify({
-                        status: checked ? 'Available' : 'Not Available',
-                        userId: user?.userId ? Number(user.userId) : 0,
-                      }),
                     });
                     if (!res.ok) throw new Error('Failed to update availability');
                     toast({
