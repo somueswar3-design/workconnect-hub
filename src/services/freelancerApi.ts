@@ -91,7 +91,7 @@ export const getJobOpenings = async (userId: string): Promise<JobOpeningDto[]> =
 
 // Submit interest form
 export const submitInterestForm = async (data: InterestFormData): Promise<{ success: boolean; message: string }> => {
-  await delay(600);
+  await new Promise(resolve => setTimeout(resolve, 600));
   console.log('Interest form submitted:', data);
   return {
     success: true,
