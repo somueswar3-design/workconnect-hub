@@ -459,9 +459,7 @@ const MyRequests = () => {
   const [loadingReq, setLoadingReq] = useState(true);
   const [hasErrorDemo, setHasErrorDemo] = useState(false);
   const [hasErrorReq, setHasErrorReq] = useState(false);
-  const [connectOpen, setConnectOpen] = useState(false);
-  const [connectReq, setConnectReq] = useState<ClientRequirementResponse | null>(null);
-  const [connectSubmitting, setConnectSubmitting] = useState(false);
+  const [connectingReqId, setConnectingReqId] = useState<number | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
