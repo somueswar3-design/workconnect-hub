@@ -235,7 +235,7 @@ const ClientOverview = () => {
                   <Button size="sm" onClick={handleApplyFilters} className="gap-1 h-7 text-xs px-3 bg-cyan-500 hover:bg-cyan-600 text-white">
                     <Search className="h-3 w-3" /> Apply
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
+                  <Button size="sm" variant="outline" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:text-orange-300">
                     <X className="h-3 w-3" /> Clear
                   </Button>
                 </div>
