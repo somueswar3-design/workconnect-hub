@@ -1,8 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Footer = () => {
+  const { isAuthenticated, user } = useAuth();
+
+  const getDashboardPath = () => {
+    const role = user?.role?.toLowerCase();
+    if (role === 'client') return '/client';
+    if (role === 'admin') return '/admin';
+    return '/freelancer';
+  };
+
   return (
     <footer className="bg-foreground text-background py-12">
       <div className="container">
@@ -28,8 +38,14 @@ const Footer = () => {
             <ul className="space-y-2 text-background/70 text-sm">
               <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
               <li><Link to="/browse" className="hover:text-primary transition-colors">Find Talent</Link></li>
-              <li><Link to="/register?role=FreeLancer" className="hover:text-primary transition-colors">Become a Freelancer</Link></li>
-              <li><Link to="/register?role=Client" className="hover:text-primary transition-colors">Need Work Support</Link></li>
+              {isAuthenticated ? (
+                <li><Link to={getDashboardPath()} className="hover:text-primary transition-colors">My Works</Link></li>
+              ) : (
+                <>
+                  <li><Link to="/register?role=FreeLancer" className="hover:text-primary transition-colors">Become a Freelancer</Link></li>
+                  <li><Link to="/register?role=Client" className="hover:text-primary transition-colors">Need Work Support</Link></li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -58,7 +74,9 @@ const Footer = () => {
             <ul className="space-y-2 text-background/70 text-sm">
               <li><Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-              <li><Link to="/login" className="hover:text-primary transition-colors">Login</Link></li>
+              {!isAuthenticated && (
+                <li><Link to="/login" className="hover:text-primary transition-colors">Login</Link></li>
+              )}
             </ul>
           </div>
         </div>
