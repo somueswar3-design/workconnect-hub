@@ -51,7 +51,7 @@ const Home = () => {
   const [demoOpen, setDemoOpen] = useState(false);
   const [selectedFreelancer, setSelectedFreelancer] = useState<FreelancerProfileDto | null>(null);
   const [demoForm, setDemoForm] = useState({
-    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '',
+    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India',
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
