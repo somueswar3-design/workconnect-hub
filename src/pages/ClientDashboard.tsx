@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Loader2, Users, Briefcase, Clock, Languages, MapPin, 
   IndianRupee, DollarSign, Calendar, ChevronLeft, ChevronRight, 
-  Star, Zap, Filter, X, Send, Search
+  Star, Zap, Filter, X, Send, Search, PlusCircle, FileText
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
