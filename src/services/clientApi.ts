@@ -144,6 +144,35 @@ export const getDemoRequests = async (userId: string): Promise<DemoRequestRespon
   return res.json();
 };
 
+// Post client requirement DTO
+export interface PostRequirementDto {
+  id: number;
+  clientUserId: number;
+  mobileNumber: string;
+  email: string;
+  title: string;
+  description: string;
+  skillsRequired: string;
+  minExperience: number;
+  budget: number;
+  country: string;
+  language: string;
+  status: string;
+  allocatedFreelancerId: number;
+  createdOn: string;
+  updatedOn: string;
+}
+
+// POST client requirement
+export const postRequirement = async (data: Partial<PostRequirementDto>): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/client/requirements`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to post requirement');
+};
+
 // Get hired freelancers for a client
 export const getHiredFreelancers = async (): Promise<HiredFreelancer[]> => {
   return [];
