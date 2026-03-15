@@ -67,47 +67,57 @@ const Home = () => {
     }
   };
 
+  // Auto-load freelancers on mount
+  useEffect(() => {
+    loadFreelancers();
+  }, []);
+
   // Expose scroll function globally for header to use
   useEffect(() => {
     (window as any).__scrollToFreelancers = () => {
-      if (!hasLoaded) loadFreelancers();
       freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
     return () => { delete (window as any).__scrollToFreelancers; };
-  }, [hasLoaded]);
+  }, []);
 
+  // Filter freelancers based on filters
   const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return freelancers;
-    const q = searchQuery.toLowerCase();
-    return freelancers.filter(f =>
-      f.fullName?.toLowerCase().includes(q) ||
-      f.primarySkills?.toLowerCase().includes(q) ||
-      f.country?.toLowerCase().includes(q)
-    );
-  }, [freelancers, searchQuery]);
+    let result = freelancers;
+    if (filterSkill.trim()) {
+      const q = filterSkill.toLowerCase();
+      result = result.filter(f => f.primarySkills?.toLowerCase().includes(q));
+    }
+    if (filterCountry.trim()) {
+      const q = filterCountry.toLowerCase();
+      result = result.filter(f => f.country?.toLowerCase().includes(q));
+    }
+    if (filterMinExp.trim()) {
+      const minExp = parseInt(filterMinExp);
+      if (!isNaN(minExp)) {
+        result = result.filter(f => (f.experience ?? f.experienceYears ?? 0) >= minExp);
+      }
+    }
+    return result;
+  }, [freelancers, filterSkill, filterCountry, filterMinExp]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-  const getCurrencySymbol = (country?: string) => {
-    if (!country) return '$';
-    const c = country.toLowerCase();
-    if (c.includes('india')) return '₹';
-    if (c.includes('united kingdom')) return '£';
-    return '$';
+  const handleFilterApply = () => {
+    setCurrentPage(1);
+    loadFreelancers({
+      skill: filterSkill.trim() || undefined,
+      country: filterCountry.trim() || undefined,
+      minExperience: filterMinExp.trim() ? parseInt(filterMinExp) : undefined,
+    });
   };
 
-  const handleDemoClick = (freelancer: FreelancerProfileDto) => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    setSelectedFreelancer(freelancer);
-    setDemoForm({
-      projectTitle: '', description: '', clientBudget: '',
-      contactEmail: user?.email || '', contactPhone: '',
-    });
-    setDemoOpen(true);
+  const handleFilterClear = () => {
+    setFilterSkill('');
+    setFilterCountry('');
+    setFilterMinExp('');
+    setCurrentPage(1);
+    loadFreelancers();
   };
 
   const handleDemoSubmit = async () => {
