@@ -221,6 +221,37 @@ const Home = () => {
     freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleInterestClick = (req: ClientRequirementResponse) => {
+    if (!isAuthenticated) {
+      navigate('/register?role=FreeLancer');
+      return;
+    }
+    setSelectedRequirement(req);
+    setInterestComment('');
+    setInterestSuccess(false);
+    setInterestOpen(true);
+  };
+
+  const handleInterestSubmit = async () => {
+    if (!selectedRequirement) return;
+    setInterestSubmitting(true);
+    try {
+      await submitFreelancerInterest({
+        id: 0,
+        requirementId: selectedRequirement.id,
+        freelancerUserId: Number(user?.userId) || 0,
+        comment: interestComment.trim(),
+        status: 'Pending',
+        createdOn: new Date().toISOString(),
+      });
+      setInterestSuccess(true);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to submit interest. Please try again.', variant: 'destructive' });
+    } finally {
+      setInterestSubmitting(false);
+    }
+  };
+
   // Extract unique skills and countries for filter dropdowns
   const uniqueSkills = useMemo(() => {
     const skills = new Set<string>();
