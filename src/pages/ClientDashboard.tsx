@@ -505,31 +505,24 @@ const MyRequests = () => {
     return 'bg-amber-50 text-amber-700 border-amber-200';
   };
 
-  const handleLetsConnect = (req: ClientRequirementResponse) => {
-    setConnectReq(req);
-    setConnectOpen(true);
-  };
-
-  const handleConnectSubmit = async () => {
-    if (!connectReq) return;
-    setConnectSubmitting(true);
+  const handleLetsConnect = async (req: ClientRequirementResponse) => {
+    setConnectingReqId(req.id);
     try {
       const payload: RequestDemoDto = {
         id: 0,
         clientId: Number(user?.userId) || 0,
         freelancerId: 0,
-        projectTitle: connectReq.title,
-        description: connectReq.description || '',
-        clientBudget: connectReq.budget || 0,
+        projectTitle: req.title,
+        description: req.description || '',
+        clientBudget: req.budget || 0,
         contactEmail: user?.email || '',
         contactPhone: '',
         status: 'Pending',
-        adminComments: `Skills: ${connectReq.skillsRequired || ''} | Exp: ${connectReq.minExperience || 0}+ yrs | Country: ${connectReq.country || 'Any'} | Language: ${connectReq.language || 'Any'}`,
+        adminComments: `Skills: ${req.skillsRequired || ''} | Exp: ${req.minExperience || 0}+ yrs | Country: ${req.country || 'Any'} | Language: ${req.language || 'Any'}`,
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
-      toast({ title: '🎉 Connect Request Sent!', description: 'Our team will match your requirement with the best freelancers and reach out soon.' });
-      setConnectOpen(false);
+      toast({ title: '🎉 Request Sent!', description: 'Our team will notify matching freelancers and connect you for a demo shortly.' });
       // Refresh demo requests
       try {
         const data = await getDemoRequests(user?.userId || '');
@@ -537,9 +530,9 @@ const MyRequests = () => {
       } catch {}
     } catch (error) {
       console.error('Connect request failed:', error);
-      toast({ title: 'Error', description: 'Failed to send connect request. Please try again.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to send request. Please try again.', variant: 'destructive' });
     } finally {
-      setConnectSubmitting(false);
+      setConnectingReqId(null);
     }
   };
 
