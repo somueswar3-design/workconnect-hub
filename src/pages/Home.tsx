@@ -17,6 +17,7 @@ import RequirementsGrid from '@/components/RequirementsGrid';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Home = () => {
+  const { isAuthenticated } = useAuth();
   const [heroSearch, setHeroSearch] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const projectsRef = useRef<HTMLDivElement>(null);
