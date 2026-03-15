@@ -112,45 +112,45 @@ const FreelancerOverview = () => {
     <div className="p-6 space-y-5">
       {/* Compact Stats Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
+        <Card className="border border-slate-700/50 shadow-sm bg-gradient-to-br from-cyan-500/10 to-transparent bg-[#0D1B2E]">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-              <DollarSign className="h-6 w-6 text-primary" />
+            <div className="h-11 w-11 rounded-xl bg-cyan-500/15 flex items-center justify-center shrink-0">
+              <DollarSign className="h-6 w-6 text-cyan-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground font-medium">Total Earnings</p>
-              <p className="text-xl font-extrabold text-foreground truncate">
+              <p className="text-xs text-slate-400 font-medium">Total Earnings</p>
+              <p className="text-xl font-extrabold text-slate-100 truncate">
                 {earnings ? `${getCurrencySymbol(earnings.currency)}${earnings.earnedAmount.toLocaleString()}` : '—'}
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-border shadow-sm">
+        <Card className="border border-slate-700/50 shadow-sm bg-[#0D1B2E]">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
-              <Briefcase className="h-6 w-6 text-accent-foreground" />
+            <div className="h-11 w-11 rounded-xl bg-orange-500/15 flex items-center justify-center shrink-0">
+              <Briefcase className="h-6 w-6 text-orange-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground font-medium">Active Projects</p>
-              <p className="text-xl font-extrabold text-foreground">{activeAssignments.length}</p>
+              <p className="text-xs text-slate-400 font-medium">Active Projects</p>
+              <p className="text-xl font-extrabold text-slate-100">{activeAssignments.length}</p>
             </div>
             {activeAssignments.length > 0 && (
-              <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setActiveTab('assignments')}>
+              <Button variant="ghost" size="sm" className="ml-auto text-xs text-cyan-400 hover:text-cyan-300 hover:bg-slate-700/50" onClick={() => setActiveTab('assignments')}>
                 View <ArrowRight className="h-3 w-3 ml-1" />
               </Button>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border border-border shadow-sm">
+        <Card className="border border-slate-700/50 shadow-sm bg-[#0D1B2E]">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
-              <CheckCircle2 className="h-6 w-6 text-muted-foreground" />
+            <div className="h-11 w-11 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-6 w-6 text-slate-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground font-medium">Completed</p>
-              <p className="text-xl font-extrabold text-foreground">{completedAssignments.length}</p>
+              <p className="text-xs text-slate-400 font-medium">Completed</p>
+              <p className="text-xl font-extrabold text-slate-100">{completedAssignments.length}</p>
             </div>
           </CardContent>
         </Card>
