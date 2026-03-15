@@ -96,23 +96,8 @@ const ClientOverview = () => {
     setCurrentPage(1);
   };
 
-  const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return profiles;
-    const q = searchQuery.toLowerCase();
-    return profiles.filter(p =>
-      p.fullName?.toLowerCase().includes(q) ||
-      p.primarySkills?.toLowerCase().includes(q) ||
-      p.secondarySkills?.toLowerCase().includes(q) ||
-      p.languagesKnown?.toLowerCase().includes(q) ||
-      p.country?.toLowerCase().includes(q) ||
-      p.currentCompanyRole?.toLowerCase().includes(q)
-    );
-  }, [profiles, searchQuery]);
-
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
+  const totalPages = Math.ceil(profiles.length / ITEMS_PER_PAGE);
+  const paginated = profiles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const getCurrencySymbol = (country?: string) => {
     if (!country) return '$';
