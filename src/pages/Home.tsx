@@ -331,6 +331,9 @@ const Home = () => {
     return Array.from(countries).sort();
   }, [freelancers]);
 
+  const isFreelancer = isAuthenticated && user?.role?.toLowerCase() === 'freelancer';
+  const isClient = isAuthenticated && user?.role?.toLowerCase() === 'client';
+
   const stats = [
     { value: '500+', label: 'Active Freelancers' },
     { value: '1,200+', label: 'Projects Delivered' },
