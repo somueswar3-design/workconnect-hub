@@ -175,17 +175,17 @@ const FreelancerOverview = () => {
               ))}
             </div>
           ) : filteredOpenings.length === 0 ? (
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-accent" />
+            <Card className="border-0 shadow-lg overflow-hidden bg-[#0D1B2E]">
+              <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
               <CardContent className="py-16 text-center space-y-6">
-                <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4">
-                  <Search className="h-12 w-12 text-primary" />
+                <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center mb-4">
+                  <Search className="h-12 w-12 text-cyan-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">No Openings Available Right Now</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
+                  <h3 className="text-xl font-bold text-slate-100 mb-2">No Openings Available Right Now</h3>
+                  <p className="text-slate-400 max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
                 </div>
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-500/10 text-cyan-400 text-sm font-medium">
                   <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
                 </div>
               </CardContent>
