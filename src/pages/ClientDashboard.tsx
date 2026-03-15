@@ -166,7 +166,7 @@ const ClientOverview = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
       </div>
     );
   }
@@ -177,18 +177,18 @@ const ClientOverview = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-xl font-bold text-foreground">Freelancer Directory</h1>
-          <p className="text-xs text-muted-foreground">{profiles.length} professionals found</p>
+          <h1 className="text-xl font-bold text-slate-100">Freelancer Directory</h1>
+          <p className="text-xs text-slate-400">{profiles.length} professionals found</p>
         </div>
         <Button
           variant={showFilters ? 'default' : 'outline'}
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className="gap-1.5 h-8 text-xs"
+          className={`gap-1.5 h-8 text-xs ${!showFilters ? 'border-slate-700/50 text-slate-300 hover:bg-slate-700/50' : ''}`}
         >
           <Filter className="h-3.5 w-3.5" />
           Filters
-          {isFiltering && <Badge className="bg-primary-foreground text-primary h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
+          {isFiltering && <Badge className="bg-cyan-400 text-[#0A1628] h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
         </Button>
       </div>
 
@@ -201,31 +201,31 @@ const ClientOverview = () => {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-4"
           >
-            <Card className="border border-border shadow-sm">
+            <Card className="border border-slate-700/50 shadow-sm bg-[#0D1B2E]">
               <CardContent className="p-3">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Skill</Label>
-                    <Input placeholder="e.g. React" value={filterSkill} onChange={e => setFilterSkill(e.target.value)} className="h-8 text-xs" />
+                    <Label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Skill</Label>
+                    <Input placeholder="e.g. React" value={filterSkill} onChange={e => setFilterSkill(e.target.value)} className="h-8 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Language</Label>
-                    <Input placeholder="e.g. Telugu" value={filterLanguage} onChange={e => setFilterLanguage(e.target.value)} className="h-8 text-xs" />
+                    <Label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Language</Label>
+                    <Input placeholder="e.g. Telugu" value={filterLanguage} onChange={e => setFilterLanguage(e.target.value)} className="h-8 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Country</Label>
-                    <Input placeholder="e.g. India" value={filterCountry} onChange={e => setFilterCountry(e.target.value)} className="h-8 text-xs" />
+                    <Label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Country</Label>
+                    <Input placeholder="e.g. India" value={filterCountry} onChange={e => setFilterCountry(e.target.value)} className="h-8 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Min Exp (yrs)</Label>
-                    <Input type="number" placeholder="e.g. 4" value={filterMinExp} onChange={e => setFilterMinExp(e.target.value)} className="h-8 text-xs" min={0} />
+                    <Label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">Min Exp (yrs)</Label>
+                    <Input type="number" placeholder="e.g. 4" value={filterMinExp} onChange={e => setFilterMinExp(e.target.value)} className="h-8 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" min={0} />
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-3">
-                  <Button size="sm" onClick={handleApplyFilters} className="gap-1 h-7 text-xs px-3">
+                  <Button size="sm" onClick={handleApplyFilters} className="gap-1 h-7 text-xs px-3 bg-cyan-500 hover:bg-cyan-600 text-white">
                     <Search className="h-3 w-3" /> Apply
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 text-muted-foreground">
+                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
                     <X className="h-3 w-3" /> Clear
                   </Button>
                 </div>
@@ -238,24 +238,24 @@ const ClientOverview = () => {
       {/* Scrollable Results */}
       <div className="flex-1 overflow-y-auto min-h-0">
         {hasError ? (
-          <Card className="border border-destructive/20 bg-destructive/5">
+          <Card className="border border-red-500/20 bg-red-500/5">
             <CardContent className="py-12 text-center space-y-3">
-              <div className="h-14 w-14 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
-                <X className="h-7 w-7 text-destructive" />
+              <div className="h-14 w-14 mx-auto rounded-full bg-red-500/10 flex items-center justify-center">
+                <X className="h-7 w-7 text-red-400" />
               </div>
-              <h3 className="text-base font-semibold text-foreground">Unable to Load</h3>
-              <p className="text-sm text-muted-foreground">Could not connect to server.</p>
-              <Button onClick={() => loadProfiles()} variant="outline" size="sm" className="gap-1.5">
+              <h3 className="text-base font-semibold text-slate-100">Unable to Load</h3>
+              <p className="text-sm text-slate-400">Could not connect to server.</p>
+              <Button onClick={() => loadProfiles()} variant="outline" size="sm" className="gap-1.5 border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
                 <Zap className="h-3.5 w-3.5" /> Retry
               </Button>
             </CardContent>
           </Card>
         ) : paginated.length === 0 ? (
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-[#0D1B2E]">
             <CardContent className="py-12 text-center space-y-3">
-              <Users className="h-10 w-10 text-muted-foreground mx-auto" />
-              <h3 className="text-base font-semibold text-foreground">No Freelancers Found</h3>
-              <p className="text-sm text-muted-foreground">Try adjusting your filters.</p>
+              <Users className="h-10 w-10 text-slate-500 mx-auto" />
+              <h3 className="text-base font-semibold text-slate-100">No Freelancers Found</h3>
+              <p className="text-sm text-slate-400">Try adjusting your filters.</p>
             </CardContent>
           </Card>
         ) : (
@@ -274,22 +274,21 @@ const ClientOverview = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.02 }}
                 >
-                  <Card className="border border-border hover:border-primary/30 transition-all shadow-sm hover:shadow">
+                  <Card className="border border-slate-700/50 hover:border-cyan-500/30 transition-all shadow-sm hover:shadow bg-[#0D1B2E]">
                     <CardContent className="p-3 sm:p-4">
                       <div className="flex items-start gap-3">
                         {/* Avatar */}
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center text-cyan-400 font-bold text-sm shrink-0">
                           {p.fullName?.charAt(0)?.toUpperCase() || '?'}
                         </div>
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <h3 className="font-semibold text-foreground text-sm truncate">{p.fullName}</h3>
+                            <h3 className="font-semibold text-slate-100 text-sm truncate">{p.fullName}</h3>
                             <Button
                               size="sm"
-                              variant="default"
-                              className="gap-1 h-7 text-[11px] font-semibold px-3 shrink-0"
+                              className="gap-1 h-7 text-[11px] font-semibold px-3 shrink-0 bg-cyan-500 hover:bg-cyan-600 text-white"
                               onClick={() => handleDemoClick(p)}
                             >
                               <Zap className="h-3 w-3" /> Demo
@@ -297,7 +296,7 @@ const ClientOverview = () => {
                           </div>
 
                           {/* Meta row */}
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mb-2">
                             {p.country && (
                               <span className="flex items-center gap-0.5">
                                 <MapPin className="h-3 w-3" /> {p.country}
@@ -307,7 +306,7 @@ const ClientOverview = () => {
                               <Briefcase className="h-3 w-3" /> {expYears} yrs
                             </span>
                             {p.hourRate && (
-                              <span className="flex items-center gap-0.5 font-medium text-foreground">
+                              <span className="flex items-center gap-0.5 font-medium text-slate-200">
                                 {symbol}{p.hourRate}/hr
                               </span>
                             )}
@@ -322,17 +321,17 @@ const ClientOverview = () => {
                           {skills.length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               {skills.slice(0, 5).map((skill, si) => (
-                                <Badge key={si} className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1.5 py-0 font-normal h-5">{skill}</Badge>
+                                <Badge key={si} className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-[10px] px-1.5 py-0 font-normal h-5">{skill}</Badge>
                               ))}
                               {skills.length > 5 && (
-                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">+{skills.length - 5}</Badge>
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-slate-700/50 text-slate-400">+{skills.length - 5}</Badge>
                               )}
                             </div>
                           )}
 
                           {/* Portfolio */}
                           {p.portfolioURL && (
-                            <a href={p.portfolioURL} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline mt-1 inline-block">
+                            <a href={p.portfolioURL} target="_blank" rel="noopener noreferrer" className="text-[10px] text-cyan-400 hover:underline mt-1 inline-block">
                               View Portfolio →
                             </a>
                           )}
@@ -349,23 +348,23 @@ const ClientOverview = () => {
 
       {/* Sticky Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1 pt-3 pb-1 border-t border-border mt-3 bg-background shrink-0">
-          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="h-7 px-2">
+        <div className="flex items-center justify-center gap-1 pt-3 pb-1 border-t border-slate-700/50 mt-3 shrink-0">
+          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="h-7 px-2 border-slate-700/50 text-slate-300 hover:bg-slate-700/50 disabled:opacity-30">
             <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
           {getPageNumbers().map((page, idx) =>
             typeof page === 'string' ? (
-              <span key={`e-${idx}`} className="px-1 text-muted-foreground text-xs">...</span>
+              <span key={`e-${idx}`} className="px-1 text-slate-500 text-xs">...</span>
             ) : (
-              <Button key={page} variant={page === currentPage ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)} className="h-7 w-7 p-0 text-xs">
+              <Button key={page} variant={page === currentPage ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)} className={`h-7 w-7 p-0 text-xs ${page === currentPage ? 'bg-cyan-500 text-white' : 'border-slate-700/50 text-slate-300 hover:bg-slate-700/50'}`}>
                 {page}
               </Button>
             )
           )}
-          <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="h-7 px-2">
+          <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="h-7 px-2 border-slate-700/50 text-slate-300 hover:bg-slate-700/50 disabled:opacity-30">
             <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-          <span className="text-[10px] text-muted-foreground ml-2">
+          <span className="text-[10px] text-slate-500 ml-2">
             {currentPage}/{totalPages}
           </span>
         </div>
@@ -374,42 +373,42 @@ const ClientOverview = () => {
 
       {/* Demo Request Dialog */}
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <Zap className="h-5 w-5 text-cyan-400" />
               Request a Demo
             </DialogTitle>
-            <DialogDescription>
-              Request a demo session with <span className="font-semibold text-foreground">{selectedFreelancer?.fullName}</span>.
+            <DialogDescription className="text-slate-400">
+              Request a demo session with <span className="font-semibold text-slate-200">{selectedFreelancer?.fullName}</span>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <Label className="text-sm">Project Title <span className="text-destructive">*</span></Label>
-              <Input placeholder="e.g. E-commerce Website Development" value={demoForm.projectTitle} onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))} />
+              <Label className="text-sm text-slate-300">Project Title <span className="text-red-400">*</span></Label>
+              <Input placeholder="e.g. E-commerce Website Development" value={demoForm.projectTitle} onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">Description</Label>
-              <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} />
+              <Label className="text-sm text-slate-300">Description</Label>
+              <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-sm">Budget</Label>
-                <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} />
+                <Label className="text-sm text-slate-300">Budget</Label>
+                <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-sm">Contact Phone</Label>
-                <Input placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} />
+                <Label className="text-sm text-slate-300">Contact Phone</Label>
+                <Input placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm">Contact Email <span className="text-destructive">*</span></Label>
-              <Input type="email" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} />
+              <Label className="text-sm text-slate-300">Contact Email <span className="text-red-400">*</span></Label>
+              <Input type="email" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>Cancel</Button>
-              <Button onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5">
+              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+              <Button onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5 bg-cyan-500 hover:bg-cyan-600 text-white">
                 {demoSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Submit
               </Button>
