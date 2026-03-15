@@ -89,7 +89,27 @@ export const getJobOpenings = async (userId: string): Promise<JobOpeningDto[]> =
   return res.json();
 };
 
-// Submit interest form
+// Interest DTO for POST
+export interface FreelancerInterestDto {
+  id: number;
+  requirementId: number;
+  freelancerUserId: number;
+  comment: string;
+  status: string;
+  createdOn: string;
+}
+
+// POST freelancer interest on a requirement
+export const submitFreelancerInterest = async (data: Partial<FreelancerInterestDto>): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/interest`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to submit interest');
+};
+
+// Submit interest form (legacy)
 export const submitInterestForm = async (data: InterestFormData): Promise<{ success: boolean; message: string }> => {
   await new Promise(resolve => setTimeout(resolve, 600));
   console.log('Interest form submitted:', data);

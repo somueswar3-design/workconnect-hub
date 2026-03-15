@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import RequirementsGrid from '@/components/RequirementsGrid';
 import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
   Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award,
@@ -232,6 +233,30 @@ const Home = () => {
         >
           <ChevronDown className="h-8 w-8 text-cyan-400/60" />
         </motion.div>
+      </section>
+
+      {/* ===== LIVE REQUIREMENTS / OPENINGS ===== */}
+      <section className="py-20 relative z-10 bg-gradient-to-b from-[#0A1628] to-[#0d1d35]/80">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <Badge className="mb-4 bg-cyan-500/10 text-cyan-400 border-cyan-500/20">🔥 Live Openings</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white">Latest Project Requirements</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
+          </motion.div>
+          <RequirementsGrid variant="public" maxItems={9} />
+          <div className="text-center mt-8">
+            <Button asChild variant="outline" size="lg" className="gap-2 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300">
+              <Link to="/login">
+                Login to See All & Apply <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       </section>
 
       {/* ===== ROLE SELECTION CARDS ===== */}
