@@ -36,7 +36,8 @@ const Register = () => {
     return <Navigate to="/freelancer" replace />;
   }
 
-  const role = searchParams.get('role') || 'FreeLancer';
+  const roleParam = searchParams.get('role') || 'FreeLancer';
+  const [role, setRole] = useState(roleParam);
   const isFreelancer = role.toLowerCase() === 'freelancer';
 
   const form = useForm<RegisterFormData>({
