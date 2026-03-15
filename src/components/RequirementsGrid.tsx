@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Search, MapPin, Briefcase, DollarSign, Clock, Filter, Users,
-  Sparkles, IndianRupee, Globe, Languages, ChevronDown, Heart
+  Search, Briefcase, DollarSign, Clock, Filter, Globe, Languages, ChevronDown, Heart
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,9 +23,10 @@ import {
 interface RequirementsGridProps {
   variant?: 'public' | 'freelancer';
   maxItems?: number;
+  theme?: 'light' | 'dark';
 }
 
-const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProps) => {
+const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: RequirementsGridProps) => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -41,12 +41,13 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
   const [submitting, setSubmitting] = useState(false);
   const [interestedIds, setInterestedIds] = useState<Set<number>>(new Set());
 
+  const isLight = theme === 'light';
+
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
         const data = await getClientRequirements();
-        // Sort by recent first
         const sorted = data.sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime());
         setRequirements(sorted);
       } catch (err) {
@@ -120,12 +121,12 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3, 4, 5, 6].map(i => (
-          <Card key={i} className="border border-slate-700/50 animate-pulse bg-slate-900/50">
+          <Card key={i} className={`animate-pulse ${isLight ? 'border-gray-200 bg-gray-50' : 'border-slate-700/50 bg-slate-900/50'}`}>
             <CardContent className="p-5">
-              <div className="h-5 bg-slate-700 rounded w-3/4 mb-3" />
-              <div className="h-4 bg-slate-700 rounded w-1/2 mb-4" />
-              <div className="h-3 bg-slate-700 rounded w-full mb-2" />
-              <div className="h-3 bg-slate-700 rounded w-2/3" />
+              <div className={`h-5 rounded w-3/4 mb-3 ${isLight ? 'bg-gray-200' : 'bg-slate-700'}`} />
+              <div className={`h-4 rounded w-1/2 mb-4 ${isLight ? 'bg-gray-200' : 'bg-slate-700'}`} />
+              <div className={`h-3 rounded w-full mb-2 ${isLight ? 'bg-gray-200' : 'bg-slate-700'}`} />
+              <div className={`h-3 rounded w-2/3 ${isLight ? 'bg-gray-200' : 'bg-slate-700'}`} />
             </CardContent>
           </Card>
         ))}
@@ -138,24 +139,24 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isLight ? 'text-gray-400' : 'text-slate-500'}`} />
           <Input
             placeholder="Search by skill, title, keyword..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-10 bg-slate-900/80 border-slate-700/50 text-slate-200 placeholder:text-slate-500"
+            className={`pl-10 ${isLight ? 'bg-white border-gray-200 text-gray-800 placeholder:text-gray-400' : 'bg-slate-900/80 border-slate-700/50 text-slate-200 placeholder:text-slate-500'}`}
           />
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className="gap-2 border-slate-700/50 text-slate-300 hover:bg-slate-800"
+          className={`gap-2 ${isLight ? 'border-gray-200 text-gray-600 hover:bg-gray-50' : 'border-slate-700/50 text-slate-300 hover:bg-slate-800'}`}
         >
           <Filter className="h-4 w-4" /> Filters
           <ChevronDown className={`h-3 w-3 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
         </Button>
-        <Badge variant="outline" className="px-3 py-2 text-xs shrink-0 border-slate-700/50 text-slate-400 self-center">
+        <Badge variant="outline" className={`px-3 py-2 text-xs shrink-0 self-center ${isLight ? 'border-gray-200 text-gray-500' : 'border-slate-700/50 text-slate-400'}`}>
           {filtered.length} requirements
         </Badge>
       </div>
@@ -163,7 +164,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
       {showFilters && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-wrap gap-3">
           <Select value={filterSkill || 'all'} onValueChange={v => setFilterSkill(v === 'all' ? '' : v)}>
-            <SelectTrigger className="w-48 bg-slate-900/80 border-slate-700/50 text-slate-300">
+            <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
               <SelectValue placeholder="Filter by Skill" />
             </SelectTrigger>
             <SelectContent>
@@ -172,7 +173,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
             </SelectContent>
           </Select>
           <Select value={filterCountry || 'all'} onValueChange={v => setFilterCountry(v === 'all' ? '' : v)}>
-            <SelectTrigger className="w-48 bg-slate-900/80 border-slate-700/50 text-slate-300">
+            <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
               <SelectValue placeholder="Filter by Country" />
             </SelectTrigger>
             <SelectContent>
@@ -181,7 +182,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
             </SelectContent>
           </Select>
           {(filterSkill || filterCountry) && (
-            <Button variant="ghost" size="sm" onClick={() => { setFilterSkill(''); setFilterCountry(''); }} className="text-cyan-400 hover:text-cyan-300">
+            <Button variant="ghost" size="sm" onClick={() => { setFilterSkill(''); setFilterCountry(''); }} className={isLight ? 'text-emerald-600 hover:text-emerald-700' : 'text-cyan-400 hover:text-cyan-300'}>
               Clear Filters
             </Button>
           )}
@@ -191,11 +192,11 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
       {/* Cards Grid */}
       {displayItems.length === 0 ? (
         <div className="text-center py-16">
-          <div className="h-20 w-20 mx-auto rounded-full bg-slate-800 flex items-center justify-center mb-4">
-            <Briefcase className="h-10 w-10 text-slate-500" />
+          <div className={`h-20 w-20 mx-auto rounded-full flex items-center justify-center mb-4 ${isLight ? 'bg-gray-100' : 'bg-slate-800'}`}>
+            <Briefcase className={`h-10 w-10 ${isLight ? 'text-gray-400' : 'text-slate-500'}`} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-300 mb-2">No Requirements Found</h3>
-          <p className="text-slate-500 text-sm">Check back soon — new projects are posted daily!</p>
+          <h3 className={`text-lg font-semibold mb-2 ${isLight ? 'text-gray-700' : 'text-slate-300'}`}>No Requirements Found</h3>
+          <p className={`text-sm ${isLight ? 'text-gray-500' : 'text-slate-500'}`}>Check back soon — new projects are posted daily!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -209,44 +210,50 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04 }}
               >
-                <Card className="border border-slate-700/40 bg-gradient-to-br from-slate-900/90 to-slate-800/50 hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/5 transition-all h-full group">
+                <Card className={`transition-all h-full group ${
+                  isLight
+                    ? 'bg-white border border-gray-200 hover:border-emerald-400 hover:shadow-lg'
+                    : 'border border-slate-700/40 bg-gradient-to-br from-slate-900/90 to-slate-800/50 hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/5'
+                }`}>
                   <CardContent className="p-5 flex flex-col h-full">
-                    {/* Header */}
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <h3 className="font-semibold text-slate-100 text-sm leading-snug group-hover:text-cyan-400 transition-colors line-clamp-2 flex-1">
+                      <h3 className={`font-semibold text-sm leading-snug transition-colors line-clamp-2 flex-1 ${
+                        isLight ? 'text-gray-900 group-hover:text-emerald-600' : 'text-slate-100 group-hover:text-cyan-400'
+                      }`}>
                         {req.title}
                       </h3>
                       <Badge className={`shrink-0 text-[10px] ${
-                        req.status?.toLowerCase() === 'open' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' : 'bg-slate-700 text-slate-400'
+                        req.status?.toLowerCase() === 'open'
+                          ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                          : isLight ? 'bg-gray-100 text-gray-500' : 'bg-slate-700 text-slate-400'
                       }`}>
                         {req.status || 'Open'}
                       </Badge>
                     </div>
 
-                    {/* Description */}
                     {req.description && (
-                      <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-2">{req.description}</p>
+                      <p className={`text-xs leading-relaxed mb-3 line-clamp-2 ${isLight ? 'text-gray-500' : 'text-slate-400'}`}>{req.description}</p>
                     )}
 
-                    {/* Skills */}
                     {skills.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
                         {skills.slice(0, 4).map((skill, si) => (
-                          <Badge key={si} className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-[10px] px-1.5 py-0 font-normal">
+                          <Badge key={si} className={`text-[10px] px-1.5 py-0 font-normal ${
+                            isLight ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
+                          }`}>
                             {skill}
                           </Badge>
                         ))}
                         {skills.length > 4 && (
-                          <Badge className="bg-slate-700/50 text-slate-400 text-[10px] px-1.5 py-0">+{skills.length - 4}</Badge>
+                          <Badge className={`text-[10px] px-1.5 py-0 ${isLight ? 'bg-gray-100 text-gray-500' : 'bg-slate-700/50 text-slate-400'}`}>+{skills.length - 4}</Badge>
                         )}
                       </div>
                     )}
 
-                    {/* Meta */}
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500 mb-4 mt-auto">
+                    <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] mb-4 mt-auto ${isLight ? 'text-gray-400' : 'text-slate-500'}`}>
                       {req.budget > 0 && (
-                        <span className="flex items-center gap-1 font-semibold text-slate-300">
-                          <DollarSign className="h-3 w-3 text-cyan-400" /> {req.budget.toLocaleString()}
+                        <span className={`flex items-center gap-1 font-semibold ${isLight ? 'text-gray-700' : 'text-slate-300'}`}>
+                          <DollarSign className={`h-3 w-3 ${isLight ? 'text-emerald-500' : 'text-cyan-400'}`} /> {req.budget.toLocaleString()}
                         </span>
                       )}
                       {req.minExperience > 0 && (
@@ -266,20 +273,19 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
                       )}
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-700/40">
-                      <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                    <div className={`flex items-center justify-between pt-3 border-t ${isLight ? 'border-gray-100' : 'border-slate-700/40'}`}>
+                      <span className={`text-[10px] flex items-center gap-1 ${isLight ? 'text-gray-400' : 'text-slate-500'}`}>
                         <Clock className="h-3 w-3" /> {getTimeAgo(req.createdOn)}
                       </span>
                       {isInterested ? (
-                        <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/25 text-[11px] gap-1">
-                          <Heart className="h-3 w-3 fill-emerald-400" /> Interested
+                        <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 text-[11px] gap-1">
+                          <Heart className="h-3 w-3 fill-emerald-500" /> Interested
                         </Badge>
                       ) : (
                         <Button
                           size="sm"
                           onClick={() => handleInterestClick(req)}
-                          className="h-7 text-xs gap-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 border-0 shadow-sm"
+                          className="h-7 text-xs gap-1 bg-emerald-500 hover:bg-emerald-600 text-white border-0 shadow-sm"
                         >
                           <Heart className="h-3 w-3" /> I'm Interested
                         </Button>
@@ -295,30 +301,29 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
 
       {/* Interest Dialog */}
       <Dialog open={!!interestDialog} onOpenChange={() => setInterestDialog(null)}>
-        <DialogContent className="sm:max-w-md border-slate-700/50 bg-[#0D1B2E]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-100">Express Interest</DialogTitle>
+            <DialogTitle>Express Interest</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/30">
-              <p className="text-sm font-medium text-cyan-400">{interestDialog?.title}</p>
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">{interestDialog?.description}</p>
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+              <p className="text-sm font-medium text-emerald-700">{interestDialog?.title}</p>
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">{interestDialog?.description}</p>
             </div>
             <div>
-              <label className="text-sm text-slate-300 mb-1 block">Add a comment (optional)</label>
+              <label className="text-sm text-gray-700 mb-1 block">Add a comment (optional)</label>
               <Textarea
                 placeholder="Why you're a great fit for this project..."
                 value={comment}
                 onChange={e => setComment(e.target.value)}
-                className="bg-slate-900/80 border-slate-700/50 text-slate-200 placeholder:text-slate-500"
                 rows={3}
               />
             </div>
             <div className="flex gap-3">
-              <Button onClick={handleSubmitInterest} disabled={submitting} className="flex-1 gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 border-0">
+              <Button onClick={handleSubmitInterest} disabled={submitting} className="flex-1 gap-2 bg-emerald-500 hover:bg-emerald-600 text-white border-0">
                 {submitting ? 'Submitting...' : '🚀 Submit Interest'}
               </Button>
-              <Button variant="outline" onClick={() => setInterestDialog(null)} className="border-slate-700/50 text-slate-300">
+              <Button variant="outline" onClick={() => setInterestDialog(null)}>
                 Cancel
               </Button>
             </div>
