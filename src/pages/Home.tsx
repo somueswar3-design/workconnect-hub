@@ -170,8 +170,34 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ===== LIVE REQUIREMENTS ===== */}
+      <section ref={projectsRef} className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200">🔥 Live Projects</Badge>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Latest Project Requirements</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
+          </motion.div>
+          <RequirementsGrid variant="public" maxItems={9} theme="light" externalSearch={activeSearch} hideFilters />
+          {!isAuthenticated && (
+            <div className="text-center mt-8">
+              <Button asChild variant="outline" size="lg" className="gap-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50">
+                <Link to="/register?role=FreeLancer">
+                  Join to See All & Apply <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ===== DOMAINS & TECHNOLOGIES ===== */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <Badge className="mb-3 bg-purple-50 text-purple-600 border-purple-200">All Domains</Badge>
@@ -200,7 +226,7 @@ const Home = () => {
       </section>
 
       {/* ===== ROLE SELECTION ===== */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">How would you like to get started?</h2>
@@ -254,30 +280,6 @@ const Home = () => {
                 </div>
               </motion.div>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== LIVE REQUIREMENTS ===== */}
-      <section ref={projectsRef} className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-10"
-          >
-            <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200">🔥 Live Projects</Badge>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Latest Project Requirements</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
-          </motion.div>
-          <RequirementsGrid variant="public" maxItems={9} theme="light" externalSearch={activeSearch} hideFilters />
-          <div className="text-center mt-8">
-            <Button asChild variant="outline" size="lg" className="gap-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50">
-              <Link to="/register?role=FreeLancer">
-                Join to See All & Apply <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
