@@ -32,7 +32,7 @@ const FreelancerOverview = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isOnline, setIsOnline] = useState(true);
-  const [activeTab, setActiveTab] = useState('openings');
+  const [activeTab, setActiveTab] = useState('requirements');
   const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [earnings, setEarnings] = useState<EarningsDto | null>(null);
   const [openings, setOpenings] = useState<JobOpeningDto[]>([]);
