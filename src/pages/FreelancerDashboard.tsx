@@ -169,8 +169,8 @@ const FreelancerOverview = () => {
           {openingsLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <Card key={i} className="border border-border shadow-sm animate-pulse">
-                  <CardContent className="p-5"><div className="h-5 bg-muted rounded w-2/3 mb-3" /><div className="h-4 bg-muted rounded w-1/3 mb-4" /><div className="h-3 bg-muted rounded w-full mb-2" /><div className="h-3 bg-muted rounded w-3/4" /></CardContent>
+                <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
+                  <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full mb-2" /><div className="h-3 bg-slate-700 rounded w-3/4" /></CardContent>
                 </Card>
               ))}
             </div>
