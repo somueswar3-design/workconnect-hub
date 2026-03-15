@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Search, Briefcase, DollarSign, Clock, Filter, Globe, Languages, ChevronDown, Heart
+  Search, Briefcase, DollarSign, Clock, Filter, Globe, Languages, ChevronDown, Heart, CheckCircle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
