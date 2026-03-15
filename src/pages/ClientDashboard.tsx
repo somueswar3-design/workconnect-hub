@@ -417,7 +417,7 @@ const ClientOverview = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
