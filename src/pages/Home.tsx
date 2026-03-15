@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, getClientRequirements, ClientRequirementResponse, postRequirement } from '@/services/clientApi';
 import { submitFreelancerInterest } from '@/services/freelancerApi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { countries } from '@/data/countries';
 
 const ITEMS_PER_PAGE = 24;
 
