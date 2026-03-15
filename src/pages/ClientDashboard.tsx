@@ -57,14 +57,10 @@ const ClientOverview = () => {
     setIsLoading(true);
     setHasError(false);
     try {
-      let data: FreelancerProfileDto[];
-      if (filters && (filters.skill || filters.language || filters.country || filters.minExperience !== undefined)) {
-        data = await getFilteredFreelancers(filters);
-        setIsFiltering(true);
-      } else {
-        data = await getFreelancerProfiles();
-        setIsFiltering(false);
-      }
+      const hasFilters = filters && (filters.skill || filters.language || filters.country || filters.minExperience !== undefined);
+      const data = await getFilteredFreelancers(filters || {});
+      setIsFiltering(!!hasFilters);
+
       setProfiles(data);
     } catch (error) {
       console.error('Failed to load freelancer profiles:', error);
