@@ -78,13 +78,13 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   return (
     <aside className="w-56 min-h-screen bg-[#0D1B2E] border-r border-slate-700/50 flex flex-col shrink-0">
       {/* Logo */}
-      <div className="p-3 border-b border-border">
+      <div className="p-3 border-b border-slate-700/50">
         <div className="flex items-center gap-2">
           <img src={logo} alt="WorkSupport360" className="h-8 w-8 rounded-lg" />
           <span className="text-sm font-bold">
-            <span className="text-primary">Work</span>
-            <span className="text-secondary">Support</span>
-            <span className="text-primary">360</span>
+            <span className="text-cyan-400">Work</span>
+            <span className="text-orange-400">Support</span>
+            <span className="text-cyan-400">360</span>
           </span>
         </div>
       </div>
