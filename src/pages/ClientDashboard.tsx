@@ -172,22 +172,22 @@ const ClientOverview = () => {
   }
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 sm:p-6 flex flex-col h-[calc(100vh-64px)]">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Available Freelancers</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{profiles.length} freelancers found</p>
+          <h1 className="text-xl font-bold text-foreground">Freelancer Directory</h1>
+          <p className="text-xs text-muted-foreground">{profiles.length} professionals found</p>
         </div>
         <Button
           variant={showFilters ? 'default' : 'outline'}
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className="gap-2"
+          className="gap-1.5 h-8 text-xs"
         >
-          <Filter className="h-4 w-4" />
+          <Filter className="h-3.5 w-3.5" />
           Filters
-          {isFiltering && <Badge className="bg-primary-foreground text-primary h-5 w-5 p-0 flex items-center justify-center text-[10px]">✓</Badge>}
+          {isFiltering && <Badge className="bg-primary-foreground text-primary h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
         </Button>
       </div>
 
@@ -198,56 +198,34 @@ const ClientOverview = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
+            className="overflow-hidden mb-4"
           >
             <Card className="border border-border shadow-sm">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">Skill</Label>
-                    <Input
-                      placeholder="e.g. React, Java"
-                      value={filterSkill}
-                      onChange={e => setFilterSkill(e.target.value)}
-                      className="h-9"
-                    />
+              <CardContent className="p-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Skill</Label>
+                    <Input placeholder="e.g. React" value={filterSkill} onChange={e => setFilterSkill(e.target.value)} className="h-8 text-xs" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">Language</Label>
-                    <Input
-                      placeholder="e.g. Telugu, Hindi"
-                      value={filterLanguage}
-                      onChange={e => setFilterLanguage(e.target.value)}
-                      className="h-9"
-                    />
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Language</Label>
+                    <Input placeholder="e.g. Telugu" value={filterLanguage} onChange={e => setFilterLanguage(e.target.value)} className="h-8 text-xs" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">Country</Label>
-                    <Input
-                      placeholder="e.g. India"
-                      value={filterCountry}
-                      onChange={e => setFilterCountry(e.target.value)}
-                      className="h-9"
-                    />
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Country</Label>
+                    <Input placeholder="e.g. India" value={filterCountry} onChange={e => setFilterCountry(e.target.value)} className="h-8 text-xs" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">Min Experience (years)</Label>
-                    <Input
-                      type="number"
-                      placeholder="e.g. 4"
-                      value={filterMinExp}
-                      onChange={e => setFilterMinExp(e.target.value)}
-                      className="h-9"
-                      min={0}
-                    />
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Min Exp (yrs)</Label>
+                    <Input type="number" placeholder="e.g. 4" value={filterMinExp} onChange={e => setFilterMinExp(e.target.value)} className="h-8 text-xs" min={0} />
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-4">
-                  <Button size="sm" onClick={handleApplyFilters} className="gap-1.5">
-                    <Search className="h-3.5 w-3.5" /> Apply Filters
+                <div className="flex items-center gap-2 mt-3">
+                  <Button size="sm" onClick={handleApplyFilters} className="gap-1 h-7 text-xs px-3">
+                    <Search className="h-3 w-3" /> Apply
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1.5 text-muted-foreground">
-                    <X className="h-3.5 w-3.5" /> Clear
+                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 text-muted-foreground">
+                    <X className="h-3 w-3" /> Clear
                   </Button>
                 </div>
               </CardContent>
@@ -256,183 +234,142 @@ const ClientOverview = () => {
         )}
       </AnimatePresence>
 
+      {/* Scrollable Results */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {hasError ? (
+          <Card className="border border-destructive/20 bg-destructive/5">
+            <CardContent className="py-12 text-center space-y-3">
+              <div className="h-14 w-14 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+                <X className="h-7 w-7 text-destructive" />
+              </div>
+              <h3 className="text-base font-semibold text-foreground">Unable to Load</h3>
+              <p className="text-sm text-muted-foreground">Could not connect to server.</p>
+              <Button onClick={() => loadProfiles()} variant="outline" size="sm" className="gap-1.5">
+                <Zap className="h-3.5 w-3.5" /> Retry
+              </Button>
+            </CardContent>
+          </Card>
+        ) : paginated.length === 0 ? (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="py-12 text-center space-y-3">
+              <Users className="h-10 w-10 text-muted-foreground mx-auto" />
+              <h3 className="text-base font-semibold text-foreground">No Freelancers Found</h3>
+              <p className="text-sm text-muted-foreground">Try adjusting your filters.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-2">
+            {paginated.map((p, idx) => {
+              const skills = p.primarySkills ? p.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
+              const languages = p.languagesKnown ? p.languagesKnown.split(',').map(s => s.trim()).filter(Boolean) : [];
+              const symbol = getCurrencySymbol(p.country);
+              const expYears = p.experience ?? p.experienceYears ?? 0;
+              const fId = p.freelancerId || p.id || idx;
 
-      {/* Results Grid */}
-      {hasError ? (
-        <Card className="border border-destructive/20 shadow-lg bg-destructive/5">
-          <CardContent className="py-16 text-center space-y-4">
-            <div className="h-20 w-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
-              <X className="h-10 w-10 text-destructive" />
-            </div>
-            <h3 className="text-lg font-bold text-foreground">Unable to Load Freelancers</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">Could not connect to the server. Please check your connection and try again.</p>
-            <Button onClick={() => loadProfiles()} variant="outline" className="gap-2">
-              <Zap className="h-4 w-4" /> Retry
-            </Button>
-          </CardContent>
-        </Card>
-      ) : paginated.length === 0 ? (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="py-16 text-center space-y-4">
-            <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center">
-              <Users className="h-10 w-10 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-bold text-foreground">No Freelancers Found</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your filter criteria to discover talent.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {paginated.map((p, idx) => {
-            const skills = p.primarySkills ? p.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
-            const secondarySkills = p.secondarySkills ? p.secondarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
-            const languages = p.languagesKnown ? p.languagesKnown.split(',').map(s => s.trim()).filter(Boolean) : [];
-            const symbol = getCurrencySymbol(p.country);
-
-            return (
-              <motion.div
-                key={p.id || idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.03 }}
-              >
-                <Card className="border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all h-full">
-                  <CardContent className="p-5">
-                    {/* Top: Name + Availability */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-lg shrink-0">
+              return (
+                <motion.div
+                  key={fId}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.02 }}
+                >
+                  <Card className="border border-border hover:border-primary/30 transition-all shadow-sm hover:shadow">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-start gap-3">
+                        {/* Avatar */}
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
                           {p.fullName?.charAt(0)?.toUpperCase() || '?'}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground text-base">{p.fullName}</h3>
-                          {p.currentCompanyRole && (
-                            <p className="text-xs text-muted-foreground">{p.currentCompanyRole}{p.currentCompany ? ` at ${p.currentCompany}` : ''}</p>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <h3 className="font-semibold text-foreground text-sm truncate">{p.fullName}</h3>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              className="gap-1 h-7 text-[11px] font-semibold px-3 shrink-0"
+                              onClick={() => handleDemoClick(p)}
+                            >
+                              <Zap className="h-3 w-3" /> Demo
+                            </Button>
+                          </div>
+
+                          {/* Meta row */}
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
+                            {p.country && (
+                              <span className="flex items-center gap-0.5">
+                                <MapPin className="h-3 w-3" /> {p.country}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-0.5">
+                              <Briefcase className="h-3 w-3" /> {expYears} yrs
+                            </span>
+                            {p.hourRate && (
+                              <span className="flex items-center gap-0.5 font-medium text-foreground">
+                                {symbol}{p.hourRate}/hr
+                              </span>
+                            )}
+                            {languages.length > 0 && (
+                              <span className="flex items-center gap-0.5">
+                                <Languages className="h-3 w-3" /> {languages.join(', ')}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Skills */}
+                          {skills.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {skills.slice(0, 5).map((skill, si) => (
+                                <Badge key={si} className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1.5 py-0 font-normal h-5">{skill}</Badge>
+                              ))}
+                              {skills.length > 5 && (
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">+{skills.length - 5}</Badge>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Portfolio */}
+                          {p.portfolioURL && (
+                            <a href={p.portfolioURL} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline mt-1 inline-block">
+                              View Portfolio →
+                            </a>
                           )}
                         </div>
                       </div>
-                      <Badge className={`text-[10px] shrink-0 ${p.freelancerUserStatus ? 'bg-green-500/10 text-green-600 border-green-500/20' : 'bg-muted text-muted-foreground'}`}>
-                        {p.freelancerUserStatus ? '🟢 Available' : '⚫ Offline'}
-                      </Badge>
-                    </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-                    {/* Experience Row */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-3 text-sm">
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Briefcase className="h-3.5 w-3.5" /> {p.experienceYears} yrs exp
-                      </span>
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Star className="h-3.5 w-3.5" /> {freelancingExpLabel[p.anyFreelnacingExperience] || 'N/A'} freelancing
-                      </span>
-                      {p.country && (
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <MapPin className="h-3.5 w-3.5" /> {p.country}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Skills */}
-                    {skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-3">
-                        {skills.slice(0, 6).map((skill, si) => (
-                          <Badge key={si} className="bg-primary/10 text-primary border-primary/20 text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>
-                        ))}
-                        {secondarySkills.slice(0, 3).map((skill, si) => (
-                          <Badge key={`s-${si}`} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>
-                        ))}
-                        {skills.length + secondarySkills.length > 9 && (
-                          <Badge variant="outline" className="text-[10px] px-2 py-0.5">+{skills.length + secondarySkills.length - 9} more</Badge>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Languages */}
-                    {languages.length > 0 && (
-                      <div className="flex items-center gap-1.5 mb-3">
-                        <Languages className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span className="text-xs text-muted-foreground">{languages.join(', ')}</span>
-                      </div>
-                    )}
-
-                    {/* Bottom Row: Rate, Hours, Weekends, Demo Button */}
-                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 pt-3 border-t border-border text-sm">
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                        {p.hourRate && (
-                          <span className="font-semibold text-foreground flex items-center gap-1">
-                            {symbol === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> : <DollarSign className="h-3.5 w-3.5 text-primary" />}
-                            {p.hourRate}/hr
-                          </span>
-                        )}
-                        {p.hoursAvailablePerDay && (
-                          <span className="text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" /> {p.hoursAvailablePerDay} hrs/day
-                          </span>
-                        )}
-                        {p.isAvailbleInweeknds && (
-                          <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-green-500/30 text-green-600">
-                            <Calendar className="h-3 w-3 mr-1" /> Weekends
-                          </Badge>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="default"
-                        className="gap-1.5 h-8 text-xs font-semibold"
-                        onClick={() => handleDemoClick(p)}
-                      >
-                        <Zap className="h-3.5 w-3.5" />
-                        Request Demo
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Pagination */}
+      {/* Sticky Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1 pt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(p => p - 1)}
-            className="h-9 px-3"
-          >
-            <ChevronLeft className="h-4 w-4" />
+        <div className="flex items-center justify-center gap-1 pt-3 pb-1 border-t border-border mt-3 bg-background shrink-0">
+          <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="h-7 px-2">
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
           {getPageNumbers().map((page, idx) =>
             typeof page === 'string' ? (
-              <span key={`ellipsis-${idx}`} className="px-2 text-muted-foreground text-sm">...</span>
+              <span key={`e-${idx}`} className="px-1 text-muted-foreground text-xs">...</span>
             ) : (
-              <Button
-                key={page}
-                variant={page === currentPage ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentPage(page)}
-                className="h-9 w-9 p-0"
-              >
+              <Button key={page} variant={page === currentPage ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)} className="h-7 w-7 p-0 text-xs">
                 {page}
               </Button>
             )
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(p => p + 1)}
-            className="h-9 px-3"
-          >
-            <ChevronRight className="h-4 w-4" />
+          <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="h-7 px-2">
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
-          <span className="text-xs text-muted-foreground ml-3">
-            Page {currentPage} of {totalPages} ({profiles.length} results)
+          <span className="text-[10px] text-muted-foreground ml-2">
+            {currentPage}/{totalPages}
           </span>
         </div>
       )}
+    </div>
 
       {/* Demo Request Dialog */}
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
