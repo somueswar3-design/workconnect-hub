@@ -3,7 +3,7 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Briefcase, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,23 +22,23 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
+  const [searchParams] = useSearchParams();
+  const roleParam = searchParams.get('role') || '';
+  const [role, setRole] = useState(roleParam);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { login, isAuthenticated, user } = useAuth();
+
+  const isFreelancer = role.toLowerCase() === 'freelancer';
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    const role = user?.role?.toLowerCase() || '';
-    if (role === 'admin') return <Navigate to="/admin" replace />;
-    if (role === 'client') return <Navigate to="/client" replace />;
+    const r = user?.role?.toLowerCase() || '';
+    if (r === 'admin') return <Navigate to="/admin" replace />;
+    if (r === 'client') return <Navigate to="/client" replace />;
     return <Navigate to="/freelancer" replace />;
   }
-
-  const roleParam = searchParams.get('role') || 'FreeLancer';
-  const [role, setRole] = useState(roleParam);
-  const isFreelancer = role.toLowerCase() === 'freelancer';
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -47,22 +47,19 @@ const Register = () => {
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
+    const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
     try {
-      await authApi.register({ email: data.email, password: data.password, role });
+      await authApi.register({ email: data.email, password: data.password, role: apiRole });
       toast.success('Registration successful!');
-
-      // Auto-login after registration
       try {
         const result = await authApi.login({ email: data.email, password: data.password });
         login(result.token, { email: data.email });
-
         if (isFreelancer) {
           navigate('/freelancer-profile');
         } else {
           navigate('/client');
         }
       } catch {
-        // If auto-login fails, redirect to login page
         toast.info('Please log in with your new credentials.');
         navigate('/login');
       }
@@ -72,6 +69,60 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  // If no role selected yet, show role chooser
+  if (!role) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 px-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-lg">
+          <Card className="border border-orange-100 bg-white shadow-xl shadow-orange-500/10 rounded-2xl overflow-hidden">
+            <CardHeader className="text-center space-y-3 pb-2">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <img src={wsLogo} alt="WorkSupport360" className="h-12 w-12 rounded-xl" />
+                <span className="text-lg font-bold">
+                  <span className="text-orange-500">Work</span>
+                  <span className="text-amber-500">Support</span>
+                  <span className="text-blue-600">360</span>
+                </span>
+              </div>
+              <CardTitle className="text-2xl font-bold text-gray-900">How would you like to join?</CardTitle>
+              <CardDescription className="text-gray-500">Choose your path to get started</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pb-8">
+              <button
+                onClick={() => setRole('FreeLancer')}
+                className="w-full flex items-center gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all group text-left"
+              >
+                <div className="h-14 w-14 rounded-xl bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition-colors">
+                  <Briefcase className="h-7 w-7 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-lg">Become a Freelancer</p>
+                  <p className="text-sm text-gray-500">Offer your skills and find projects</p>
+                </div>
+              </button>
+              <button
+                onClick={() => setRole('Client')}
+                className="w-full flex items-center gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group text-left"
+              >
+                <div className="h-14 w-14 rounded-xl bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition-colors">
+                  <Users className="h-7 w-7 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-lg">Need Work Support</p>
+                  <p className="text-sm text-gray-500">Find talented professionals for your projects</p>
+                </div>
+              </button>
+              <div className="text-center text-sm pt-2">
+                <span className="text-gray-500">Already have an account? </span>
+                <Link to="/login" className="text-orange-500 hover:text-orange-600 font-medium hover:underline">Sign in here</Link>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-blue-50 px-4">
@@ -86,6 +137,13 @@ const Register = () => {
                 <span className="text-blue-600">360</span>
               </span>
             </div>
+
+            {/* Role badge */}
+            <div className={`inline-flex items-center gap-2 mx-auto px-4 py-2 rounded-full text-sm font-medium ${isFreelancer ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
+              {isFreelancer ? <Briefcase className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+              {isFreelancer ? 'Registering as Freelancer' : 'Registering as Client'}
+            </div>
+
             <CardTitle className="text-2xl font-bold text-gray-900">
               {isFreelancer ? 'Become a Freelancer' : 'Get Work Support'}
             </CardTitle>
@@ -129,6 +187,13 @@ const Register = () => {
                 </Button>
               </form>
             </Form>
+
+            {/* Change role link */}
+            <div className="text-center">
+              <button onClick={() => setRole('')} className="text-sm text-gray-400 hover:text-orange-500 underline">
+                Change role selection
+              </button>
+            </div>
 
             <div className="text-center text-sm">
               <span className="text-gray-500">Already have an account? </span>
