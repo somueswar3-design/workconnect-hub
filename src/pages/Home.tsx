@@ -601,7 +601,7 @@ const Home = () => {
       </section>
 
       {/* ===== CURRENT FREELANCER WORKS / LIVE REQUIREMENTS ===== */}
-      <section className="py-16 bg-white">
+      <section ref={worksSectionRef} className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
