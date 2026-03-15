@@ -779,6 +779,77 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ===== CAN'T FIND WORK? POST YOUR JD ===== */}
+      <section className="py-14 bg-gradient-to-r from-indigo-50 via-white to-purple-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-indigo-100 overflow-hidden">
+            <div className="grid md:grid-cols-2">
+              {/* Left — Message */}
+              <div className="p-8 md:p-10 flex flex-col justify-center">
+                <Badge className="mb-3 w-fit bg-indigo-100 text-indigo-700 border-indigo-200 text-xs px-3 py-1">🤝 We Match For You</Badge>
+                <h3 className="text-2xl font-extrabold text-gray-900 mb-3 leading-tight">
+                  Can't find the right talent?
+                </h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  Post your <span className="font-semibold text-indigo-600">Job Description</span> and we'll assign the perfect freelancer for your project. Our team reviews every requirement and matches you with verified professionals.
+                </p>
+                <div className="space-y-2 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span>Share your JD — we handle the matching</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span>Get matched within 24–48 hours</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span>Verified & skilled professionals only</span>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate('/register?role=Client');
+                    } else {
+                      navigate('/client');
+                    }
+                  }}
+                  size="lg"
+                  className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold shadow-lg w-fit"
+                >
+                  <FileText className="h-5 w-5" /> Post Your Requirement
+                </Button>
+              </div>
+
+              {/* Right — Platform Fee */}
+              <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-violet-600 p-8 md:p-10 text-white flex flex-col justify-center items-center text-center">
+                <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center mb-4 backdrop-blur-sm">
+                  <DollarSign className="h-8 w-8 text-white" />
+                </div>
+                <p className="text-sm text-white/80 font-medium mb-1">Platform Service Fee</p>
+                <p className="text-5xl font-extrabold mb-2">10%</p>
+                <p className="text-white/80 text-sm mb-6 max-w-xs leading-relaxed">
+                  Only a flat 10% service fee on successful project assignments. No hidden charges — pay only when you hire.
+                </p>
+                <div className="space-y-2 text-left w-full max-w-xs">
+                  {[
+                    'No upfront costs',
+                    'Fee applied only on assignment',
+                    'Transparent billing & invoicing',
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-white/90">
+                      <CheckCircle className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {!isAuthenticated && (
         <section className="py-20 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
