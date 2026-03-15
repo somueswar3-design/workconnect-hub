@@ -158,22 +158,11 @@ const FreelancerOverview = () => {
         </Card>
       </div>
 
-      {/* Tabs: Requirements & Openings */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-slate-800/50 border border-slate-700/50">
-          <TabsTrigger value="requirements" className="gap-2 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-            <LayoutGrid className="h-4 w-4" /> Client Requirements
-          </TabsTrigger>
-          <TabsTrigger value="openings" className="gap-2 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
-            <Briefcase className="h-4 w-4" /> Job Openings
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="requirements">
-          <RequirementsGrid variant="freelancer" />
-        </TabsContent>
-
-        <TabsContent value="openings">
+      {/* Job Openings */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
+          <Briefcase className="h-5 w-5 text-cyan-400" /> Job Openings
+        </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative flex-1">

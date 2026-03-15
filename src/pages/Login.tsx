@@ -52,15 +52,13 @@ const Login = () => {
           if (!statusData.profileUpdated) {
             navigate('/freelancer-profile');
           } else {
-            navigate('/freelancer');
+            navigate('/');
           }
         } catch {
           navigate('/freelancer-profile');
         }
-      } else if (role.toLowerCase() === 'client') {
-        navigate('/client');
       } else {
-        navigate('/admin');
+        navigate('/');
       }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {

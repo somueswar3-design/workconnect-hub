@@ -54,7 +54,7 @@ const Register = () => {
         if (isFreelancer) {
           navigate('/freelancer-profile');
         } else {
-          navigate('/client');
+          navigate('/');
         }
       } catch {
         toast.info('Please log in with your new credentials.');
