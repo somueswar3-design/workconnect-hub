@@ -88,8 +88,8 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
 
   const handleInterestClick = (req: ClientRequirementResponse) => {
     if (!isAuthenticated) {
-      toast({ title: 'Login Required', description: 'Please login to express interest in this requirement.' });
-      navigate('/login');
+      toast({ title: 'Login Required', description: 'Please create an account or login to express interest.' });
+      navigate('/register?role=FreeLancer');
       return;
     }
     setInterestDialog(req);
