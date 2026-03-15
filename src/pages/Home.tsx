@@ -1202,10 +1202,24 @@ const Home = () => {
               <Label className="text-sm">Description</Label>
               <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm">Country (Currency)</Label>
+              <Select value={demoForm.budgetCountry} onValueChange={v => setDemoForm(f => ({ ...f, budgetCountry: v }))}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="Select country" /></SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {countries.map(c => (
+                    <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol} {c.currency})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-sm">Budget</Label>
-                <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} />
+                <Label className="text-sm">Budget ({countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'})</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">{countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'}</span>
+                  <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="pl-8" />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm">Contact Phone</Label>
