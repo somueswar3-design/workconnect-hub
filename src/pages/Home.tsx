@@ -66,6 +66,14 @@ const Home = () => {
   const [interestSubmitting, setInterestSubmitting] = useState(false);
   const [interestSuccess, setInterestSuccess] = useState(false);
 
+  // Post requirement dialog state
+  const [postReqOpen, setPostReqOpen] = useState(false);
+  const [postReqSubmitting, setPostReqSubmitting] = useState(false);
+  const [postReqForm, setPostReqForm] = useState({
+    projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '',
+    language: '', country: '', contactEmail: '', countryCode: '+91', contactPhone: '',
+  });
+
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
     setHasError(false);
