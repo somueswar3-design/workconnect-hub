@@ -32,7 +32,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
     const token = localStorage.getItem('auth_token');
     try {
       const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${userId}&status=${statusText}`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
