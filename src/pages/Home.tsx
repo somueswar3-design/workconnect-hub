@@ -50,6 +50,11 @@ const Home = () => {
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
+  // Requirements state
+  const [requirements, setRequirements] = useState<ClientRequirementResponse[]>([]);
+  const [reqLoading, setReqLoading] = useState(false);
+  const [showPostForm, setShowPostForm] = useState(false);
+
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
     setHasError(false);
