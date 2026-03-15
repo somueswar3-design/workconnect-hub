@@ -109,12 +109,6 @@ const FreelancerOverview = () => {
 
   return (
     <div className="p-6 space-y-5">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Welcome back, {user?.fullName || user?.email || 'User'}!</p>
-      </div>
-
       {/* Compact Stats Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
