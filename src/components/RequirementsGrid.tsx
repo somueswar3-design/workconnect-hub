@@ -162,7 +162,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
 
       {showFilters && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-wrap gap-3">
-          <Select value={filterSkill} onValueChange={setFilterSkill}>
+          <Select value={filterSkill || 'all'} onValueChange={v => setFilterSkill(v === 'all' ? '' : v)}>
             <SelectTrigger className="w-48 bg-slate-900/80 border-slate-700/50 text-slate-300">
               <SelectValue placeholder="Filter by Skill" />
             </SelectTrigger>
@@ -171,7 +171,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems }: RequirementsGridProp
               {allSkills.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={filterCountry} onValueChange={setFilterCountry}>
+          <Select value={filterCountry || 'all'} onValueChange={v => setFilterCountry(v === 'all' ? '' : v)}>
             <SelectTrigger className="w-48 bg-slate-900/80 border-slate-700/50 text-slate-300">
               <SelectValue placeholder="Filter by Country" />
             </SelectTrigger>
