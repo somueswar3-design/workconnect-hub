@@ -4,6 +4,7 @@ import DashboardSidebar from '@/components/DashboardSidebar';
 interface DashboardLayoutProps {
   children: ReactNode;
   userType: 'freelancer' | 'client';
+  isActive?: boolean;
 }
 
 const DashboardLayout = ({ children, userType }: DashboardLayoutProps) => {
