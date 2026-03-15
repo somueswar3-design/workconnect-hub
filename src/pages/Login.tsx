@@ -23,10 +23,7 @@ const Login = () => {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    const role = user?.role?.toLowerCase() || '';
-    if (role === 'admin') return <Navigate to="/admin" replace />;
-    if (role === 'client') return <Navigate to="/client" replace />;
-    return <Navigate to="/freelancer" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
