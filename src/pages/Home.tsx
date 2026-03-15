@@ -19,8 +19,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
+import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, getClientRequirements, ClientRequirementResponse, postRequirement } from '@/services/clientApi';
 import { submitFreelancerInterest } from '@/services/freelancerApi';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const ITEMS_PER_PAGE = 24;
 
@@ -64,6 +65,14 @@ const Home = () => {
   const [interestComment, setInterestComment] = useState('');
   const [interestSubmitting, setInterestSubmitting] = useState(false);
   const [interestSuccess, setInterestSuccess] = useState(false);
+
+  // Post requirement dialog state
+  const [postReqOpen, setPostReqOpen] = useState(false);
+  const [postReqSubmitting, setPostReqSubmitting] = useState(false);
+  const [postReqForm, setPostReqForm] = useState({
+    projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '',
+    language: '', country: '', contactEmail: '', countryCode: '+91', contactPhone: '',
+  });
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
@@ -252,7 +261,57 @@ const Home = () => {
     }
   };
 
-  // Extract unique skills and countries for filter dropdowns
+  const openPostRequirement = () => {
+    if (!isAuthenticated) {
+      navigate('/register?role=Client');
+      return;
+    }
+    setPostReqForm({
+      projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '',
+      language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '',
+    });
+    setPostReqOpen(true);
+  };
+
+  const handlePostReqSubmit = async () => {
+    if (!postReqForm.projectTitle.trim() || !postReqForm.requiredSkills.trim() || !postReqForm.contactEmail.trim()) {
+      toast({ title: 'Validation', description: 'Project title, required skills, and email are required.', variant: 'destructive' });
+      return;
+    }
+    if (!postReqForm.contactPhone.trim() || postReqForm.contactPhone.trim().length < 7) {
+      toast({ title: 'Validation', description: 'A valid mobile number is required (min 7 digits).', variant: 'destructive' });
+      return;
+    }
+    setPostReqSubmitting(true);
+    try {
+      await postRequirement({
+        id: 0,
+        clientUserId: Number(user?.userId) || 0,
+        mobileNumber: `${postReqForm.countryCode}${postReqForm.contactPhone}`,
+        email: postReqForm.contactEmail,
+        title: postReqForm.projectTitle,
+        description: postReqForm.description,
+        skillsRequired: postReqForm.requiredSkills,
+        minExperience: Number(postReqForm.experienceLevel) || 0,
+        budget: Number(postReqForm.budget) || 0,
+        country: postReqForm.country,
+        language: postReqForm.language,
+        status: 'Pending',
+        allocatedFreelancerId: 0,
+        createdOn: new Date().toISOString(),
+        updatedOn: new Date().toISOString(),
+      });
+      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers.' });
+      setPostReqOpen(false);
+      // Reload requirements section
+      loadRequirements();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to post requirement.', variant: 'destructive' });
+    } finally {
+      setPostReqSubmitting(false);
+    }
+  };
+
   const uniqueSkills = useMemo(() => {
     const skills = new Set<string>();
     freelancers.forEach(f => {
@@ -664,7 +723,7 @@ const Home = () => {
             </div>
             {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
               <Button
-                onClick={() => navigate('/client')}
+                onClick={openPostRequirement}
                 className="gap-2 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white font-bold shadow-lg animate-pulse"
                 size="lg"
               >
@@ -808,13 +867,7 @@ const Home = () => {
                   </div>
                 </div>
                 <Button
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      navigate('/register?role=Client');
-                    } else {
-                      navigate('/client');
-                    }
-                  }}
+                  onClick={openPostRequirement}
                   size="lg"
                   className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold shadow-lg w-fit"
                 >
@@ -1179,6 +1232,103 @@ const Home = () => {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== POST REQUIREMENT DIALOG ===== */}
+      <Dialog open={postReqOpen} onOpenChange={setPostReqOpen}>
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-indigo-500" />
+              Post Your Requirement
+            </DialogTitle>
+            <DialogDescription>
+              Share your project details and we'll match you with the right freelancer.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-sm">Project Title <span className="text-red-500">*</span></Label>
+              <Input placeholder="e.g. E-commerce Platform Development" value={postReqForm.projectTitle} onChange={e => setPostReqForm(f => ({ ...f, projectTitle: e.target.value }))} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm">Description</Label>
+              <Textarea placeholder="Describe your project — what you need, timeline, etc." value={postReqForm.description} onChange={e => setPostReqForm(f => ({ ...f, description: e.target.value }))} rows={3} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm">Required Skills <span className="text-red-500">*</span></Label>
+              <Input placeholder="e.g. React, Node.js, Python (comma separated)" value={postReqForm.requiredSkills} onChange={e => setPostReqForm(f => ({ ...f, requiredSkills: e.target.value }))} />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Budget (₹)</Label>
+                <Input type="number" placeholder="e.g. 50000" value={postReqForm.budget} onChange={e => setPostReqForm(f => ({ ...f, budget: e.target.value }))} min={0} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Min Experience (yrs)</Label>
+                <Input type="number" placeholder="e.g. 3" value={postReqForm.experienceLevel} onChange={e => setPostReqForm(f => ({ ...f, experienceLevel: e.target.value }))} min={0} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Language</Label>
+                <Input placeholder="e.g. English, Telugu" value={postReqForm.language} onChange={e => setPostReqForm(f => ({ ...f, language: e.target.value }))} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Country</Label>
+                <Input placeholder="e.g. India" value={postReqForm.country} onChange={e => setPostReqForm(f => ({ ...f, country: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Mobile Number <span className="text-red-500">*</span></Label>
+                <div className="flex gap-1.5">
+                  <Select value={postReqForm.countryCode} onValueChange={val => setPostReqForm(f => ({ ...f, countryCode: val }))}>
+                    <SelectTrigger className="w-[90px] h-9 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                      <SelectItem value="+65">🇸🇬 +65</SelectItem>
+                      <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                      <SelectItem value="+81">🇯🇵 +81</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input placeholder="9876543210" value={postReqForm.contactPhone} onChange={e => setPostReqForm(f => ({ ...f, contactPhone: e.target.value.replace(/\D/g, '') }))} className="flex-1" maxLength={15} />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm">Contact Email <span className="text-red-500">*</span></Label>
+              <Input type="email" placeholder="your@email.com" value={postReqForm.contactEmail} onChange={e => setPostReqForm(f => ({ ...f, contactEmail: e.target.value }))} />
+            </div>
+
+            {/* Platform fee note */}
+            <div className="bg-indigo-50 rounded-lg p-3 flex items-start gap-3 border border-indigo-100">
+              <DollarSign className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-indigo-700">10% Platform Service Fee</p>
+                <p className="text-xs text-indigo-500 mt-0.5">A flat 10% fee is applied only on successful project assignments. No hidden charges.</p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t">
+              <Button variant="outline" onClick={() => setPostReqOpen(false)} disabled={postReqSubmitting}>Cancel</Button>
+              <Button onClick={handlePostReqSubmit} disabled={postReqSubmitting} className="gap-1.5 bg-indigo-500 hover:bg-indigo-600 text-white">
+                {postReqSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Post Requirement
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
