@@ -459,9 +459,7 @@ const MyRequests = () => {
   const [loadingReq, setLoadingReq] = useState(true);
   const [hasErrorDemo, setHasErrorDemo] = useState(false);
   const [hasErrorReq, setHasErrorReq] = useState(false);
-  const [connectOpen, setConnectOpen] = useState(false);
-  const [connectReq, setConnectReq] = useState<ClientRequirementResponse | null>(null);
-  const [connectSubmitting, setConnectSubmitting] = useState(false);
+  const [connectingReqId, setConnectingReqId] = useState<number | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -507,31 +505,24 @@ const MyRequests = () => {
     return 'bg-amber-50 text-amber-700 border-amber-200';
   };
 
-  const handleLetsConnect = (req: ClientRequirementResponse) => {
-    setConnectReq(req);
-    setConnectOpen(true);
-  };
-
-  const handleConnectSubmit = async () => {
-    if (!connectReq) return;
-    setConnectSubmitting(true);
+  const handleLetsConnect = async (req: ClientRequirementResponse) => {
+    setConnectingReqId(req.id);
     try {
       const payload: RequestDemoDto = {
         id: 0,
         clientId: Number(user?.userId) || 0,
         freelancerId: 0,
-        projectTitle: connectReq.title,
-        description: connectReq.description || '',
-        clientBudget: connectReq.budget || 0,
+        projectTitle: req.title,
+        description: req.description || '',
+        clientBudget: req.budget || 0,
         contactEmail: user?.email || '',
         contactPhone: '',
         status: 'Pending',
-        adminComments: `Skills: ${connectReq.skillsRequired || ''} | Exp: ${connectReq.minExperience || 0}+ yrs | Country: ${connectReq.country || 'Any'} | Language: ${connectReq.language || 'Any'}`,
+        adminComments: `Skills: ${req.skillsRequired || ''} | Exp: ${req.minExperience || 0}+ yrs | Country: ${req.country || 'Any'} | Language: ${req.language || 'Any'}`,
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
-      toast({ title: '🎉 Connect Request Sent!', description: 'Our team will match your requirement with the best freelancers and reach out soon.' });
-      setConnectOpen(false);
+      toast({ title: '🎉 Request Sent!', description: 'Our team will notify matching freelancers and connect you for a demo shortly.' });
       // Refresh demo requests
       try {
         const data = await getDemoRequests(user?.userId || '');
@@ -539,9 +530,9 @@ const MyRequests = () => {
       } catch {}
     } catch (error) {
       console.error('Connect request failed:', error);
-      toast({ title: 'Error', description: 'Failed to send connect request. Please try again.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to send request. Please try again.', variant: 'destructive' });
     } finally {
-      setConnectSubmitting(false);
+      setConnectingReqId(null);
     }
   };
 
@@ -693,10 +684,11 @@ const MyRequests = () => {
                             <Button
                               size="sm"
                               onClick={() => handleLetsConnect(req)}
+                              disabled={connectingReqId === req.id}
                               className="h-7 px-3 text-xs gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-full"
                             >
-                              <Zap className="h-3 w-3" />
-                              Let's Connect
+                              {connectingReqId === req.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+                              {connectingReqId === req.id ? 'Sending...' : "Let's Connect"}
                             </Button>
                           )}
                         </div>
@@ -783,79 +775,6 @@ const MyRequests = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Let's Connect Dialog - Clean White */}
-      <Dialog open={connectOpen} onOpenChange={setConnectOpen}>
-        <DialogContent className="sm:max-w-md bg-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-gray-900">
-              <Zap className="h-5 w-5 text-emerald-500" />
-              Let's Connect
-            </DialogTitle>
-            <DialogDescription className="text-gray-500">
-              We'll match your requirement with the best freelancers and connect you.
-            </DialogDescription>
-          </DialogHeader>
-
-          {connectReq && (
-            <div className="space-y-3 pt-1">
-              {/* Requirement Summary */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2.5">
-                <h4 className="font-semibold text-gray-900 text-sm">{connectReq.title}</h4>
-                {connectReq.description && (
-                  <p className="text-xs text-gray-500 line-clamp-3">{connectReq.description}</p>
-                )}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  {connectReq.budget > 0 && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <DollarSign className="h-3 w-3 text-cyan-500" />
-                      <span className="text-gray-700 font-medium">₹{connectReq.budget.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {connectReq.minExperience > 0 && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <Briefcase className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-700">{connectReq.minExperience}+ yrs</span>
-                    </div>
-                  )}
-                  {connectReq.skillsRequired && (
-                    <div className="flex items-center gap-1.5 text-xs col-span-2">
-                      <Star className="h-3 w-3 text-amber-500" />
-                      <span className="text-gray-700 truncate">{connectReq.skillsRequired}</span>
-                    </div>
-                  )}
-                  {connectReq.country && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <MapPin className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-700">{connectReq.country}</span>
-                    </div>
-                  )}
-                  {connectReq.language && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <Languages className="h-3 w-3 text-gray-400" />
-                      <span className="text-gray-700">{connectReq.language}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-emerald-50 rounded-lg p-3 flex items-start gap-2">
-                <Users className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
-                <p className="text-xs text-emerald-700">
-                  Our team will review your requirement and connect you with matching freelancers. You'll be notified via email once a match is found.
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" onClick={() => setConnectOpen(false)} disabled={connectSubmitting} className="border-gray-300 text-gray-700">Cancel</Button>
-                <Button onClick={handleConnectSubmit} disabled={connectSubmitting} className="gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white">
-                  {connectSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  Send Request
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
