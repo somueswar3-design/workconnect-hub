@@ -181,7 +181,7 @@ const ClientOverview = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Available Freelancers</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{filtered.length} freelancers found</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{profiles.length} freelancers found</p>
         </div>
         <Button
           variant={showFilters ? 'default' : 'outline'}
