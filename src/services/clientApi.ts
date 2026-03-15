@@ -98,7 +98,7 @@ export const getFilteredFreelancers = async (filters: FreelancerFilterParams): P
   return res.json();
 };
 
-// Request demo DTO
+// Request demo DTO (for POST)
 export interface RequestDemoDto {
   id: number;
   clientId: number;
@@ -111,6 +111,18 @@ export interface RequestDemoDto {
   status: string;
   adminComments: string;
   createdOn: string;
+}
+
+// Demo request response DTO (from GET)
+export interface DemoRequestResponse {
+  demoId: number;
+  freelancerId: number;
+  freelancerName: string;
+  projectTitle: string;
+  budget: number;
+  status: string;
+  adminComments: string | null;
+  requestedOn: string;
 }
 
 // POST request demo
