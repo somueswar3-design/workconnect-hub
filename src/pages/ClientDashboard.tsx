@@ -684,10 +684,11 @@ const MyRequests = () => {
                             <Button
                               size="sm"
                               onClick={() => handleLetsConnect(req)}
+                              disabled={connectingReqId === req.id}
                               className="h-7 px-3 text-xs gap-1 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-full"
                             >
-                              <Zap className="h-3 w-3" />
-                              Let's Connect
+                              {connectingReqId === req.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+                              {connectingReqId === req.id ? 'Sending...' : "Let's Connect"}
                             </Button>
                           )}
                         </div>
