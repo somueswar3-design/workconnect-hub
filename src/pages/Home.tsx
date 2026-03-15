@@ -35,7 +35,12 @@ const Home = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter state
+  const [filterSkill, setFilterSkill] = useState('');
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterMinExp, setFilterMinExp] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Demo dialog state
   const [demoOpen, setDemoOpen] = useState(false);
