@@ -1,44 +1,27 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import RequirementsGrid from '@/components/RequirementsGrid';
+import { motion } from 'framer-motion';
 import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
   Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award,
   Laptop, BookOpen, Target, Heart, ThumbsUp, MessageSquare, Briefcase,
-  ChevronDown, Play
+  ChevronDown, Play, Search
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import RequirementsGrid from '@/components/RequirementsGrid';
 import wsLogo from '@/assets/worksupport360-logo.png';
-import remoteWorkImage from '@/assets/remote-work.jpg';
-import modernOfficeImage from '@/assets/modern-office.jpg';
-import businessHandshakeImage from '@/assets/business-handshake.jpg';
-import teamImage from '@/assets/team-collaboration.jpg';
-
-const HERO_VIDEO = 'https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_25fps.mp4';
 
 const Home = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const popularSearches = ['React', 'Node.js', 'Python', 'AWS', 'DevOps', 'Data Science', '.NET', 'Angular'];
 
-  const features = [
-    { icon: Shield, title: 'Privacy Protected', description: 'Use alias names for yourself and your company. Your real identity stays hidden until you choose to reveal it.' },
-    { icon: Users, title: 'Find Talent Fast', description: "Browse available workers in real-time. See who's active and ready to help with your IT projects." },
-    { icon: Zap, title: 'Quick Setup', description: 'Upload your resume and let us auto-populate your profile. Get started in minutes, not hours.' },
-    { icon: Clock, title: 'Flexible Hours', description: 'Work when you want, where you want. Set your own schedule and availability status.' },
-    { icon: DollarSign, title: 'Fair Compensation', description: 'Set your own hourly rates. Get paid for your expertise with transparent pricing.' },
-    { icon: Globe, title: 'Remote First', description: 'Connect with clients globally. No geographic limitations on your career growth.' },
-  ];
-
-  const benefits = [
-    "No commitment - work when you're free",
-    'Set your own hourly rate',
-    'Keep your company info private',
-    'Connect with IT projects instantly',
-    'Get matched with relevant projects',
-    'Build your professional reputation',
+  const stats = [
+    { value: '500+', label: 'Active Freelancers' },
+    { value: '1,200+', label: 'Projects Delivered' },
+    { value: '98%', label: 'Satisfaction Rate' },
+    { value: '24/7', label: 'Support' },
   ];
 
   const techSkills = [
@@ -48,209 +31,166 @@ const Home = () => {
     { name: 'Azure', icon: Cloud }, { name: 'Machine Learning', icon: TrendingUp }, { name: 'Cybersecurity', icon: Shield },
   ];
 
-  const stats = [
-    { value: '500+', label: 'Active Freelancers' },
-    { value: '1,200+', label: 'Projects Completed' },
-    { value: '98%', label: 'Client Satisfaction' },
-    { value: '24/7', label: 'Support Available' },
-  ];
-
   const testimonials = [
-    { name: 'Rajesh K.', role: 'Full Stack Developer', company: 'Hyderabad', text: 'WorkSupport360 connected me with amazing clients. The privacy features give me peace of mind while freelancing alongside my regular job.', rating: 5 },
-    { name: 'Priya M.', role: 'DevOps Engineer', company: 'Bangalore', text: 'Finally, a platform that respects my time and privacy. I can work on my terms without compromising my current position.', rating: 5 },
-    { name: 'Suresh R.', role: 'Data Scientist', company: 'Chennai', text: 'The matching system is incredible. I only get projects that match my skills. Telugu language support made communication easy.', rating: 5 },
-    { name: 'Lakshmi S.', role: 'React Developer', company: 'Vizag', text: 'Great platform for IT professionals. The client grid view helps me track all my engagements easily.', rating: 5 },
+    { name: 'Rajesh K.', role: 'Full Stack Developer', location: 'Hyderabad', text: 'WorkSupport360 connected me with amazing clients. The privacy features give me peace of mind.', rating: 5, avatar: 'R' },
+    { name: 'Priya M.', role: 'DevOps Engineer', location: 'Bangalore', text: 'Finally, a platform that respects my time. I can work on my terms without compromising.', rating: 5, avatar: 'P' },
+    { name: 'Suresh R.', role: 'Data Scientist', location: 'Chennai', text: 'The matching system is incredible. I only get projects that match my skills perfectly.', rating: 5, avatar: 'S' },
+    { name: 'Lakshmi S.', role: 'React Developer', location: 'Vizag', text: 'Great platform for IT professionals. Tracking engagements is seamless and intuitive.', rating: 5, avatar: 'L' },
   ];
 
   const howItWorks = [
-    { step: '01', title: 'Create Your Profile', description: 'Sign up and upload your resume. Our smart system auto-fills your skills and experience.' },
-    { step: '02', title: 'Set Your Availability', description: "Toggle your status to show when you're ready for new projects. Stay in control." },
-    { step: '03', title: 'Get Matched', description: 'Clients browse and connect with you. Accept projects that fit your schedule.' },
-    { step: '04', title: 'Get Paid', description: 'Complete work, track earnings, and receive timely payments for your expertise.' },
+    { step: '1', title: 'Create Your Profile', description: 'Sign up, upload your resume, and let our smart system auto-fill your skills.', icon: Laptop, color: 'bg-emerald-500' },
+    { step: '2', title: 'Browse & Match', description: 'Find projects that match your skills or get matched by clients looking for talent.', icon: Search, color: 'bg-blue-500' },
+    { step: '3', title: 'Express Interest', description: 'Click "I\'m Interested" on projects you love and get connected with clients.', icon: Heart, color: 'bg-orange-500' },
+    { step: '4', title: 'Get Paid', description: 'Complete work, track earnings, and receive timely payments for your expertise.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
 
-  const industries = [
-    { name: 'FinTech', icon: DollarSign }, { name: 'Healthcare', icon: Heart },
-    { name: 'E-Commerce', icon: Target }, { name: 'EdTech', icon: BookOpen },
-    { name: 'SaaS', icon: Cloud }, { name: 'Startups', icon: Laptop },
-  ];
-
-  const clientBenefits = [
-    { icon: ThumbsUp, title: 'Verified Professionals', description: 'All freelancers are verified and skill-assessed' },
-    { icon: Clock, title: 'Quick Hiring', description: 'Find and hire talent within hours, not weeks' },
-    { icon: MessageSquare, title: 'Multi-language Support', description: 'Communicate in Telugu, Hindi, or English' },
-    { icon: Shield, title: 'Secure Payments', description: 'Protected transactions with milestone-based payments' },
-  ];
+  const trustedBy = ['TCS', 'Infosys', 'Wipro', 'HCL', 'Tech Mahindra', 'Startups'];
 
   return (
-    <div className="flex flex-col bg-[#0A1628] text-slate-100 relative overflow-hidden min-h-screen">
+    <div className="flex flex-col bg-white text-gray-900 min-h-screen">
 
-      {/* ===== FULL-SCREEN VIDEO HERO ===== */}
-      <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-        {/* Video Background */}
-        <video
-          ref={videoRef}
-          autoPlay muted loop playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={HERO_VIDEO} type="video/mp4" />
-        </video>
-
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628]/80 via-[#0A1628]/50 to-[#0A1628]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A1628]/70 via-transparent to-[#0A1628]/70" />
-
-        {/* Animated particles */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                width: 120 + i * 60,
-                height: 120 + i * 60,
-                left: `${15 + i * 14}%`,
-                top: `${10 + i * 12}%`,
-                background: i % 2 === 0
-                  ? 'radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(26,110,255,0.08) 0%, transparent 70%)',
-              }}
-              animate={{
-                x: [0, 30 - i * 10, 0],
-                y: [0, 20 + i * 5, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          ))}
+      {/* ===== HERO ===== */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(16,185,129,0.3) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(59,130,246,0.2) 0%, transparent 50%)',
+          }} />
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 container text-center px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            className="flex flex-col items-center"
-          >
-
-            {/* Watch Demo Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <a
-                href="/demo-explainer.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-white/10 border border-cyan-400/30 backdrop-blur-sm hover:bg-white/15 hover:border-cyan-400/50 transition-all cursor-pointer group"
-              >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                  <Play className="h-4 w-4 text-white ml-0.5" />
-                </div>
-                <span className="text-sm font-semibold text-cyan-200 group-hover:text-white transition-colors tracking-wide">
-                  Watch How It Works
-                </span>
-              </a>
-            </motion.div>
-
-            {/* Main title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight tracking-tight"
-            >
-              <span className="bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
-                Connect with Top
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                IT Professionals
-              </span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="text-lg md:text-xl text-slate-300/90 max-w-2xl mx-auto mb-10 leading-relaxed"
-            >
-              The privacy-first freelancing platform. Find skilled developers, designers & tech experts.
-              Work on your terms, protect your identity, grow your career.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 mb-12"
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button asChild size="lg" className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/25 border-0 font-bold">
-                  <Link to="/register?role=FreeLancer">
-                    Become a Freelancer
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 py-6 border-indigo-400/50 text-indigo-300 hover:bg-indigo-500/20 hover:text-white backdrop-blur-sm font-bold">
-                  <Link to="/register?role=Client">
-                    Need Work Support
-                    <Users className="h-5 w-5" />
-                  </Link>
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            {/* Quick stats row */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.0 }}
-              className="flex flex-wrap justify-center gap-6 md:gap-10"
-            >
-              {stats.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-2xl md:text-3xl font-black bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">{stat.value}</p>
-                  <p className="text-xs md:text-sm text-slate-400 tracking-wide">{stat.label}</p>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-          animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <ChevronDown className="h-8 w-8 text-cyan-400/60" />
-        </motion.div>
-      </section>
-
-      {/* ===== LIVE REQUIREMENTS / OPENINGS ===== */}
-      <section className="py-20 relative z-10 bg-gradient-to-b from-[#0A1628] to-[#0d1d35]/80">
-        <div className="container">
+        <div className="relative container mx-auto px-4 py-20 md:py-28">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+              Find the perfect <br />
+              <span className="text-emerald-400">IT freelance</span> services <br />
+              for your business
+            </h1>
+            <p className="text-lg text-slate-300 mb-8 max-w-xl">
+              Connect with top-tier IT professionals. Privacy-first, flexible, and built for modern remote work.
+            </p>
+
+            {/* Search Bar */}
+            <div className="flex items-center bg-white rounded-lg overflow-hidden shadow-xl max-w-xl">
+              <div className="flex-1 flex items-center px-4">
+                <Search className="h-5 w-5 text-gray-400 shrink-0" />
+                <Input
+                  placeholder="Search for skills or services..."
+                  className="border-0 shadow-none text-gray-800 placeholder:text-gray-400 focus-visible:ring-0 bg-transparent"
+                />
+              </div>
+              <Button className="rounded-none rounded-r-lg h-12 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold border-0">
+                Search
+              </Button>
+            </div>
+
+            {/* Popular Searches */}
+            <div className="flex flex-wrap items-center gap-2 mt-4">
+              <span className="text-sm text-slate-400">Popular:</span>
+              {popularSearches.slice(0, 5).map(s => (
+                <span key={s} className="text-sm px-3 py-1 rounded-full border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-400 cursor-pointer transition-colors">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Trusted By strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-16 flex flex-wrap items-center gap-6"
+          >
+            <span className="text-sm text-slate-400 font-medium">Trusted by:</span>
+            {trustedBy.map(name => (
+              <span key={name} className="text-sm font-semibold text-slate-400/80 tracking-wide">{name}</span>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ===== ROLE SELECTION ===== */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">How would you like to get started?</h2>
+            <p className="text-gray-500 max-w-lg mx-auto">Choose your path and join thousands of IT professionals and businesses</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Freelancer */}
+            <Link to="/register?role=FreeLancer" className="group">
+              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-emerald-500 hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 text-xs">For Freelancers</Badge>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5">
+                  <Briefcase className="h-7 w-7 text-emerald-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Become a Freelancer</h3>
+                <p className="text-gray-500 text-sm mb-5">Offer your IT skills, set your own rates, and earn on your terms.</p>
+                <ul className="space-y-2.5 mb-6">
+                  {['Create your professional profile', 'Get matched with projects', 'Set your own schedule & rates', 'Privacy-protected identity'].map(item => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  Start as Freelancer <ArrowRight className="h-4 w-4" />
+                </div>
+              </motion.div>
+            </Link>
+
+            {/* Client */}
+            <Link to="/register?role=Client" className="group">
+              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-blue-500 hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-blue-50 text-blue-600 border-blue-200 text-xs">For Businesses</Badge>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-5">
+                  <Users className="h-7 w-7 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Need Work Support</h3>
+                <p className="text-gray-500 text-sm mb-5">Find verified IT professionals to power your projects.</p>
+                <ul className="space-y-2.5 mb-6">
+                  {['Browse skilled professionals', 'Post your requirements', 'Request free demos', 'Milestone-based payments'].map(item => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 text-blue-500 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  Hire Talent <ArrowRight className="h-4 w-4" />
+                </div>
+              </motion.div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== LIVE REQUIREMENTS ===== */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <Badge className="mb-4 bg-cyan-500/10 text-cyan-400 border-cyan-500/20">🔥 Live Openings</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white">Latest Project Requirements</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
+            <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200">🔥 Live Projects</Badge>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Latest Project Requirements</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
           </motion.div>
-          <RequirementsGrid variant="public" maxItems={9} />
+          <RequirementsGrid variant="public" maxItems={9} theme="light" />
           <div className="text-center mt-8">
-            <Button asChild variant="outline" size="lg" className="gap-2 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300">
+            <Button asChild variant="outline" size="lg" className="gap-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50">
               <Link to="/login">
                 Login to See All & Apply <ArrowRight className="h-4 w-4" />
               </Link>
@@ -259,326 +199,110 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== ROLE SELECTION CARDS ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3 text-white">Get Started Today</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">Choose your path and join our growing community of IT professionals</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Freelancer Card */}
-            <Link to="/register?role=FreeLancer" className="group">
+      {/* ===== STATS ===== */}
+      <section className="py-12 bg-gray-50 border-y border-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-10 md:gap-16">
+            {stats.map(stat => (
               <motion.div
-                whileHover={{ y: -8 }}
-                className="relative p-8 rounded-2xl border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-cyan-900/20 to-[#0A1628] hover:border-cyan-400 hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-400/10 rounded-full blur-3xl group-hover:bg-cyan-400/20 transition-colors" />
-                <div className="relative">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mb-5 shadow-lg shadow-cyan-500/30">
-                    <Briefcase className="h-8 w-8 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Become a Freelancer</h2>
-                  <p className="text-slate-400 mb-5">Offer your IT skills, set your rates, and earn on your terms</p>
-                  <ul className="space-y-2 mb-6">
-                    {['Create professional profile', 'Get matched with clients', 'Set your own schedule', 'Earn with transparency'].map(item => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
-                        <CheckCircle className="h-4 w-4 text-cyan-400 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex items-center gap-2 text-cyan-400 font-semibold group-hover:gap-3 transition-all">
-                    Register as Freelancer <ArrowRight className="h-5 w-5" />
-                  </div>
-                </div>
-              </motion.div>
-            </Link>
-
-            {/* Client Card */}
-            <Link to="/register?role=Client" className="group">
-              <motion.div
-                whileHover={{ y: -8 }}
-                className="relative p-8 rounded-2xl border-2 border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-indigo-900/20 to-[#0A1628] hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-400/10 rounded-full blur-3xl group-hover:bg-indigo-400/20 transition-colors" />
-                <div className="relative">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-600 flex items-center justify-center mb-5 shadow-lg shadow-indigo-500/30">
-                    <Users className="h-8 w-8 text-white" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Need Work Support</h2>
-                  <p className="text-slate-400 mb-5">Find verified IT professionals to help with your projects</p>
-                  <ul className="space-y-2 mb-6">
-                    {['Browse skilled professionals', 'Search by skills & experience', 'Request free demos', 'Milestone-based payments'].map(item => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
-                        <CheckCircle className="h-4 w-4 text-indigo-400 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex items-center gap-2 text-indigo-400 font-semibold group-hover:gap-3 transition-all">
-                    Register as Client <ArrowRight className="h-5 w-5" />
-                  </div>
-                </div>
-              </motion.div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== INDUSTRIES ===== */}
-      <section className="py-14 relative z-10 border-y border-white/5 bg-gradient-to-b from-[#0A1628] to-[#0d1d35]">
-        <div className="container">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2 text-white">Industries We Serve</h2>
-            <p className="text-slate-400">Connecting IT talent across diverse sectors</p>
-          </div>
-          <div className="grid gap-4 grid-cols-3 md:grid-cols-6">
-            {industries.map((industry) => (
-              <motion.div
-                key={industry.name}
-                whileHover={{ scale: 1.05 }}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-slate-900/50 hover:bg-cyan-900/20 transition-colors border border-slate-800 hover:border-cyan-500/30"
-              >
-                <div className="h-12 w-12 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                  <industry.icon className="h-6 w-6 text-cyan-400" />
-                </div>
-                <span className="text-sm font-medium text-center text-slate-300">{industry.name}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== REMOTE WORK SECTION ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="relative order-2 lg:order-1 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-              <img src={remoteWorkImage} alt="Remote work professional" className="w-full h-auto object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-indigo-500/10" />
-            </div>
-            <div className="order-1 lg:order-2">
-              <Badge className="mb-4 bg-cyan-500/10 text-cyan-400 border-cyan-500/20">Work From Anywhere</Badge>
-              <h2 className="text-3xl font-bold mb-4 text-white">Seamless Remote Collaboration</h2>
-              <p className="text-slate-400 mb-6">
-                Our platform is built for the modern remote workforce. Connect with clients through
-                video calls, share screens for live demos, and collaborate in real-time regardless of location.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  { icon: Globe, color: 'cyan', title: 'Global Reach', desc: 'Work with clients worldwide' },
-                  { icon: Clock, color: 'indigo', title: 'Flexible Hours', desc: 'Work on your schedule' },
-                  { icon: Laptop, color: 'cyan', title: 'Easy Demos', desc: 'Screen sharing & live sessions' },
-                  { icon: Headphones, color: 'indigo', title: '24/7 Support', desc: 'Help when you need it' },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3">
-                    <div className={`h-10 w-10 rounded-lg bg-${item.color}-500/10 flex items-center justify-center shrink-0`}>
-                      <item.icon className={`h-5 w-5 text-${item.color}-400`} />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-slate-200">{item.title}</h4>
-                      <p className="text-sm text-slate-400">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== TECH SKILLS ===== */}
-      <section className="py-16 relative z-10 bg-[#0d1d35]/50">
-        <div className="container">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold mb-4 text-white">Skills We Connect</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">From frontend to backend, cloud to security — we cover all major IT domains</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {techSkills.map((skill) => (
-              <motion.div
-                key={skill.name}
-                whileHover={{ scale: 1.08, borderColor: 'rgba(0,212,255,0.5)' }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900/50 border border-slate-700 transition-colors"
-              >
-                <skill.icon className="h-4 w-4 text-cyan-400" />
-                <span className="font-medium text-sm text-slate-300">{skill.name}</span>
-              </motion.div>
-            ))}
-            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-500/10 border-indigo-500/20 border">
-              <span className="font-medium text-sm text-indigo-400">+ 100 more skills</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FEATURES ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="mb-4 text-3xl font-bold text-white">
-              Why Choose <span className="bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">WorkSupport360</span>?
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              We've built the platform IT professionals have been waiting for — privacy-focused,
-              flexible, and designed for modern remote work.
-            </p>
-          </div>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                className="text-center"
               >
-                <Card className="border-slate-800 bg-slate-900/50 hover:bg-slate-800/80 hover:border-cyan-500/30 transition-all shadow-lg h-full">
-                  <CardContent className="pt-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5">
-                      <feature.icon className="h-6 w-6 text-cyan-400" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-semibold text-white">{feature.title}</h3>
-                    <p className="text-slate-400 text-sm">{feature.description}</p>
-                  </CardContent>
-                </Card>
+                <p className="text-3xl md:text-4xl font-extrabold text-gray-900">{stat.value}</p>
+                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== COMMUNITY SECTION ===== */}
-      <section className="py-20 bg-[#0d1d35]/50 relative z-10">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <Badge className="mb-4 bg-indigo-500/10 text-indigo-400 border-indigo-500/20">Join Our Network</Badge>
-              <h2 className="text-3xl font-bold mb-4 text-white">A Thriving Community of Professionals</h2>
-              <p className="text-slate-400 mb-6">
-                Be part of a growing network of IT professionals who value flexibility, privacy, and
-                fair compensation. Our platform brings together the best talent from across India.
-              </p>
-              <div className="space-y-4">
-                {[
-                  { icon: Award, color: 'cyan', title: 'Top-Rated Freelancers', desc: 'Verified skills and client reviews' },
-                  { icon: Users, color: 'indigo', title: 'Diverse Talent Pool', desc: 'From freshers to senior architects' },
-                  { icon: TrendingUp, color: 'cyan', title: 'Career Growth', desc: 'Build your portfolio and reputation' },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-center gap-4 p-4 rounded-xl bg-slate-900/50 border border-slate-800">
-                    <div className={`h-12 w-12 rounded-full bg-${item.color}-500/10 flex items-center justify-center`}>
-                      <item.icon className={`h-6 w-6 text-${item.color}-400`} />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white">{item.title}</h4>
-                      <p className="text-sm text-slate-400">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-              <img src={modernOfficeImage} alt="Modern IT workspace" className="w-full h-auto object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-cyan-500/10" />
-            </div>
           </div>
         </div>
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-white">How It Works</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">Get started in just 4 simple steps. From signup to your first payment.</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">How It Works</h2>
+            <p className="text-gray-500 max-w-lg mx-auto">Get started in just 4 simple steps</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {howItWorks.map((item, index) => (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
+            {howItWorks.map((item, i) => (
               <motion.div
                 key={item.step}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
-                className="relative"
+                transition={{ delay: i * 0.1 }}
+                className="text-center"
               >
-                {index < howItWorks.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-cyan-500/50 to-transparent -translate-x-4" />
-                )}
-                <div className="flex flex-col items-center text-center">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-600 text-white font-bold text-lg shadow-lg shadow-cyan-500/20">
-                    {item.step}
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold text-white">{item.title}</h3>
-                  <p className="text-slate-400 text-sm">{item.description}</p>
+                <div className={`h-14 w-14 rounded-full ${item.color} flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                  <item.icon className="h-6 w-6 text-white" />
                 </div>
+                <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== CLIENT BENEFITS ===== */}
-      <section className="py-20 bg-[#0d1d35]/50 relative z-10">
-        <div className="container">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-indigo-500/10 text-indigo-400 border-indigo-500/20">For Businesses</Badge>
-            <h2 className="text-3xl font-bold mb-4 text-white">Why Clients Choose Us</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">Find the perfect IT professional for your project with our streamlined hiring process</p>
+      {/* ===== SKILLS ===== */}
+      <section className="py-14 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Popular Skills</h2>
+            <p className="text-gray-500">Find talent across all major IT domains</p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {clientBenefits.map((benefit, i) => (
+          <div className="flex flex-wrap justify-center gap-3">
+            {techSkills.map(skill => (
               <motion.div
-                key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:shadow-xl hover:border-indigo-500/30 transition-all"
+                key={skill.name}
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer"
               >
-                <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="h-7 w-7 text-indigo-400" />
-                </div>
-                <h3 className="font-semibold mb-2 text-white">{benefit.title}</h3>
-                <p className="text-sm text-slate-400">{benefit.description}</p>
+                <skill.icon className="h-4 w-4 text-emerald-500" />
+                <span className="font-medium text-sm text-gray-700">{skill.name}</span>
               </motion.div>
             ))}
+            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-200">
+              <span className="font-medium text-sm text-emerald-600">+ 100 more</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-white">What Our Freelancers Say</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">Join thousands of satisfied IT professionals who found their ideal work-life balance</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">What Our Freelancers Say</h2>
+            <p className="text-gray-500">Join thousands of satisfied IT professionals</p>
           </div>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {testimonials.map((testimonial, i) => (
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
+            {testimonials.map((t, i) => (
               <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
+                key={t.name}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
               >
-                <Card className="border-slate-800 bg-slate-900/50 h-full">
+                <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow h-full bg-white">
                   <CardContent className="pt-6">
-                    <div className="flex gap-1 mb-3">
-                      {[...Array(testimonial.rating)].map((_, j) => (
+                    <div className="flex gap-0.5 mb-3">
+                      {[...Array(t.rating)].map((_, j) => (
                         <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
                       ))}
                     </div>
-                    <p className="text-slate-400 mb-4 text-sm italic">"{testimonial.text}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                        <span className="font-semibold text-cyan-400">{testimonial.name[0]}</span>
+                    <p className="text-gray-600 text-sm mb-4 italic leading-relaxed">"{t.text}"</p>
+                    <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+                      <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <span className="font-bold text-emerald-600">{t.avatar}</span>
                       </div>
                       <div>
-                        <p className="font-semibold text-sm text-white">{testimonial.name}</p>
-                        <p className="text-xs text-slate-500">{testimonial.role} • {testimonial.company}</p>
+                        <p className="font-semibold text-sm text-gray-900">{t.name}</p>
+                        <p className="text-xs text-gray-400">{t.role} • {t.location}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -589,111 +313,28 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== BENEFITS ===== */}
-      <section className="py-20 bg-[#0d1d35]/50 relative z-10">
-        <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white">Work on Your Terms</h2>
-            <p className="mb-8 text-slate-400">Take control of your career with flexibility that fits your lifestyle</p>
-            <div className="grid gap-3 sm:grid-cols-2 text-left">
-              {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-center gap-3 p-4 rounded-lg bg-slate-900/50 border border-slate-800 hover:border-cyan-500/50 transition-colors">
-                  <CheckCircle className="h-5 w-5 text-cyan-400 shrink-0" />
-                  <span className="text-sm text-slate-300">{benefit}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== HIRE TALENT ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div>
-              <Badge className="mb-4 bg-indigo-500/10 text-indigo-400 border-indigo-500/20">Need IT Support?</Badge>
-              <h2 className="text-3xl font-bold mb-4 text-white">Hire Top IT Talent Today</h2>
-              <p className="text-slate-400 mb-6">
-                Browse our pool of verified IT professionals ready to help with your projects.
-                From quick fixes to long-term support, find the right talent instantly.
-              </p>
-              <ul className="space-y-3 mb-6">
-                {['Browse by skills and experience', 'See real-time availability', 'Request demos before committing', 'Multi-language support: Telugu, Hindi, English'].map((item) => (
-                  <li key={item} className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-cyan-400" />
-                    <span className="text-slate-300">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild size="lg" variant="outline" className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
-                <Link to="/browse">Browse Available Talent <ArrowRight className="h-4 w-4" /></Link>
-              </Button>
-            </div>
-            <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-              <img src={businessHandshakeImage} alt="Business partnership" className="w-full h-auto object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-cyan-500/10" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== CTA SECTION ===== */}
-      <section className="py-20 lg:py-28 bg-gradient-to-br from-cyan-900/80 to-indigo-900/80 backdrop-blur-md relative z-10 border-t border-white/10">
-        <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
+      {/* ===== CTA ===== */}
+      <section className="py-20 bg-gradient-to-r from-slate-900 to-emerald-900 text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Ready to Start Your Freelancing Journey?</h2>
-              <p className="mb-8 text-lg text-slate-300">
-                Join WorkSupport360 today and connect with IT projects that match your skills.
-                Your privacy protected, your career elevated.
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Start Your Journey?</h2>
+              <p className="text-lg text-slate-300 mb-8">
+                Join WorkSupport360 today. Your privacy protected, your career elevated.
               </p>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                <Button asChild size="lg" className="gap-2 text-lg px-8 bg-white text-indigo-900 hover:bg-slate-200 font-bold">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild size="lg" className="gap-2 text-lg px-8 bg-emerald-500 hover:bg-emerald-600 border-0 font-bold text-white">
                   <Link to="/register?role=FreeLancer">Get Started Free <ArrowRight className="h-5 w-5" /></Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 bg-transparent border-white text-white hover:bg-white hover:text-indigo-900 font-bold">
-                  <Link to="/browse">Explore Talent Pool</Link>
+                <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 bg-transparent border-white/30 text-white hover:bg-white/10 font-bold">
+                  <Link to="/browse">Explore Talent</Link>
                 </Button>
               </div>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== MISSION SECTION ===== */}
-      <section className="py-20 relative z-10">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-              <img src={teamImage} alt="Team collaboration" className="w-full h-auto object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-indigo-500/10" />
-            </div>
-            <div>
-              <Badge className="mb-4 bg-cyan-500/10 text-cyan-400 border-cyan-500/20">Our Mission</Badge>
-              <h2 className="text-3xl font-bold mb-4 text-white">Empowering IT Professionals</h2>
-              <p className="text-slate-400 mb-6">
-                We believe every IT professional deserves the opportunity to grow their career on their
-                own terms. WorkSupport360 bridges the gap between talented developers and businesses seeking
-                quality IT support.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                  <Headphones className="h-6 w-6 text-cyan-400 mb-2" />
-                  <h4 className="font-semibold text-white">24/7 Support</h4>
-                  <p className="text-sm text-slate-400">Always here to help you succeed</p>
-                </div>
-                <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-800">
-                  <Shield className="h-6 w-6 text-indigo-400 mb-2" />
-                  <h4 className="font-semibold text-white">Secure Platform</h4>
-                  <p className="text-sm text-slate-400">Your data is always protected</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
