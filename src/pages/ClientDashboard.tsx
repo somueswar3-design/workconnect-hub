@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse } from '@/services/clientApi';
+import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse, postRequirement } from '@/services/clientApi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import ChangePassword from '@/pages/ChangePassword';
 
@@ -610,9 +610,23 @@ const PostRequirement = () => {
     }
     setSubmitting(true);
     try {
-      // TODO: Connect to POST API endpoint when ready
-      // await postRequirement({ ...form, phone: `${form.countryCode}${form.contactPhone}`, clientId: user?.userId });
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await postRequirement({
+        id: 0,
+        clientUserId: Number(user?.userId) || 0,
+        mobileNumber: `${form.countryCode}${form.contactPhone}`,
+        email: form.contactEmail,
+        title: form.projectTitle,
+        description: form.description,
+        skillsRequired: form.requiredSkills,
+        minExperience: Number(form.experienceLevel) || 0,
+        budget: Number(form.budget) || 0,
+        country: form.country,
+        language: form.language,
+        status: 'Pending',
+        allocatedFreelancerId: 0,
+        createdOn: new Date().toISOString(),
+        updatedOn: new Date().toISOString(),
+      });
       toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers shortly.' });
       setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     } catch (error) {
