@@ -332,6 +332,29 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Success Popup */}
+      <Dialog open={!!successPopup} onOpenChange={() => setSuccessPopup(null)}>
+        <DialogContent className="sm:max-w-sm text-center">
+          <div className="flex flex-col items-center py-4 space-y-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 12 }}
+              className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center"
+            >
+              <CheckCircle className="h-10 w-10 text-emerald-500" />
+            </motion.div>
+            <h3 className="text-xl font-bold text-gray-900">Interest Submitted! 🎉</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              You've successfully expressed interest in <span className="font-semibold text-gray-700">"{successPopup}"</span>. The client will review your profile and get back to you soon.
+            </p>
+            <Button onClick={() => setSuccessPopup(null)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-0">
+              Got it!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
