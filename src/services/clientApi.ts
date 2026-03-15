@@ -98,7 +98,7 @@ export const getFilteredFreelancers = async (filters: FreelancerFilterParams): P
   return res.json();
 };
 
-// Request demo DTO
+// Request demo DTO (for POST)
 export interface RequestDemoDto {
   id: number;
   clientId: number;
@@ -113,6 +113,18 @@ export interface RequestDemoDto {
   createdOn: string;
 }
 
+// Demo request response DTO (from GET)
+export interface DemoRequestResponse {
+  demoId: number;
+  freelancerId: number;
+  freelancerName: string;
+  projectTitle: string;
+  budget: number;
+  status: string;
+  adminComments: string | null;
+  requestedOn: string;
+}
+
 // POST request demo
 export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
   const res = await fetch(`${API_BASE}/api/client/request-demo`, {
@@ -124,8 +136,8 @@ export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
 };
 
 // GET demo requests for a client
-export const getDemoRequests = async (clientId: string): Promise<RequestDemoDto[]> => {
-  const res = await fetch(`${API_BASE}/api/client/demo-requests?clientId=${clientId}`, {
+export const getDemoRequests = async (userId: string): Promise<DemoRequestResponse[]> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests?userId=${userId}`, {
     headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to fetch demo requests');

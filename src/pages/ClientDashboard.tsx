@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto } from '@/services/clientApi';
+import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse } from '@/services/clientApi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import ChangePassword from '@/pages/ChangePassword';
 
@@ -422,7 +422,7 @@ const ClientOverview = () => {
 
 // ===== My Demo Requests Page =====
 const MyDemoRequests = () => {
-  const [requests, setRequests] = useState<RequestDemoDto[]>([]);
+  const [requests, setRequests] = useState<DemoRequestResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const { user } = useAuth();
@@ -449,7 +449,8 @@ const MyDemoRequests = () => {
     if (s === 'approved' || s === 'accepted') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
     if (s === 'rejected' || s === 'declined') return 'bg-red-500/10 text-red-400 border-red-500/20';
     if (s === 'in progress' || s === 'inprogress') return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-    return 'bg-amber-500/10 text-amber-400 border-amber-500/20'; // pending
+    if (s === 'requested') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+    return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
   };
 
   if (loading) {
@@ -501,8 +502,8 @@ const MyDemoRequests = () => {
             </Card>
             <Card className="border border-slate-700/50 bg-[#0D1B2E]">
               <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => r.status?.toLowerCase() === 'pending').length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Pending</p>
+                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => ['pending', 'requested'].includes(r.status?.toLowerCase())).length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Requested</p>
               </CardContent>
             </Card>
             <Card className="border border-slate-700/50 bg-[#0D1B2E]">
@@ -522,7 +523,7 @@ const MyDemoRequests = () => {
           {/* Request Cards */}
           {requests.map((req, idx) => (
             <motion.div
-              key={req.id || idx}
+              key={req.demoId || idx}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
@@ -532,31 +533,23 @@ const MyDemoRequests = () => {
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-slate-100 text-sm truncate">{req.projectTitle}</h3>
-                      <p className="text-xs text-slate-500 mt-0.5">Freelancer ID: {req.freelancerId}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Freelancer: {req.freelancerName || `ID ${req.freelancerId}`}</p>
                     </div>
                     <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
-                      {req.status || 'Pending'}
+                      {req.status || 'Requested'}
                     </Badge>
                   </div>
 
-                  {req.description && (
-                    <p className="text-xs text-slate-400 mb-3 line-clamp-2">{req.description}</p>
-                  )}
-
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
-                    {req.clientBudget > 0 && (
+                    {req.budget > 0 && (
                       <span className="flex items-center gap-1">
                         <DollarSign className="h-3 w-3 text-cyan-400" />
-                        <span className="text-slate-200 font-medium">₹{req.clientBudget.toLocaleString()}</span>
+                        <span className="text-slate-200 font-medium">₹{req.budget.toLocaleString()}</span>
                       </span>
                     )}
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {new Date(req.createdOn).toLocaleDateString()}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Send className="h-3 w-3" />
-                      {req.contactEmail}
+                      {new Date(req.requestedOn).toLocaleDateString()}
                     </span>
                     {req.adminComments && (
                       <span className="flex items-center gap-1 text-indigo-300">
