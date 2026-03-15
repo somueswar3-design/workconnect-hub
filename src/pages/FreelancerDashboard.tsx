@@ -155,22 +155,8 @@ const FreelancerOverview = () => {
         </Card>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="openings" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Search className="h-4 w-4" /> Openings
-          </TabsTrigger>
-          <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Briefcase className="h-4 w-4" /> My Assignments
-          </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Clock className="h-4 w-4" /> Work History
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Openings Tab */}
-        <TabsContent value="openings" className="space-y-4">
+      {/* Openings */}
+      <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
