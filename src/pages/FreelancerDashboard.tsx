@@ -280,7 +280,11 @@ const FreelancerOverview = () => {
 const FreelancerDashboard = () => {
   return (
     <DashboardLayout userType="freelancer">
-      <FreelancerOverview />
+      <Routes>
+        <Route path="/" element={<FreelancerOverview />} />
+        <Route path="/settings/password" element={<ChangePassword />} />
+        <Route path="*" element={<FreelancerOverview />} />
+      </Routes>
     </DashboardLayout>
   );
 };
