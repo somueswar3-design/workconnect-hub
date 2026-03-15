@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getAssignments, getFreelancerEarnings, getJobOpenings, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
+import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
 import {
   Dialog,
   DialogContent,
@@ -279,8 +279,25 @@ const FreelancerOverview = () => {
 };
 
 const FreelancerDashboard = () => {
+  const { user } = useAuth();
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      try {
+        const profile = await getFreelancerProfile(user?.userId || '');
+        if (profile) {
+          setIsActive(profile.availabilityStatus?.toLowerCase() === 'available');
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile availability:', err);
+      }
+    };
+    if (user?.userId) fetchAvailability();
+  }, [user?.userId]);
+
   return (
-    <DashboardLayout userType="freelancer">
+    <DashboardLayout userType="freelancer" isActive={isActive}>
       <Routes>
         <Route path="/" element={<FreelancerOverview />} />
         <Route path="/settings/password" element={<ChangePassword />} />

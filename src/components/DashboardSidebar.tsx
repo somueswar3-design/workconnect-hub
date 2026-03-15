@@ -6,7 +6,7 @@ import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +21,12 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [activeStatus, setActiveStatus] = useState(isActive);
+  const [activeStatus, setActiveStatus] = useState(isActive ?? true);
+
+  // Sync with prop when profile data loads
+  useEffect(() => {
+    if (isActive !== undefined) setActiveStatus(isActive);
+  }, [isActive]);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleStatusToggle = async () => {
