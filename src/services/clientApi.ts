@@ -65,6 +65,14 @@ export interface FreelancerProfileDto {
   updatedOn: string;
 }
 
+// Filter params for freelancer search
+export interface FreelancerFilterParams {
+  skill?: string;
+  language?: string;
+  country?: string;
+  minExperience?: number;
+}
+
 // Get all freelancer profiles for client browse
 export const getFreelancerProfiles = async (): Promise<FreelancerProfileDto[]> => {
   const res = await fetch(`${API_BASE}/api/freelancer/profiles`, {
@@ -72,6 +80,45 @@ export const getFreelancerProfiles = async (): Promise<FreelancerProfileDto[]> =
   });
   if (!res.ok) throw new Error('Failed to fetch freelancer profiles');
   return res.json();
+};
+
+// Get filtered freelancer profiles
+export const getFilteredFreelancers = async (filters: FreelancerFilterParams): Promise<FreelancerProfileDto[]> => {
+  const params = new URLSearchParams();
+  if (filters.skill) params.append('skill', filters.skill);
+  if (filters.language) params.append('language', filters.language);
+  if (filters.country) params.append('country', filters.country);
+  if (filters.minExperience !== undefined) params.append('minExperience', String(filters.minExperience));
+  const res = await fetch(`${API_BASE}/api/client/freelancers/filter?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch filtered freelancers');
+  return res.json();
+};
+
+// Request demo DTO
+export interface RequestDemoDto {
+  id: number;
+  clientId: number;
+  freelancerId: number;
+  projectTitle: string;
+  description: string;
+  clientBudget: number;
+  contactEmail: string;
+  contactPhone: string;
+  status: string;
+  adminComments: string;
+  createdOn: string;
+}
+
+// POST request demo
+export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/client/request-demo`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to submit demo request');
 };
 
 // Get hired freelancers for a client
