@@ -96,7 +96,13 @@ const Home = () => {
     (window as any).__scrollToFreelancers = () => {
       freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-    return () => { delete (window as any).__scrollToFreelancers; };
+    (window as any).__scrollToWorks = () => {
+      worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+    return () => {
+      delete (window as any).__scrollToFreelancers;
+      delete (window as any).__scrollToWorks;
+    };
   }, []);
 
   // Filter freelancers based on filters
