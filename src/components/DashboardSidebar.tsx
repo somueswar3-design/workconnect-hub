@@ -51,8 +51,6 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const basePath = userType === 'freelancer' ? '/freelancer' : '/client';
 
   const settingsItems = [
-    { icon: Languages, label: 'Language', path: `${basePath}/settings/language` },
-    { icon: Camera, label: 'Update Photo', path: `${basePath}/settings/photo` },
     { icon: Lock, label: 'Change Password', path: `${basePath}/settings/password` },
   ];
 
