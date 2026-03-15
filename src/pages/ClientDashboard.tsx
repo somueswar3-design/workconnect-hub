@@ -596,13 +596,17 @@ const PostRequirement = () => {
       toast({ title: 'Validation', description: 'Project title, required skills, and email are required.', variant: 'destructive' });
       return;
     }
+    if (!form.contactPhone.trim() || form.contactPhone.trim().length < 7) {
+      toast({ title: 'Validation', description: 'A valid mobile number with country code is required.', variant: 'destructive' });
+      return;
+    }
     setSubmitting(true);
     try {
       // TODO: Connect to POST API endpoint when ready
-      // await postRequirement({ ...form, clientId: user?.userId });
+      // await postRequirement({ ...form, phone: `${form.countryCode}${form.contactPhone}`, clientId: user?.userId });
       await new Promise(resolve => setTimeout(resolve, 800));
       toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers shortly.' });
-      setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', contactPhone: '' });
+      setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to post requirement.', variant: 'destructive' });
     } finally {
