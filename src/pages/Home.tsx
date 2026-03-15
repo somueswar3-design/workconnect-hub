@@ -191,7 +191,7 @@ const Home = () => {
     setSelectedFreelancer(freelancer);
     setDemoForm({
       projectTitle: '', description: '', clientBudget: '',
-      contactEmail: user?.email || '', contactPhone: '',
+      contactEmail: user?.email || '', contactPhone: '', budgetCountry: 'India',
     });
     setDemoOpen(true);
   };
