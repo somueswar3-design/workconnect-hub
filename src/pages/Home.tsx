@@ -72,10 +72,23 @@ const Home = () => {
     }
   };
 
-  // Auto-load freelancers on mount
+  // Auto-load freelancers and requirements on mount
   useEffect(() => {
     loadFreelancers();
+    loadRequirements();
   }, []);
+
+  const loadRequirements = async () => {
+    setReqLoading(true);
+    try {
+      const data = await getClientRequirements();
+      setRequirements(data);
+    } catch (error) {
+      console.error('Failed to load requirements:', error);
+    } finally {
+      setReqLoading(false);
+    }
+  };
 
   // Expose scroll function globally for header to use
   useEffect(() => {
