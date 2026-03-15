@@ -29,6 +29,13 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const getDashboardPath = () => {
+    const role = user?.role?.toLowerCase();
+    if (role === 'client') return '/client';
+    if (role === 'admin') return '/admin';
+    return '/freelancer';
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
