@@ -138,7 +138,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
 
         {/* Settings Collapsible */}
         <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+          <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-700/50 hover:text-slate-200 transition-colors">
             <div className="flex items-center gap-2.5">
               <Settings className="h-4 w-4" />
               Settings
@@ -151,7 +151,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
               return (
                 <NavLink key={item.path} to={item.path} className={cn(
                   'flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs transition-colors',
-                  isActivePath ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  isActivePath ? 'bg-cyan-500/15 text-cyan-400' : 'text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
                 )}>
                   <item.icon className="h-3.5 w-3.5" />
                   {item.label}
