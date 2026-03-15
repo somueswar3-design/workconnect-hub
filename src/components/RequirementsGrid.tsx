@@ -24,9 +24,11 @@ interface RequirementsGridProps {
   variant?: 'public' | 'freelancer';
   maxItems?: number;
   theme?: 'light' | 'dark';
+  externalSearch?: string;
+  hideFilters?: boolean;
 }
 
-const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: RequirementsGridProps) => {
+const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark', externalSearch = '', hideFilters = false }: RequirementsGridProps) => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -42,6 +44,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
   const [interestedIds, setInterestedIds] = useState<Set<number>>(new Set());
 
   const isLight = theme === 'light';
+  const showFilterUI = !hideFilters;
 
   useEffect(() => {
     const load = async () => {
@@ -63,8 +66,10 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
   ));
   const allCountries = Array.from(new Set(requirements.map(r => r.country).filter(Boolean)));
 
+  const combinedSearch = externalSearch || searchQuery;
+
   const filtered = requirements.filter(r => {
-    const q = searchQuery.toLowerCase();
+    const q = combinedSearch.toLowerCase();
     const matchesSearch = !q ||
       r.title?.toLowerCase().includes(q) ||
       r.description?.toLowerCase().includes(q) ||
@@ -138,57 +143,71 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
 
   return (
     <div className="space-y-4">
-      {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isLight ? 'text-gray-400' : 'text-slate-500'}`} />
-          <Input
-            placeholder="Search by skill, title, keyword..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className={`pl-10 ${isLight ? 'bg-white border-gray-200 text-gray-800 placeholder:text-gray-400' : 'bg-slate-900/80 border-slate-700/50 text-slate-200 placeholder:text-slate-500'}`}
-          />
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowFilters(!showFilters)}
-          className={`gap-2 ${isLight ? 'border-gray-200 text-gray-600 hover:bg-gray-50' : 'border-slate-700/50 text-slate-300 hover:bg-slate-800'}`}
-        >
-          <Filter className="h-4 w-4" /> Filters
-          <ChevronDown className={`h-3 w-3 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-        </Button>
-        <Badge variant="outline" className={`px-3 py-2 text-xs shrink-0 self-center ${isLight ? 'border-gray-200 text-gray-500' : 'border-slate-700/50 text-slate-400'}`}>
-          {filtered.length} requirements
-        </Badge>
-      </div>
-
-      {showFilters && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-wrap gap-3">
-          <Select value={filterSkill || 'all'} onValueChange={v => setFilterSkill(v === 'all' ? '' : v)}>
-            <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
-              <SelectValue placeholder="Filter by Skill" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Skills</SelectItem>
-              {allSkills.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={filterCountry || 'all'} onValueChange={v => setFilterCountry(v === 'all' ? '' : v)}>
-            <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
-              <SelectValue placeholder="Filter by Country" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Countries</SelectItem>
-              {allCountries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          {(filterSkill || filterCountry) && (
-            <Button variant="ghost" size="sm" onClick={() => { setFilterSkill(''); setFilterCountry(''); }} className={isLight ? 'text-emerald-600 hover:text-emerald-700' : 'text-cyan-400 hover:text-cyan-300'}>
-              Clear Filters
+      {/* Search & Filters - only show when not hidden */}
+      {showFilterUI && (
+        <>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isLight ? 'text-gray-400' : 'text-slate-500'}`} />
+              <Input
+                placeholder="Search by skill, title, keyword..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className={`pl-10 ${isLight ? 'bg-white border-gray-200 text-gray-800 placeholder:text-gray-400' : 'bg-slate-900/80 border-slate-700/50 text-slate-200 placeholder:text-slate-500'}`}
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`gap-2 ${isLight ? 'border-gray-200 text-gray-600 hover:bg-gray-50' : 'border-slate-700/50 text-slate-300 hover:bg-slate-800'}`}
+            >
+              <Filter className="h-4 w-4" /> Filters
+              <ChevronDown className={`h-3 w-3 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </Button>
+            <Badge variant="outline" className={`px-3 py-2 text-xs shrink-0 self-center ${isLight ? 'border-gray-200 text-gray-500' : 'border-slate-700/50 text-slate-400'}`}>
+              {filtered.length} requirements
+            </Badge>
+          </div>
+
+          {showFilters && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-wrap gap-3">
+              <Select value={filterSkill || 'all'} onValueChange={v => setFilterSkill(v === 'all' ? '' : v)}>
+                <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
+                  <SelectValue placeholder="Filter by Skill" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Skills</SelectItem>
+                  {allSkills.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={filterCountry || 'all'} onValueChange={v => setFilterCountry(v === 'all' ? '' : v)}>
+                <SelectTrigger className={`w-48 ${isLight ? 'bg-white border-gray-200 text-gray-700' : 'bg-slate-900/80 border-slate-700/50 text-slate-300'}`}>
+                  <SelectValue placeholder="Filter by Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Countries</SelectItem>
+                  {allCountries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {(filterSkill || filterCountry) && (
+                <Button variant="ghost" size="sm" onClick={() => { setFilterSkill(''); setFilterCountry(''); }} className={isLight ? 'text-emerald-600 hover:text-emerald-700' : 'text-cyan-400 hover:text-cyan-300'}>
+                  Clear Filters
+                </Button>
+              )}
+            </motion.div>
           )}
-        </motion.div>
+        </>
+      )}
+
+      {/* Show active search indicator when using external search */}
+      {externalSearch && (
+        <div className="flex items-center gap-2">
+          <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 gap-1">
+            <Search className="h-3 w-3" /> Showing results for "{externalSearch}"
+          </Badge>
+          <span className="text-xs text-gray-400">{filtered.length} found</span>
+        </div>
       )}
 
       {/* Cards Grid */}
@@ -266,11 +285,6 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
                       {req.country && (
                         <span className="flex items-center gap-1">
                           <Globe className="h-3 w-3" /> {req.country}
-                        </span>
-                      )}
-                      {req.language && (
-                        <span className="flex items-center gap-1">
-                          <Languages className="h-3 w-3" /> {req.language}
                         </span>
                       )}
                     </div>

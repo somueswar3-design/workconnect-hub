@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogIn, LogOut, User, Play } from 'lucide-react';
+import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/worksupport360-logo.png';
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Dialog, DialogContent,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 
 const Header = () => {
@@ -20,6 +20,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const [showDemo, setShowDemo] = useState(false);
+  const [showJoinChoice, setShowJoinChoice] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -85,12 +86,12 @@ const Header = () => {
                   <LogIn className="h-4 w-4" />
                   Login
                 </Link>
-                <Link
-                  to="/register"
+                <button
+                  onClick={() => setShowJoinChoice(true)}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-lg hover:-translate-y-0.5 shadow-sm"
                 >
                   Join Free
-                </Link>
+                </button>
               </>
             )}
           </nav>
@@ -103,9 +104,18 @@ const Header = () => {
               <Play className="h-3 w-3 fill-emerald-500" />
               Demo
             </button>
-            <Button variant="ghost" size="icon" className="text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
-            </Button>
+            {isAuthenticated ? (
+              <button onClick={handleLogout} className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600">
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowJoinChoice(true)}
+                className="text-xs px-3 py-1.5 rounded-full bg-emerald-500 text-white font-semibold"
+              >
+                Join Free
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -120,6 +130,46 @@ const Header = () => {
               title="How WorkSupport360 Works"
               allowFullScreen
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Join Role Choice Dialog */}
+      <Dialog open={showJoinChoice} onOpenChange={setShowJoinChoice}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold text-gray-900">
+              How would you like to join?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 mt-2">
+            <button
+              onClick={() => { setShowJoinChoice(false); navigate('/register?role=FreeLancer'); }}
+              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-100 hover:border-emerald-500 hover:shadow-lg transition-all text-left"
+            >
+              <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:bg-emerald-100 transition-colors">
+                <Briefcase className="h-6 w-6 text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 mb-1">I'm a Freelancer</h3>
+                <p className="text-sm text-gray-500">I want to offer my IT skills and get freelance work</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-emerald-500 mt-1 transition-colors" />
+            </button>
+
+            <button
+              onClick={() => { setShowJoinChoice(false); navigate('/register?role=Client'); }}
+              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-100 hover:border-blue-500 hover:shadow-lg transition-all text-left"
+            >
+              <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 mb-1">Need Work Support</h3>
+                <p className="text-sm text-gray-500">I want to find and hire IT professionals for my projects</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-blue-500 mt-1 transition-colors" />
+            </button>
           </div>
         </DialogContent>
       </Dialog>
