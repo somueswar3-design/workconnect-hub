@@ -153,7 +153,7 @@ const ClientOverview = () => {
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
-      toast({ title: '🎉 Demo Requested!', description: 'Thank you! Our admin team will coordinate the demo process with you shortly.' });
+      toast({ title: '🎉 Demo Requested!', description: 'Your request has been submitted. The freelancer and admin team will be notified shortly.' });
       setDemoOpen(false);
     } catch (error) {
       console.error('Demo request failed:', error);
