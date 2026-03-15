@@ -750,13 +750,7 @@ const Home = () => {
 
                         {/* Action */}
                         <Button
-                          onClick={() => {
-                            if (!isAuthenticated) {
-                              navigate('/register?role=FreeLancer');
-                            } else {
-                              navigate('/freelancer');
-                            }
-                          }}
+                          onClick={() => handleInterestClick(req)}
                           size="sm"
                           variant="outline"
                           className={`w-full gap-1 text-xs h-7 font-semibold ${color.text} border-current hover:${color.bg}`}
