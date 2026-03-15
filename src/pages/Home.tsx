@@ -723,7 +723,7 @@ const Home = () => {
             </div>
             {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
               <Button
-                onClick={() => navigate('/client')}
+                onClick={openPostRequirement}
                 className="gap-2 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white font-bold shadow-lg animate-pulse"
                 size="lg"
               >
