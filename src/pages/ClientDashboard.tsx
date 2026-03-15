@@ -16,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse, postRequirement } from '@/services/clientApi';
+import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse, postRequirement, getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import ChangePassword from '@/pages/ChangePassword';
 
@@ -433,150 +434,297 @@ const ClientOverview = () => {
   );
 };
 
-// ===== My Demo Requests Page =====
-const MyDemoRequests = () => {
-  const [requests, setRequests] = useState<DemoRequestResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+// ===== My Requests Page (Demo + Requirements) =====
+const MyRequests = () => {
+  const [demoRequests, setDemoRequests] = useState<DemoRequestResponse[]>([]);
+  const [requirements, setRequirements] = useState<ClientRequirementResponse[]>([]);
+  const [loadingDemo, setLoadingDemo] = useState(true);
+  const [loadingReq, setLoadingReq] = useState(true);
+  const [hasErrorDemo, setHasErrorDemo] = useState(false);
+  const [hasErrorReq, setHasErrorReq] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setHasError(false);
+    const loadDemo = async () => {
+      setLoadingDemo(true);
+      setHasErrorDemo(false);
       try {
         const data = await getDemoRequests(user?.userId || '');
-        setRequests(data);
+        setDemoRequests(data);
       } catch (err) {
         console.error('Failed to load demo requests:', err);
-        setHasError(true);
+        setHasErrorDemo(true);
       } finally {
-        setLoading(false);
+        setLoadingDemo(false);
       }
     };
-    load();
+    const loadReq = async () => {
+      setLoadingReq(true);
+      setHasErrorReq(false);
+      try {
+        const data = await getClientRequirements(user?.userId || '');
+        // Sort by recent first
+        data.sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime());
+        setRequirements(data);
+      } catch (err) {
+        console.error('Failed to load requirements:', err);
+        setHasErrorReq(true);
+      } finally {
+        setLoadingReq(false);
+      }
+    };
+    loadDemo();
+    loadReq();
   }, [user?.userId]);
 
   const getStatusColor = (status: string) => {
     const s = status?.toLowerCase();
-    if (s === 'approved' || s === 'accepted') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-    if (s === 'rejected' || s === 'declined') return 'bg-red-500/10 text-red-400 border-red-500/20';
+    if (s === 'approved' || s === 'accepted' || s === 'completed') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    if (s === 'rejected' || s === 'declined' || s === 'closed') return 'bg-red-500/10 text-red-400 border-red-500/20';
     if (s === 'in progress' || s === 'inprogress') return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-    if (s === 'requested') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+    if (s === 'requested' || s === 'pending') return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+    if (s === 'open') return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
     return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
-      </div>
-    );
-  }
 
   return (
     <div className="p-4 sm:p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-100">My Demo Requests</h1>
-        <p className="text-xs text-slate-400 mt-0.5">Track your submitted demo requests and their status</p>
+        <h1 className="text-xl font-bold text-slate-100">My Requests</h1>
+        <p className="text-xs text-slate-400 mt-0.5">Track your demo requests and posted requirements</p>
       </div>
 
-      {hasError ? (
-        <Card className="border border-red-500/20 bg-red-500/5">
-          <CardContent className="py-12 text-center space-y-3">
-            <X className="h-10 w-10 text-red-400 mx-auto" />
-            <h3 className="text-base font-semibold text-slate-100">Unable to Load Requests</h3>
-            <p className="text-sm text-slate-400">Could not connect to server.</p>
-            <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
-              <Zap className="h-3.5 w-3.5 mr-1" /> Retry
-            </Button>
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+          <CardContent className="p-3 text-center">
+            <p className="text-2xl font-extrabold text-slate-100">{demoRequests.length}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">Demo Requests</p>
           </CardContent>
         </Card>
-      ) : requests.length === 0 ? (
-        <Card className="border-0 bg-[#0D1B2E]">
-          <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
-          <CardContent className="py-16 text-center space-y-4">
-            <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center">
-              <Send className="h-10 w-10 text-cyan-400" />
+        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+          <CardContent className="p-3 text-center">
+            <p className="text-2xl font-extrabold text-cyan-400">{requirements.length}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">Requirements</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+          <CardContent className="p-3 text-center">
+            <p className="text-2xl font-extrabold text-amber-400">{demoRequests.filter(r => ['pending', 'requested'].includes(r.status?.toLowerCase())).length + requirements.filter(r => ['pending', 'open'].includes(r.status?.toLowerCase())).length}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">Pending</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+          <CardContent className="p-3 text-center">
+            <p className="text-2xl font-extrabold text-emerald-400">{demoRequests.filter(r => ['approved', 'accepted'].includes(r.status?.toLowerCase())).length + requirements.filter(r => ['completed', 'approved'].includes(r.status?.toLowerCase())).length}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">Completed</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="requirements" className="w-full">
+        <TabsList className="bg-[#0A1628] border border-slate-700/50 w-full sm:w-auto">
+          <TabsTrigger value="requirements" className="data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-400 text-slate-400 gap-1.5 text-xs">
+            <FileText className="h-3.5 w-3.5" />
+            Posted Requirements ({requirements.length})
+          </TabsTrigger>
+          <TabsTrigger value="demos" className="data-[state=active]:bg-cyan-500/15 data-[state=active]:text-cyan-400 text-slate-400 gap-1.5 text-xs">
+            <Zap className="h-3.5 w-3.5" />
+            Demo Requests ({demoRequests.length})
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Requirements Tab */}
+        <TabsContent value="requirements" className="mt-4 space-y-3">
+          {loadingReq ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
             </div>
-            <h3 className="text-lg font-bold text-slate-100">No Demo Requests Yet</h3>
-            <p className="text-slate-400 max-w-md mx-auto">Browse the freelancer directory and request demos to get started with your projects.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {/* Summary Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-              <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-slate-100">{requests.length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Total</p>
+          ) : hasErrorReq ? (
+            <Card className="border border-red-500/20 bg-red-500/5">
+              <CardContent className="py-12 text-center space-y-3">
+                <X className="h-10 w-10 text-red-400 mx-auto" />
+                <h3 className="text-base font-semibold text-slate-100">Unable to Load Requirements</h3>
+                <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                  <Zap className="h-3.5 w-3.5 mr-1" /> Retry
+                </Button>
               </CardContent>
             </Card>
-            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-              <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => ['pending', 'requested'].includes(r.status?.toLowerCase())).length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Requested</p>
+          ) : requirements.length === 0 ? (
+            <Card className="border-0 bg-[#0D1B2E]">
+              <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
+              <CardContent className="py-16 text-center space-y-4">
+                <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center">
+                  <FileText className="h-10 w-10 text-cyan-400" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-100">No Requirements Posted Yet</h3>
+                <p className="text-slate-400 max-w-md mx-auto">Post your project requirements and matching freelancers will show interest.</p>
               </CardContent>
             </Card>
-            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-              <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-emerald-400">{requests.filter(r => ['approved', 'accepted'].includes(r.status?.toLowerCase())).length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Approved</p>
-              </CardContent>
-            </Card>
-            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-              <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-indigo-400">{requests.filter(r => r.status?.toLowerCase().includes('progress')).length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">In Progress</p>
-              </CardContent>
-            </Card>
-          </div>
+          ) : (
+            <div className="space-y-3">
+              {requirements.map((req, idx) => {
+                const skills = req.skillsRequired ? req.skillsRequired.split(',').map(s => s.trim()).filter(Boolean) : [];
+                return (
+                  <motion.div
+                    key={req.id || idx}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.03 }}
+                  >
+                    <Card className="border border-slate-700/50 bg-[#0D1B2E] hover:border-cyan-500/30 transition-all">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-slate-100 text-sm truncate">{req.title}</h3>
+                            {req.description && <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{req.description}</p>}
+                          </div>
+                          <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
+                            {req.status || 'Open'}
+                          </Badge>
+                        </div>
 
-          {/* Request Cards */}
-          {requests.map((req, idx) => (
-            <motion.div
-              key={req.demoId || idx}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.03 }}
-            >
-              <Card className="border border-slate-700/50 bg-[#0D1B2E] hover:border-cyan-500/30 transition-all">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-slate-100 text-sm truncate">{req.projectTitle}</h3>
-                      <p className="text-xs text-slate-500 mt-0.5">Freelancer: {req.freelancerName || `ID ${req.freelancerId}`}</p>
-                    </div>
-                    <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
-                      {req.status || 'Requested'}
-                    </Badge>
-                  </div>
+                        {/* Skills */}
+                        {skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {skills.slice(0, 5).map((skill, si) => (
+                              <Badge key={si} className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-[10px] px-1.5 py-0 font-normal h-5">{skill}</Badge>
+                            ))}
+                            {skills.length > 5 && (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-slate-700/50 text-slate-400">+{skills.length - 5}</Badge>
+                            )}
+                          </div>
+                        )}
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
-                    {req.budget > 0 && (
-                      <span className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3 text-cyan-400" />
-                        <span className="text-slate-200 font-medium">₹{req.budget.toLocaleString()}</span>
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(req.requestedOn).toLocaleDateString()}
-                    </span>
-                    {req.adminComments && (
-                      <span className="flex items-center gap-1 text-indigo-300">
-                        <Star className="h-3 w-3" />
-                        {req.adminComments}
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      )}
+                        {/* Interested Freelancers Banner */}
+                        {req.status?.toLowerCase() === 'open' && (
+                          <div className="mb-2 p-2 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4 text-emerald-400" />
+                                <span className="text-xs font-medium text-emerald-300">
+                                  Freelancers may show interest — check back soon!
+                                </span>
+                              </div>
+                              <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] px-2">
+                                Let's Connect
+                              </Badge>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
+                          {req.budget > 0 && (
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3 text-cyan-400" />
+                              <span className="text-slate-200 font-medium">₹{req.budget.toLocaleString()}</span>
+                            </span>
+                          )}
+                          {req.minExperience > 0 && (
+                            <span className="flex items-center gap-1">
+                              <Briefcase className="h-3 w-3" />
+                              {req.minExperience}+ yrs
+                            </span>
+                          )}
+                          {req.country && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {req.country}
+                            </span>
+                          )}
+                          {req.language && (
+                            <span className="flex items-center gap-1">
+                              <Languages className="h-3 w-3" />
+                              {req.language}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {new Date(req.createdOn).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Demo Requests Tab */}
+        <TabsContent value="demos" className="mt-4 space-y-3">
+          {loadingDemo ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+            </div>
+          ) : hasErrorDemo ? (
+            <Card className="border border-red-500/20 bg-red-500/5">
+              <CardContent className="py-12 text-center space-y-3">
+                <X className="h-10 w-10 text-red-400 mx-auto" />
+                <h3 className="text-base font-semibold text-slate-100">Unable to Load Requests</h3>
+                <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                  <Zap className="h-3.5 w-3.5 mr-1" /> Retry
+                </Button>
+              </CardContent>
+            </Card>
+          ) : demoRequests.length === 0 ? (
+            <Card className="border-0 bg-[#0D1B2E]">
+              <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
+              <CardContent className="py-16 text-center space-y-4">
+                <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center">
+                  <Send className="h-10 w-10 text-cyan-400" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-100">No Demo Requests Yet</h3>
+                <p className="text-slate-400 max-w-md mx-auto">Browse the freelancer directory and request demos to get started.</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {demoRequests.map((req, idx) => (
+                <motion.div
+                  key={req.demoId || idx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.03 }}
+                >
+                  <Card className="border border-slate-700/50 bg-[#0D1B2E] hover:border-cyan-500/30 transition-all">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-slate-100 text-sm truncate">{req.projectTitle}</h3>
+                          <p className="text-xs text-slate-500 mt-0.5">Freelancer: {req.freelancerName || `ID ${req.freelancerId}`}</p>
+                        </div>
+                        <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
+                          {req.status || 'Requested'}
+                        </Badge>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
+                        {req.budget > 0 && (
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="h-3 w-3 text-cyan-400" />
+                            <span className="text-slate-200 font-medium">₹{req.budget.toLocaleString()}</span>
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {new Date(req.requestedOn).toLocaleDateString()}
+                        </span>
+                        {req.adminComments && (
+                          <span className="flex items-center gap-1 text-indigo-300">
+                            <Star className="h-3 w-3" />
+                            {req.adminComments}
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
@@ -739,7 +887,7 @@ const ClientDashboard = () => {
       <Routes>
         <Route path="/" element={<ClientOverview />} />
         <Route path="/freelancers" element={<ClientOverview />} />
-        <Route path="/demo-requests" element={<MyDemoRequests />} />
+        <Route path="/demo-requests" element={<MyRequests />} />
         <Route path="/post-requirement" element={<PostRequirement />} />
         <Route path="/history" element={<ClientOverview />} />
         <Route path="/settings/password" element={<ChangePassword />} />
