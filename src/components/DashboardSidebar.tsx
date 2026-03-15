@@ -90,18 +90,18 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
       </div>
 
       {/* User Info */}
-      <div className="px-3 py-3 border-b border-border">
+      <div className="px-3 py-3 border-b border-slate-700/50">
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+          <div className="h-9 w-9 rounded-full bg-cyan-500/15 flex items-center justify-center overflow-hidden shrink-0">
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
             ) : (
-              <User className="h-4 w-4 text-primary" />
+              <User className="h-4 w-4 text-cyan-400" />
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">{user?.fullName || user?.email || 'User'}</p>
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
+            <p className="text-sm font-semibold text-slate-100 truncate">{user?.fullName || user?.email || 'User'}</p>
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-cyan-500/30 text-cyan-400">
               {userType === 'freelancer' ? 'Freelancer' : 'Client'}
             </Badge>
           </div>
