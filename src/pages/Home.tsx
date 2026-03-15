@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
@@ -26,8 +26,10 @@ const ITEMS_PER_PAGE = 24;
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const { toast } = useToast();
   const freelancerSectionRef = useRef<HTMLDivElement>(null);
+  const worksSectionRef = useRef<HTMLDivElement>(null);
 
   // Freelancer list state (from API)
   const [freelancers, setFreelancers] = useState<FreelancerProfileDto[]>([]);
@@ -95,8 +97,25 @@ const Home = () => {
     (window as any).__scrollToFreelancers = () => {
       freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-    return () => { delete (window as any).__scrollToFreelancers; };
+    (window as any).__scrollToWorks = () => {
+      worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+    return () => {
+      delete (window as any).__scrollToFreelancers;
+      delete (window as any).__scrollToWorks;
+    };
   }, []);
+
+  // Handle scroll from navigation state
+  useEffect(() => {
+    const state = locationState.state as any;
+    if (state?.scrollToFreelancers) {
+      setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+    if (state?.scrollToWorks) {
+      setTimeout(() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }, [locationState.state]);
 
   // Filter freelancers based on filters
   const filtered = useMemo(() => {
@@ -594,7 +613,7 @@ const Home = () => {
       </section>
 
       {/* ===== CURRENT FREELANCER WORKS / LIVE REQUIREMENTS ===== */}
-      <section className="py-16 bg-white">
+      <section ref={worksSectionRef} className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>

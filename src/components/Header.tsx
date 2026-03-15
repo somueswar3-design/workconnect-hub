@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/worksupport360-logo.png';
@@ -70,6 +70,20 @@ const Header = () => {
             >
               <Users className="h-4 w-4" />
               Hire Talent
+            </button>
+
+            <button
+              onClick={() => {
+                if (location.pathname === '/') {
+                  (window as any).__scrollToWorks?.();
+                } else {
+                  navigate('/', { state: { scrollToWorks: true } });
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"
+            >
+              <Search className="h-4 w-4" />
+              Find Work
             </button>
 
             {isAuthenticated ? (
