@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import RequirementsGrid from '@/components/RequirementsGrid';
 import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
   Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award,
