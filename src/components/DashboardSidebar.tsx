@@ -82,9 +82,9 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
         <div className="flex items-center gap-2">
           <img src={logo} alt="WorkSupport360" className="h-8 w-8 rounded-lg" />
           <span className="text-sm font-bold">
-            <span className="text-cyan-400">Work</span>
-            <span className="text-orange-400">Support</span>
-            <span className="text-cyan-400">360</span>
+            <span className="text-orange-500">Work</span>
+            <span className="text-amber-500">Support</span>
+            <span className="text-blue-600">360</span>
           </span>
         </div>
       </div>

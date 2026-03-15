@@ -36,8 +36,8 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-emerald-600">Work</span>
-              <span className="text-gray-800">Support</span>
+              <span className="text-orange-500">Work</span>
+              <span className="text-amber-500">Support</span>
               <span className="text-blue-600">360</span>
             </span>
           </Link>
