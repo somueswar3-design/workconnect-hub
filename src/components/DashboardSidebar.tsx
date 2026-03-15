@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard
+  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard, Home
 } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
@@ -57,12 +57,14 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   };
 
   const freelancerMenuItems = [
+    { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer' },
     { icon: User, label: 'My Profile', path: '/freelancer-profile' },
     { icon: Users, label: 'Engaged Clients', path: '/freelancer/clients' },
   ];
 
   const clientMenuItems = [
+    { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
     { icon: Briefcase, label: 'My Requests', path: '/client/demo-requests' },
     { icon: Users, label: 'Post Requirement', path: '/client/post-requirement' },
