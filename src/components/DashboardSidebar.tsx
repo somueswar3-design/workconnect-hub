@@ -21,7 +21,12 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [activeStatus, setActiveStatus] = useState(isActive);
+  const [activeStatus, setActiveStatus] = useState(isActive ?? true);
+
+  // Sync with prop when profile data loads
+  useEffect(() => {
+    if (isActive !== undefined) setActiveStatus(isActive);
+  }, [isActive]);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleStatusToggle = async () => {
