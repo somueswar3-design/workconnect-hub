@@ -36,33 +36,35 @@ export interface ClientStats {
   averageRating: number;
 }
 
-// Freelancer profile DTO from the browse API
+// Freelancer profile DTO from the filter API
 export interface FreelancerProfileDto {
-  id: number;
-  userId: number;
+  freelancerId: number;
+  id?: number;
+  userId?: number;
   fullName: string;
-  gender: number;
+  gender?: number;
   country: string;
-  phoneNumber: string;
-  companyName: string;
-  experienceYears: number;
+  phoneNumber?: string;
+  companyName?: string;
+  experienceYears?: number;
+  experience?: number;
   primarySkills: string;
-  secondarySkills: string;
-  skillSetDesc: string;
-  anyFreelnacingExperience: number;
-  currentCompany: string;
-  currentCompanyRole: string;
+  secondarySkills?: string;
+  skillSetDesc?: string;
+  anyFreelnacingExperience?: number;
+  currentCompany?: string;
+  currentCompanyRole?: string;
   languagesKnown: string;
-  speakingLanguage: string;
-  hoursAvailablePerDay: string;
+  speakingLanguage?: string;
+  hoursAvailablePerDay?: string;
   hourRate: string;
-  isAvailbleInweeknds: boolean;
-  bioDescption: string;
-  linkedInProfile: string;
+  isAvailbleInweeknds?: boolean;
+  bioDescption?: string;
+  linkedInProfile?: string;
   portfolioURL: string;
-  freelancerUserStatus: boolean;
-  createdOn: string;
-  updatedOn: string;
+  freelancerUserStatus?: boolean;
+  createdOn?: string;
+  updatedOn?: string;
 }
 
 // Filter params for freelancer search
