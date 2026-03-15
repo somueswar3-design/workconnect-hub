@@ -448,7 +448,79 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== FREELANCER SHOWCASE (Main Section) ===== */}
+      {/* ===== FREELANCER PROFILE CTA (Freelancer role only) ===== */}
+      {isFreelancer && (
+        <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <Card className="border-0 shadow-xl overflow-hidden">
+                  <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-8 md:p-10 text-white text-center">
+                    <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                      <User className="h-8 w-8 text-white" />
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Complete Your Profile & Get Matched</h2>
+                    <p className="text-white/90 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+                      Update your profile with your skills, experience & availability. We'll match you with the right client requirements and provide assignments directly to you.
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
+                      {[
+                        { icon: Target, text: 'Smart Matching with Client Needs' },
+                        { icon: Shield, text: 'Your Privacy is Protected' },
+                        { icon: TrendingUp, text: 'Grow Your Freelance Career' },
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col items-center gap-2 text-sm">
+                          <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                            <item.icon className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="text-white/90 font-medium text-center text-xs">{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Platform fee highlight */}
+                    <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 mb-6 max-w-sm mx-auto border border-white/20">
+                      <div className="flex items-center justify-center gap-3">
+                        <DollarSign className="h-6 w-6 text-yellow-300" />
+                        <div>
+                          <p className="text-sm text-white/80">Platform Commission</p>
+                          <p className="text-3xl font-extrabold">10%</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-white/70 mt-2">Only on successful assignments. No upfront fees!</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button
+                        size="lg"
+                        onClick={() => navigate('/freelancer-profile')}
+                        className="gap-2 text-lg px-8 bg-white text-emerald-600 hover:bg-white/90 font-bold shadow-xl"
+                      >
+                        <User className="h-5 w-5" /> Update Your Profile
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        onClick={() => navigate('/freelancer')}
+                        className="gap-2 text-lg px-8 bg-transparent border-white/40 text-white hover:bg-white/10 font-bold"
+                      >
+                        <Briefcase className="h-5 w-5" /> Go to Dashboard
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ===== FREELANCER SHOWCASE (Clients & Guests only) ===== */}
+      {!isFreelancer && (
       <section ref={freelancerSectionRef} className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <motion.div
