@@ -329,12 +329,6 @@ const ClientOverview = () => {
                             </div>
                           )}
 
-                          {/* Portfolio */}
-                          {p.portfolioURL && (
-                            <a href={p.portfolioURL} target="_blank" rel="noopener noreferrer" className="text-[10px] text-cyan-400 hover:underline mt-1 inline-block">
-                              View Portfolio →
-                            </a>
-                          )}
                         </div>
                       </div>
                     </CardContent>
