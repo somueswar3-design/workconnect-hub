@@ -55,6 +55,7 @@ const ClientOverview = () => {
 
   const loadProfiles = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
+    setHasError(false);
     try {
       let data: FreelancerProfileDto[];
       if (filters && (filters.skill || filters.language || filters.country || filters.minExperience !== undefined)) {
@@ -67,7 +68,8 @@ const ClientOverview = () => {
       setProfiles(data);
     } catch (error) {
       console.error('Failed to load freelancer profiles:', error);
-      toast({ title: 'Error', description: 'Failed to load freelancer profiles', variant: 'destructive' });
+      setHasError(true);
+      setProfiles([]);
     } finally {
       setIsLoading(false);
     }
