@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { countries } from '@/data/countries';
 import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, DemoRequestResponse, postRequirement, getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardLayout from '@/layouts/DashboardLayout';
@@ -48,6 +49,7 @@ const ClientOverview = () => {
     clientBudget: '',
     contactEmail: '',
     contactPhone: '',
+    budgetCountry: 'India',
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
@@ -128,6 +130,7 @@ const ClientOverview = () => {
       clientBudget: '',
       contactEmail: user?.email || '',
       contactPhone: '',
+      budgetCountry: 'India',
     });
     setDemoOpen(true);
   };
@@ -406,10 +409,24 @@ const ClientOverview = () => {
               <Label className="text-sm text-slate-300">Description</Label>
               <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Country (Currency)</Label>
+              <Select value={demoForm.budgetCountry} onValueChange={v => setDemoForm(f => ({ ...f, budgetCountry: v }))}>
+                <SelectTrigger className="w-full bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue placeholder="Select country" /></SelectTrigger>
+                <SelectContent className="max-h-60 bg-[#0D1B2E] border-slate-700/50">
+                  {countries.map(c => (
+                    <SelectItem key={c.code} value={c.name} className="text-slate-200 focus:bg-slate-700/50 focus:text-slate-100">{c.name} ({c.currencySymbol} {c.currency})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-sm text-slate-300">Budget</Label>
-                <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+                <Label className="text-sm text-slate-300">Budget ({countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'})</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">{countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'}</span>
+                  <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="pl-8 bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm text-slate-300">Contact Phone</Label>
