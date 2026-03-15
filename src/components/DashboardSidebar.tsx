@@ -76,7 +76,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   ];
 
   return (
-    <aside className="w-56 min-h-screen bg-gradient-to-b from-background to-muted/30 border-r border-border flex flex-col shrink-0">
+    <aside className="w-56 min-h-screen bg-[#0D1B2E] border-r border-slate-700/50 flex flex-col shrink-0">
       {/* Logo */}
       <div className="p-3 border-b border-border">
         <div className="flex items-center gap-2">
