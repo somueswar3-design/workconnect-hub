@@ -29,9 +29,9 @@ const freelancingExpLabel: Record<number, string> = {
 const ClientOverview = () => {
   const [profiles, setProfiles] = useState<FreelancerProfileDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [filterSkill, setFilterSkill] = useState('');
   const [filterLanguage, setFilterLanguage] = useState('');
   const [filterCountry, setFilterCountry] = useState('');
