@@ -158,84 +158,101 @@ const FreelancerOverview = () => {
         </Card>
       </div>
 
-      {/* Openings */}
-      <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-              <Input placeholder="Search by skill, title, or keyword..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
-            </div>
-            <Badge variant="outline" className="px-3 py-2 text-xs shrink-0 border-slate-700/50 text-slate-400">{filteredOpenings.length} openings</Badge>
-          </div>
+      {/* Tabs: Requirements & Openings */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="bg-slate-800/50 border border-slate-700/50">
+          <TabsTrigger value="requirements" className="gap-2 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+            <LayoutGrid className="h-4 w-4" /> Client Requirements
+          </TabsTrigger>
+          <TabsTrigger value="openings" className="gap-2 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+            <Briefcase className="h-4 w-4" /> Job Openings
+          </TabsTrigger>
+        </TabsList>
 
-          {openingsLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
-                  <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full mb-2" /><div className="h-3 bg-slate-700 rounded w-3/4" /></CardContent>
-                </Card>
-              ))}
+        <TabsContent value="requirements">
+          <RequirementsGrid variant="freelancer" />
+        </TabsContent>
+
+        <TabsContent value="openings">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Input placeholder="Search by skill, title, or keyword..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+              </div>
+              <Badge variant="outline" className="px-3 py-2 text-xs shrink-0 border-slate-700/50 text-slate-400">{filteredOpenings.length} openings</Badge>
             </div>
-          ) : filteredOpenings.length === 0 ? (
-            <Card className="border-0 shadow-lg overflow-hidden bg-[#0D1B2E]">
-              <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
-              <CardContent className="py-16 text-center space-y-6">
-                <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center mb-4">
-                  <Search className="h-12 w-12 text-cyan-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-100 mb-2">No Openings Available Right Now</h3>
-                  <p className="text-slate-400 max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
-                </div>
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-500/10 text-cyan-400 text-sm font-medium">
-                  <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {filteredOpenings.map((job, idx) => (
-                <motion.div key={job.id || idx} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-                  <Card className="border border-slate-700/50 shadow-sm hover:shadow-md hover:border-cyan-500/30 transition-all group cursor-pointer bg-[#0D1B2E]">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-slate-100 text-base group-hover:text-cyan-400 transition-colors truncate">{job.title}</h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm text-slate-400 flex items-center gap-1"><Building2 className="h-3.5 w-3.5" /> {job.clientName}</span>
-                            {job.location && <span className="text-sm text-slate-400 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {job.location}</span>}
+
+            {openingsLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map(i => (
+                  <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
+                    <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full mb-2" /><div className="h-3 bg-slate-700 rounded w-3/4" /></CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredOpenings.length === 0 ? (
+              <Card className="border-0 shadow-lg overflow-hidden bg-[#0D1B2E]">
+                <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
+                <CardContent className="py-16 text-center space-y-6">
+                  <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center mb-4">
+                    <Search className="h-12 w-12 text-cyan-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-100 mb-2">No Openings Available Right Now</h3>
+                    <p className="text-slate-400 max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-500/10 text-cyan-400 text-sm font-medium">
+                    <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {filteredOpenings.map((job, idx) => (
+                  <motion.div key={job.id || idx} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                    <Card className="border border-slate-700/50 shadow-sm hover:shadow-md hover:border-cyan-500/30 transition-all group cursor-pointer bg-[#0D1B2E]">
+                      <CardContent className="p-5">
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-slate-100 text-base group-hover:text-cyan-400 transition-colors truncate">{job.title}</h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm text-slate-400 flex items-center gap-1"><Building2 className="h-3.5 w-3.5" /> {job.clientName}</span>
+                              {job.location && <span className="text-sm text-slate-400 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {job.location}</span>}
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            {job.postedDate && <span className="text-xs text-slate-500">{getTimeAgo(job.postedDate)}</span>}
+                            <Badge className={`block mt-1 text-[10px] ${job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-slate-700 text-slate-400'}`}>{job.status || 'Open'}</Badge>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          {job.postedDate && <span className="text-xs text-slate-500">{getTimeAgo(job.postedDate)}</span>}
-                          <Badge className={`block mt-1 text-[10px] ${job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-slate-700 text-slate-400'}`}>{job.status || 'Open'}</Badge>
-                        </div>
-                      </div>
-                      {job.description && <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-2">{job.description}</p>}
-                      {job.skills && job.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-3">
-                          {job.skills.map((skill, si) => <Badge key={si} className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>)}
-                        </div>
-                      )}
-                      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-slate-700/50">
-                        {job.budget && (
-                          <span className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                            {getCurrencySymbol(job.currency) === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-cyan-400" /> : <DollarSign className="h-3.5 w-3.5 text-cyan-400" />}
-                            {job.budget}
-                          </span>
+                        {job.description && <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-2">{job.description}</p>}
+                        {job.skills && job.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {job.skills.map((skill, si) => <Badge key={si} className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>)}
+                          </div>
                         )}
-                        {job.duration && <span className="text-xs text-slate-400 flex items-center gap-1"><Timer className="h-3.5 w-3.5" /> {job.duration}</span>}
-                        {job.deadline && <span className="text-xs text-slate-400 flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}</span>}
-                        {job.applicants !== undefined && job.applicants > 0 && <span className="text-xs text-slate-400 flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {job.applicants} applicants</span>}
-                        {job.postedDate && <span className="text-xs text-slate-500 flex items-center gap-1 ml-auto"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          )}
-      </div>
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-slate-700/50">
+                          {job.budget && (
+                            <span className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                              {getCurrencySymbol(job.currency) === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-cyan-400" /> : <DollarSign className="h-3.5 w-3.5 text-cyan-400" />}
+                              {job.budget}
+                            </span>
+                          )}
+                          {job.duration && <span className="text-xs text-slate-400 flex items-center gap-1"><Timer className="h-3.5 w-3.5" /> {job.duration}</span>}
+                          {job.deadline && <span className="text-xs text-slate-400 flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}</span>}
+                          {job.applicants !== undefined && job.applicants > 0 && <span className="text-xs text-slate-400 flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {job.applicants} applicants</span>}
+                          {job.postedDate && <span className="text-xs text-slate-500 flex items-center gap-1 ml-auto"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Notification Popup */}
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
