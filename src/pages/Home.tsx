@@ -326,25 +326,76 @@ const Home = () => {
             <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT professionals. Hourly, Part-Time, or Full-Time — flexible for your needs.</p>
           </motion.div>
 
-          {/* Search & Load */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 max-w-2xl mx-auto mb-8">
-            <div className="flex-1 w-full flex items-center bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <Search className="h-5 w-5 text-gray-400 ml-4 shrink-0" />
-              <Input
-                placeholder="Search by name, skill, or country..."
-                value={searchQuery}
-                onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="border-0 shadow-none focus-visible:ring-0 bg-transparent"
-              />
-            </div>
-            {!hasLoaded && (
+          {/* Filters */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
               <Button
-                onClick={() => loadFreelancers()}
-                className="gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
               >
-                <Zap className="h-4 w-4" /> Load Freelancers
+                <Filter className="h-4 w-4" /> {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
-            )}
+              <p className="text-sm text-gray-500">{filtered.length} freelancers found</p>
+            </div>
+
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Skill</Label>
+                        <select
+                          value={filterSkill}
+                          onChange={e => { setFilterSkill(e.target.value); setCurrentPage(1); }}
+                          className="w-full h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="">All Skills</option>
+                          {uniqueSkills.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Country</Label>
+                        <select
+                          value={filterCountry}
+                          onChange={e => { setFilterCountry(e.target.value); setCurrentPage(1); }}
+                          className="w-full h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                          <option value="">All Countries</option>
+                          {uniqueCountries.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Min Experience (yrs)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="e.g. 3"
+                          value={filterMinExp}
+                          onChange={e => { setFilterMinExp(e.target.value); setCurrentPage(1); }}
+                          className="h-9"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button size="sm" onClick={handleFilterApply} className="gap-1 bg-emerald-500 hover:bg-emerald-600 text-white">
+                        <Filter className="h-3 w-3" /> Apply
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleFilterClear} className="gap-1">
+                        <X className="h-3 w-3" /> Clear
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Loading */}
@@ -364,100 +415,73 @@ const Home = () => {
             </div>
           )}
 
-          {/* Not loaded yet */}
-          {!hasLoaded && !isLoading && !hasError && (
-            <div className="text-center py-12">
-              <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-10 w-10 text-emerald-500" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Discover Top Freelancers</h3>
-              <p className="text-gray-500 mb-6">Click "Load Freelancers" or "Hire Talent" to browse our directory</p>
-            </div>
-          )}
-
-          {/* Freelancer Cards Grid */}
+          {/* Freelancer Small Cards Grid */}
           {hasLoaded && !isLoading && !hasError && (
             <>
               {paginated.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">No freelancers found. Try a different search.</p>
+                  <p className="text-gray-500">No freelancers found. Try different filters.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   {paginated.map((f, idx) => {
                     const colorSet = cardColors[idx % cardColors.length];
                     const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
-                    const languages = f.languagesKnown ? f.languagesKnown.split(',').map(s => s.trim()).filter(Boolean) : [];
                     const symbol = getCurrencySymbol(f.country);
                     const expYears = f.experience ?? f.experienceYears ?? 0;
 
                     return (
                       <motion.div
                         key={f.freelancerId || f.id || idx}
-                        initial={{ opacity: 0, y: 15 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: idx * 0.03 }}
+                        transition={{ delay: idx * 0.02 }}
                       >
-                        <Card className="border-0 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 bg-white">
-                          {/* Color top bar */}
-                          <div className={`h-2 bg-gradient-to-r ${colorSet.bg}`} />
-                          <CardContent className="p-5">
+                        <Card className="border-0 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group hover:-translate-y-1 bg-white h-full">
+                          <div className={`h-1.5 bg-gradient-to-r ${colorSet.bg}`} />
+                          <CardContent className="p-3">
                             {/* Avatar & Name */}
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className={`h-12 w-12 rounded-full bg-gradient-to-br ${colorSet.bg} flex items-center justify-center text-white font-bold text-lg shadow-md`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${colorSet.bg} flex items-center justify-center text-white font-bold text-xs shadow-sm shrink-0`}>
                                 {f.fullName?.charAt(0)?.toUpperCase() || '?'}
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 truncate">{f.fullName}</h3>
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                  <MapPin className="h-3 w-3" />
-                                  <span className="truncate">{f.country || 'Remote'}</span>
-                                </div>
+                              <div className="min-w-0">
+                                <h3 className="font-semibold text-xs text-gray-900 truncate leading-tight">{f.fullName}</h3>
+                                <p className="text-[10px] text-gray-400 truncate flex items-center gap-0.5">
+                                  <MapPin className="h-2.5 w-2.5 shrink-0" />{f.country || 'Remote'}
+                                </p>
                               </div>
                             </div>
 
-                            {/* Stats row */}
-                            <div className="grid grid-cols-2 gap-2 mb-4">
-                              <div className={`${colorSet.light} rounded-lg p-2 text-center`}>
-                                <p className={`text-lg font-bold ${colorSet.text}`}>{expYears}</p>
-                                <p className="text-[10px] text-gray-500 font-medium">Yrs Exp</p>
-                              </div>
-                              <div className={`${colorSet.light} rounded-lg p-2 text-center`}>
-                                <p className={`text-lg font-bold ${colorSet.text}`}>{symbol}{f.hourRate || '—'}</p>
-                                <p className="text-[10px] text-gray-500 font-medium">Per Hour</p>
-                              </div>
+                            {/* Stats */}
+                            <div className="flex items-center justify-between mb-2 text-[10px]">
+                              <span className={`${colorSet.badge} px-1.5 py-0.5 rounded-full font-semibold`}>{expYears}yr exp</span>
+                              <span className="font-bold text-gray-700 text-xs">{symbol}{f.hourRate || '—'}/hr</span>
                             </div>
 
-                            {/* Skills */}
+                            {/* Skills - max 2 */}
                             {skills.length > 0 && (
-                              <div className="flex flex-wrap gap-1.5 mb-4">
-                                {skills.slice(0, 4).map((skill, si) => (
-                                  <span key={si} className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${colorSet.badge}`}>
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {skills.slice(0, 2).map((skill, si) => (
+                                  <span key={si} className="text-[9px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium truncate max-w-full">
                                     {skill}
                                   </span>
                                 ))}
-                                {skills.length > 4 && (
-                                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">+{skills.length - 4}</span>
+                                {skills.length > 2 && (
+                                  <span className="text-[9px] px-1 py-0.5 text-gray-400">+{skills.length - 2}</span>
                                 )}
-                              </div>
-                            )}
-
-                            {/* Languages */}
-                            {languages.length > 0 && (
-                              <div className="flex items-center gap-1 text-xs text-gray-400 mb-4">
-                                <Languages className="h-3 w-3" />
-                                <span className="truncate">{languages.join(', ')}</span>
                               </div>
                             )}
 
                             {/* Demo Button */}
                             <Button
                               onClick={() => handleDemoClick(f)}
-                              className={`w-full gap-2 font-semibold bg-gradient-to-r ${colorSet.bg} hover:opacity-90 text-white shadow-md`}
+                              size="sm"
+                              className={`w-full gap-1 text-[10px] h-7 font-semibold bg-gradient-to-r ${colorSet.bg} hover:opacity-90 text-white shadow-sm`}
                             >
-                              <Zap className="h-4 w-4" /> Request Demo
+                              <Play className="h-3 w-3" /> Demo
                             </Button>
                           </CardContent>
                         </Card>
@@ -469,27 +493,69 @@ const Home = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
+                <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(1)}
+                    className="h-8 px-2 text-xs"
+                  >
+                    First
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(p => p - 1)}
-                    className="h-9 px-3"
+                    className="h-8 px-2"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-3 w-3" />
                   </Button>
-                  <span className="text-sm text-gray-600 font-medium px-3">
-                    Page {currentPage} of {totalPages}
-                  </span>
+                  
+                  {/* Page numbers */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 2)
+                    .reduce((acc: (number | string)[], page, idx, arr) => {
+                      if (idx > 0 && typeof arr[idx - 1] === 'number' && (page as number) - (arr[idx - 1] as number) > 1) {
+                        acc.push('...');
+                      }
+                      acc.push(page);
+                      return acc;
+                    }, [])
+                    .map((page, idx) =>
+                      page === '...' ? (
+                        <span key={`ellipsis-${idx}`} className="px-1 text-gray-400 text-xs">...</span>
+                      ) : (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setCurrentPage(page as number)}
+                          className={`h-8 w-8 p-0 text-xs ${currentPage === page ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : ''}`}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
+
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(p => p + 1)}
-                    className="h-9 px-3"
+                    className="h-8 px-2"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="h-8 px-2 text-xs"
+                  >
+                    Last
                   </Button>
                 </div>
               )}
@@ -509,15 +575,90 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== WORK TYPES (guests only) ===== */}
+      {/* ===== BECOME A FREELANCER — Earn Money ===== */}
       {!isAuthenticated && (
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-              <Badge className="mb-3 bg-orange-50 text-orange-600 border-orange-200">Flexible Hiring</Badge>
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">Perfect for Your Work Needs</h2>
-              <p className="text-gray-500 max-w-xl mx-auto">Hire skilled IT freelancers — hourly, part-time, or full-time.</p>
+        <section className="py-20 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+            }} />
+          </div>
+          <div className="relative container mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <Badge className="mb-4 bg-white/20 text-white border-white/30 text-sm px-4 py-1 backdrop-blur-sm">💰 Earn Money</Badge>
+                <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight">
+                  Become a Freelancer & <br />Start Earning Today
+                </h2>
+                <p className="text-white/90 text-lg mb-6 leading-relaxed">
+                  Join thousands of IT professionals earning on their own terms. Work part-time while keeping your job, or go full-time freelancing.
+                </p>
+                <div className="space-y-3 mb-8">
+                  {[
+                    { icon: DollarSign, text: 'Set your own hourly rates' },
+                    { icon: Clock, text: 'Work part-time or full-time — your choice' },
+                    { icon: Globe, text: 'Connect with clients worldwide' },
+                    { icon: Shield, text: 'Your identity stays protected' },
+                    { icon: TrendingUp, text: 'Build your portfolio & grow' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <item.icon className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="font-medium">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="gap-2 text-lg px-8 bg-white text-orange-600 hover:bg-white/90 font-bold shadow-xl"
+                  >
+                    <Link to="/register?role=FreeLancer">
+                      <Briefcase className="h-5 w-5" /> Register as Freelancer
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 text-lg px-8 bg-transparent border-white/40 text-white hover:bg-white/10 font-bold"
+                  >
+                    <Link to="/login">
+                      Already registered? Login
+                    </Link>
+                  </Button>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="hidden md:grid grid-cols-2 gap-4"
+              >
+                {[
+                  { label: 'Avg. Earnings', value: '₹50K+/mo', icon: DollarSign, bg: 'bg-white/20' },
+                  { label: 'Active Projects', value: '1,200+', icon: Briefcase, bg: 'bg-white/15' },
+                  { label: 'Freelancers', value: '500+', icon: Users, bg: 'bg-white/20' },
+                  { label: 'Part-Time Earners', value: '60%', icon: Clock, bg: 'bg-white/15' },
+                ].map((stat, i) => (
+                  <div key={i} className={`${stat.bg} backdrop-blur-sm rounded-2xl p-5 text-center border border-white/10`}>
+                    <stat.icon className="h-8 w-8 mx-auto mb-2 text-white/80" />
+                    <p className="text-2xl font-extrabold">{stat.value}</p>
+                    <p className="text-xs text-white/70 font-medium mt-1">{stat.label}</p>
+                  </div>
+                ))}
+              </motion.div>
             </div>
+          </div>
+        </section>
+      )}
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {[
                 { title: 'Hourly Basis', desc: 'Pay only for the hours worked. Ideal for short tasks or consulting.', icon: Clock, color: 'from-emerald-500 to-teal-600', features: ['Flexible hours', 'No commitment', 'Pay as you go'] },
