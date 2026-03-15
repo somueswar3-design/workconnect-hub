@@ -109,12 +109,6 @@ const FreelancerOverview = () => {
 
   return (
     <div className="p-6 space-y-5">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Welcome back, {user?.fullName || user?.email || 'User'}!</p>
-      </div>
-
       {/* Compact Stats Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card className="border border-border shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
@@ -161,22 +155,8 @@ const FreelancerOverview = () => {
         </Card>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="openings" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Search className="h-4 w-4" /> Openings
-          </TabsTrigger>
-          <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Briefcase className="h-4 w-4" /> My Assignments
-          </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <Clock className="h-4 w-4" /> Work History
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Openings Tab */}
-        <TabsContent value="openings" className="space-y-4">
+      {/* Openings */}
+      <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -252,94 +232,7 @@ const FreelancerOverview = () => {
               ))}
             </div>
           )}
-        </TabsContent>
-
-        {/* Assignments Tab */}
-        <TabsContent value="assignments" className="space-y-4">
-          {loading ? (
-            <Card className="border-0 shadow-md"><CardContent className="py-12 text-center"><p className="text-muted-foreground">Loading assignments...</p></CardContent></Card>
-          ) : validAssignments.length === 0 ? (
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-              <CardContent className="py-14 text-center space-y-5">
-                <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center"><Briefcase className="h-10 w-10 text-primary" /></div>
-                <div><h3 className="text-xl font-bold text-foreground mb-2">No Assignments Yet</h3><p className="text-muted-foreground max-w-md mx-auto">Once your profile is shortlisted, we'll assign you to the perfect project.</p></div>
-                <Button onClick={() => navigate('/freelancer-profile')} size="sm"><User className="h-4 w-4 mr-2" /> Complete Your Profile</Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {activeAssignments.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /> Active ({activeAssignments.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {activeAssignments.map((a, idx) => (
-                      <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2"><div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center"><Briefcase className="h-4 w-4 text-primary" /></div><Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]">{a.status || 'Active'}</Badge></div>
-                          <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
-                          {a.startDate && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.startDate).toLocaleDateString()}</p>}
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {completedAssignments.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Past ({completedAssignments.length})</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {completedAssignments.map((a, idx) => (
-                      <Card key={`${a.projectId}-${idx}`} className="border border-border shadow-sm bg-muted/20">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2"><div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center"><Briefcase className="h-4 w-4 text-muted-foreground" /></div><Badge variant="outline" className="text-[10px]">{a.status || 'Completed'}</Badge></div>
-                          <h4 className="font-semibold text-foreground text-sm mb-1 truncate">{a.projectName}</h4>
-                          <p className="text-xs text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {a.clientName}</p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </TabsContent>
-
-        {/* Work History Tab */}
-        <TabsContent value="history" className="space-y-3">
-          {validAssignments.length === 0 ? (
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
-              <CardContent className="py-14 text-center space-y-4">
-                <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center"><Clock className="h-10 w-10 text-muted-foreground" /></div>
-                <h3 className="text-xl font-bold text-foreground">No Work History Yet</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">Your work history will appear here once you start working on projects.</p>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium"><Sparkles className="h-4 w-4" /> We'll notify you when you're shortlisted!</div>
-              </CardContent>
-            </Card>
-          ) : (
-            validAssignments.map((a, idx) => (
-              <Card key={`history-${a.projectId}-${idx}`} className="border border-border shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-2 w-2 rounded-full shrink-0" style={{ background: a.status?.toLowerCase() === 'active' ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))' }} />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground text-sm truncate">{a.projectName}</h4>
-                      <p className="text-xs text-muted-foreground">{a.clientName}</p>
-                    </div>
-                    <Badge className={a.status?.toLowerCase() === 'active' ? 'bg-primary/10 text-primary border-primary/20 text-[10px]' : 'text-[10px]'} variant={a.status?.toLowerCase() === 'active' ? 'default' : 'outline'}>{a.status}</Badge>
-                    <div className="text-right text-xs text-muted-foreground shrink-0">
-                      {a.startDate && <div>{new Date(a.startDate).toLocaleDateString()}</div>}
-                      {a.endDate && <div>→ {new Date(a.endDate).toLocaleDateString()}</div>}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+      </div>
 
       {/* Notification Popup */}
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
