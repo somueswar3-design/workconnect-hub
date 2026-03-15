@@ -106,6 +106,17 @@ const Home = () => {
     };
   }, []);
 
+  // Handle scroll from navigation state
+  useEffect(() => {
+    const state = locationState.state as any;
+    if (state?.scrollToFreelancers) {
+      setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+    if (state?.scrollToWorks) {
+      setTimeout(() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
+    }
+  }, [locationState.state]);
+
   // Filter freelancers based on filters
   const filtered = useMemo(() => {
     let result = freelancers;
