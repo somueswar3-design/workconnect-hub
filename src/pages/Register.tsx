@@ -34,10 +34,7 @@ const Register = () => {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    const r = user?.role?.toLowerCase() || '';
-    if (r === 'admin') return <Navigate to="/admin" replace />;
-    if (r === 'client') return <Navigate to="/client" replace />;
-    return <Navigate to="/freelancer" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const form = useForm<RegisterFormData>({
