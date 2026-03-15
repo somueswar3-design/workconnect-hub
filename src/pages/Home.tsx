@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -14,10 +14,20 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import RequirementsGrid from '@/components/RequirementsGrid';
-import wsLogo from '@/assets/worksupport360-logo.png';
 
 const Home = () => {
-  const popularSearches = ['React', 'Node.js', 'Python', 'AWS', 'DevOps', 'Data Science', '.NET', 'Angular'];
+  const [heroSearch, setHeroSearch] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
+  const projectsRef = useRef<HTMLDivElement>(null);
+
+  const popularSkills = [
+    'React', 'Node.js', 'Python', 'AWS', 'DevOps', '.NET', 'Angular', 'Java',
+    'TypeScript', 'Docker', 'Kubernetes', 'Azure', 'SQL Server', 'MongoDB',
+    'Power BI', 'Salesforce', 'SAP', 'Terraform', 'GraphQL', 'Flutter',
+    'iOS', 'Android', 'Golang', 'Rust', 'PHP', 'Laravel', 'Django',
+    'Machine Learning', 'Data Engineering', 'Cybersecurity', 'Blockchain',
+    'ServiceNow', 'Tableau', 'Snowflake', 'Figma', 'UI/UX Design',
+  ];
 
   const stats = [
     { value: '500+', label: 'Active Freelancers' },
@@ -59,6 +69,17 @@ const Home = () => {
     { step: '4', title: 'Get Paid', description: 'Complete work, track earnings, and receive timely payments for your expertise.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
 
+  const handleHeroSearch = () => {
+    setActiveSearch(heroSearch);
+    projectsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSkillClick = (skill: string) => {
+    setHeroSearch(skill);
+    setActiveSearch(skill);
+    projectsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col bg-white text-gray-900 min-h-screen">
 
@@ -92,10 +113,16 @@ const Home = () => {
                 <Search className="h-5 w-5 text-gray-400 shrink-0" />
                 <Input
                   placeholder="Search for skills or services..."
+                  value={heroSearch}
+                  onChange={e => setHeroSearch(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleHeroSearch()}
                   className="border-0 shadow-none text-gray-800 placeholder:text-gray-400 focus-visible:ring-0 bg-transparent"
                 />
               </div>
-              <Button className="rounded-none rounded-r-lg h-12 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold border-0">
+              <Button
+                onClick={handleHeroSearch}
+                className="rounded-none rounded-r-lg h-12 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold border-0"
+              >
                 Search
               </Button>
             </div>
@@ -103,8 +130,12 @@ const Home = () => {
             {/* Popular Searches */}
             <div className="flex flex-wrap items-center gap-2 mt-4">
               <span className="text-sm text-slate-400">Popular:</span>
-              {popularSearches.slice(0, 5).map(s => (
-                <span key={s} className="text-sm px-3 py-1 rounded-full border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-400 cursor-pointer transition-colors">
+              {popularSkills.slice(0, 6).map(s => (
+                <span
+                  key={s}
+                  onClick={() => handleSkillClick(s)}
+                  className="text-sm px-3 py-1 rounded-full border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-400 cursor-pointer transition-colors"
+                >
                   {s}
                 </span>
               ))}
@@ -113,69 +144,34 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== ROLE SELECTION ===== */}
-      <section className="py-16 bg-gray-50">
+      {/* ===== POPULAR IT SKILLS ===== */}
+      <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">How would you like to get started?</h2>
-            <p className="text-gray-500 max-w-lg mx-auto">Choose your path and join thousands of IT professionals and businesses</p>
+          <div className="text-center mb-8">
+            <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200">Popular Skills</Badge>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Trending IT Skills</h2>
+            <p className="text-gray-500 text-sm">Click any skill to find matching projects</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {/* Freelancer */}
-            <Link to="/register?role=FreeLancer" className="group">
-              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-emerald-500 hover:shadow-xl transition-all duration-300">
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 text-xs">For Freelancers</Badge>
-                </div>
-                <div className="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5">
-                  <Briefcase className="h-7 w-7 text-emerald-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Become a Freelancer</h3>
-                <p className="text-gray-500 text-sm mb-5">Offer your IT skills, set your own rates, and earn on your terms.</p>
-                <ul className="space-y-2.5 mb-6">
-                  {['Create your professional profile', 'Get matched with projects', 'Set your own schedule & rates', 'Privacy-protected identity'].map(item => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
-                      <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm group-hover:gap-3 transition-all">
-                  Start as Freelancer <ArrowRight className="h-4 w-4" />
-                </div>
-              </motion.div>
-            </Link>
-
-            {/* Client */}
-            <Link to="/register?role=Client" className="group">
-              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-blue-500 hover:shadow-xl transition-all duration-300">
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-blue-50 text-blue-600 border-blue-200 text-xs">For Businesses</Badge>
-                </div>
-                <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-5">
-                  <Users className="h-7 w-7 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Need Work Support</h3>
-                <p className="text-gray-500 text-sm mb-5">Find verified IT professionals to power your projects.</p>
-                <ul className="space-y-2.5 mb-6">
-                  {['Browse skilled professionals', 'Post your requirements', 'Request free demos', 'Milestone-based payments'].map(item => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
-                      <CheckCircle className="h-4 w-4 text-blue-500 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
-                  Hire Talent <ArrowRight className="h-4 w-4" />
-                </div>
-              </motion.div>
-            </Link>
+          <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
+            {popularSkills.map((skill, i) => (
+              <motion.span
+                key={skill}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.02 }}
+                onClick={() => handleSkillClick(skill)}
+                className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-600 cursor-pointer transition-all"
+              >
+                {skill}
+              </motion.span>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===== DOMAINS & TECHNOLOGIES ===== */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <Badge className="mb-3 bg-purple-50 text-purple-600 border-purple-200">All Domains</Badge>
@@ -203,8 +199,67 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ===== ROLE SELECTION ===== */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">How would you like to get started?</h2>
+            <p className="text-gray-500 max-w-lg mx-auto">Choose your path and join thousands of IT professionals and businesses</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <Link to="/register?role=FreeLancer" className="group">
+              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-emerald-500 hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 text-xs">For Freelancers</Badge>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5">
+                  <Briefcase className="h-7 w-7 text-emerald-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Become a Freelancer</h3>
+                <p className="text-gray-500 text-sm mb-5">Offer your IT skills, set your own rates, and earn on your terms.</p>
+                <ul className="space-y-2.5 mb-6">
+                  {['Create your professional profile', 'Get matched with projects', 'Set your own schedule & rates', 'Privacy-protected identity'].map(item => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  Start as Freelancer <ArrowRight className="h-4 w-4" />
+                </div>
+              </motion.div>
+            </Link>
+
+            <Link to="/register?role=Client" className="group">
+              <motion.div whileHover={{ y: -4 }} className="relative bg-white rounded-2xl border-2 border-gray-100 p-8 hover:border-blue-500 hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-blue-50 text-blue-600 border-blue-200 text-xs">For Businesses</Badge>
+                </div>
+                <div className="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-5">
+                  <Users className="h-7 w-7 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Need Work Support</h3>
+                <p className="text-gray-500 text-sm mb-5">Find verified IT professionals to power your projects.</p>
+                <ul className="space-y-2.5 mb-6">
+                  {['Browse skilled professionals', 'Post your requirements', 'Request free demos', 'Milestone-based payments'].map(item => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                      <CheckCircle className="h-4 w-4 text-blue-500 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-2 text-blue-600 font-semibold text-sm group-hover:gap-3 transition-all">
+                  Hire Talent <ArrowRight className="h-4 w-4" />
+                </div>
+              </motion.div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ===== LIVE REQUIREMENTS ===== */}
-      <section className="py-16 bg-gray-50">
+      <section ref={projectsRef} className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -216,7 +271,7 @@ const Home = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Latest Project Requirements</h2>
             <p className="text-gray-500 max-w-xl mx-auto">Browse real client requirements. Find a project that matches your skills and express your interest!</p>
           </motion.div>
-          <RequirementsGrid variant="public" maxItems={9} theme="light" />
+          <RequirementsGrid variant="public" maxItems={9} theme="light" externalSearch={activeSearch} hideFilters />
           <div className="text-center mt-8">
             <Button asChild variant="outline" size="lg" className="gap-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50">
               <Link to="/register?role=FreeLancer">
