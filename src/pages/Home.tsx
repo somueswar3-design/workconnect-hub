@@ -659,48 +659,8 @@ const Home = () => {
           </div>
         </section>
       )}
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {[
-                { title: 'Hourly Basis', desc: 'Pay only for the hours worked. Ideal for short tasks or consulting.', icon: Clock, color: 'from-emerald-500 to-teal-600', features: ['Flexible hours', 'No commitment', 'Pay as you go'] },
-                { title: 'Part-Time', desc: 'Engage freelancers for 20 hrs/week. Perfect for ongoing support.', icon: Timer, color: 'from-blue-500 to-indigo-600', features: ['20 hrs/week', 'Dedicated support', 'Cost effective'] },
-                { title: 'Full-Time', desc: 'Hire dedicated freelancers for 40 hrs/week for long-term needs.', icon: Briefcase, color: 'from-purple-500 to-violet-600', features: ['40 hrs/week', 'Full dedication', 'Team integration'] },
-              ].map((type, i) => (
-                <motion.div
-                  key={type.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  onClick={() => navigate('/login')}
-                  className="cursor-pointer group"
-                >
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all h-full bg-white overflow-hidden">
-                    <div className={`h-2 bg-gradient-to-r ${type.color}`} />
-                    <CardContent className="pt-6">
-                      <div className={`h-12 w-12 rounded-xl bg-gradient-to-r ${type.color} flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform`}>
-                        <type.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{type.title}</h3>
-                      <p className="text-sm text-gray-500 mb-4">{type.desc}</p>
-                      <ul className="space-y-2">
-                        {type.features.map(f => (
-                          <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                            <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="flex items-center gap-1.5 mt-4 text-sm font-semibold text-emerald-600 group-hover:gap-2.5 transition-all">
-                        Hire Now <ArrowRight className="h-4 w-4" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+
+
 
       {/* ===== DOMAINS & TECHNOLOGIES ===== */}
       <section className="py-16 bg-gray-50">
