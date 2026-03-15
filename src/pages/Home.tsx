@@ -19,7 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto } from '@/services/clientApi';
+import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
 
 const ITEMS_PER_PAGE = 24;
 
@@ -50,6 +50,11 @@ const Home = () => {
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
+  // Requirements state
+  const [requirements, setRequirements] = useState<ClientRequirementResponse[]>([]);
+  const [reqLoading, setReqLoading] = useState(false);
+  const [showPostForm, setShowPostForm] = useState(false);
+
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
     setHasError(false);
@@ -67,10 +72,23 @@ const Home = () => {
     }
   };
 
-  // Auto-load freelancers on mount
+  // Auto-load freelancers and requirements on mount
   useEffect(() => {
     loadFreelancers();
+    loadRequirements();
   }, []);
+
+  const loadRequirements = async () => {
+    setReqLoading(true);
+    try {
+      const data = await getClientRequirements();
+      setRequirements(data);
+    } catch (error) {
+      console.error('Failed to load requirements:', error);
+    } finally {
+      setReqLoading(false);
+    }
+  };
 
   // Expose scroll function globally for header to use
   useEffect(() => {
@@ -575,7 +593,140 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== BECOME A FREELANCER — Earn Money ===== */}
+      {/* ===== CURRENT FREELANCER WORKS / LIVE REQUIREMENTS ===== */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+            <div>
+              <Badge className="mb-2 bg-indigo-50 text-indigo-600 border-indigo-200 text-sm px-4 py-1">📋 Live Openings</Badge>
+              <h2 className="text-3xl font-extrabold text-gray-900">
+                Current Freelancer <span className="text-indigo-500">Works</span>
+              </h2>
+              <p className="text-gray-500 mt-1">Active projects posted by clients — find work that matches your skills</p>
+            </div>
+            {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
+              <Button
+                onClick={() => navigate('/client')}
+                className="gap-2 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white font-bold shadow-lg animate-pulse"
+                size="lg"
+              >
+                <FileText className="h-5 w-5" /> Post Your Requirement
+              </Button>
+            )}
+          </div>
+
+          {reqLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            </div>
+          ) : requirements.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No live openings at the moment. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {requirements.slice(0, 12).map((req, idx) => {
+                const reqColors = [
+                  { border: 'border-l-indigo-500', bg: 'bg-indigo-50', text: 'text-indigo-600', badge: 'bg-indigo-100 text-indigo-700' },
+                  { border: 'border-l-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-600', badge: 'bg-emerald-100 text-emerald-700' },
+                  { border: 'border-l-orange-500', bg: 'bg-orange-50', text: 'text-orange-600', badge: 'bg-orange-100 text-orange-700' },
+                  { border: 'border-l-rose-500', bg: 'bg-rose-50', text: 'text-rose-600', badge: 'bg-rose-100 text-rose-700' },
+                  { border: 'border-l-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-600', badge: 'bg-cyan-100 text-cyan-700' },
+                  { border: 'border-l-purple-500', bg: 'bg-purple-50', text: 'text-purple-600', badge: 'bg-purple-100 text-purple-700' },
+                ];
+                const color = reqColors[idx % reqColors.length];
+                const skills = req.skillsRequired ? req.skillsRequired.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+                return (
+                  <motion.div
+                    key={req.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.04 }}
+                  >
+                    <Card className={`border-l-4 ${color.border} shadow-sm hover:shadow-lg transition-all duration-300 h-full bg-white hover:-translate-y-0.5`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-bold text-sm text-gray-900 line-clamp-1">{req.title}</h3>
+                          <Badge className={`text-[10px] px-2 py-0.5 shrink-0 ${color.badge}`}>
+                            {req.status || 'Open'}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-gray-500 line-clamp-2 mb-3">{req.description}</p>
+
+                        {/* Skills */}
+                        {skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-3">
+                            {skills.slice(0, 3).map((skill, si) => (
+                              <span key={si} className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${color.badge}`}>
+                                {skill}
+                              </span>
+                            ))}
+                            {skills.length > 3 && (
+                              <span className="text-[10px] px-1 py-0.5 text-gray-400">+{skills.length - 3}</span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Meta */}
+                        <div className="grid grid-cols-2 gap-1.5 text-[11px] text-gray-500 mb-3">
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-3 w-3 text-emerald-500" />
+                            <span className="font-semibold text-gray-700">₹{req.budget?.toLocaleString() || '—'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Award className="h-3 w-3 text-amber-500" />
+                            <span>{req.minExperience || 0}+ yrs</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-blue-500" />
+                            <span className="truncate">{req.country || 'Remote'}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Languages className="h-3 w-3 text-purple-500" />
+                            <span className="truncate">{req.language || '—'}</span>
+                          </div>
+                        </div>
+
+                        {/* Action */}
+                        <Button
+                          onClick={() => {
+                            if (!isAuthenticated) {
+                              navigate('/register?role=FreeLancer');
+                            } else {
+                              navigate('/freelancer');
+                            }
+                          }}
+                          size="sm"
+                          variant="outline"
+                          className={`w-full gap-1 text-xs h-7 font-semibold ${color.text} border-current hover:${color.bg}`}
+                        >
+                          <Heart className="h-3 w-3" /> I'm Interested
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+
+          {requirements.length > 12 && (
+            <div className="text-center mt-6">
+              <Button
+                variant="outline"
+                onClick={() => isAuthenticated ? navigate('/freelancer') : navigate('/login')}
+                className="gap-2 font-semibold"
+              >
+                View All Openings <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {!isAuthenticated && (
         <section className="py-20 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
