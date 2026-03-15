@@ -72,6 +72,20 @@ const Header = () => {
               Hire Talent
             </button>
 
+            <button
+              onClick={() => {
+                if (location.pathname === '/') {
+                  (window as any).__scrollToWorks?.();
+                } else {
+                  navigate('/', { state: { scrollToWorks: true } });
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"
+            >
+              <Search className="h-4 w-4" />
+              Find Work
+            </button>
+
             {isAuthenticated ? (
               <>
                 <Link
