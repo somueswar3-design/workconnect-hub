@@ -523,7 +523,7 @@ const MyDemoRequests = () => {
           {/* Request Cards */}
           {requests.map((req, idx) => (
             <motion.div
-              key={req.id || idx}
+              key={req.demoId || idx}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
@@ -533,31 +533,23 @@ const MyDemoRequests = () => {
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-slate-100 text-sm truncate">{req.projectTitle}</h3>
-                      <p className="text-xs text-slate-500 mt-0.5">Freelancer ID: {req.freelancerId}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Freelancer: {req.freelancerName || `ID ${req.freelancerId}`}</p>
                     </div>
                     <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
-                      {req.status || 'Pending'}
+                      {req.status || 'Requested'}
                     </Badge>
                   </div>
 
-                  {req.description && (
-                    <p className="text-xs text-slate-400 mb-3 line-clamp-2">{req.description}</p>
-                  )}
-
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
-                    {req.clientBudget > 0 && (
+                    {req.budget > 0 && (
                       <span className="flex items-center gap-1">
                         <DollarSign className="h-3 w-3 text-cyan-400" />
-                        <span className="text-slate-200 font-medium">₹{req.clientBudget.toLocaleString()}</span>
+                        <span className="text-slate-200 font-medium">₹{req.budget.toLocaleString()}</span>
                       </span>
                     )}
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {new Date(req.createdOn).toLocaleDateString()}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Send className="h-3 w-3" />
-                      {req.contactEmail}
+                      {new Date(req.requestedOn).toLocaleDateString()}
                     </span>
                     {req.adminComments && (
                       <span className="flex items-center gap-1 text-indigo-300">
