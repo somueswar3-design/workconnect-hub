@@ -887,7 +887,7 @@ const ClientDashboard = () => {
       <Routes>
         <Route path="/" element={<ClientOverview />} />
         <Route path="/freelancers" element={<ClientOverview />} />
-        <Route path="/demo-requests" element={<MyDemoRequests />} />
+        <Route path="/demo-requests" element={<MyRequests />} />
         <Route path="/post-requirement" element={<PostRequirement />} />
         <Route path="/history" element={<ClientOverview />} />
         <Route path="/settings/password" element={<ChangePassword />} />
