@@ -96,6 +96,8 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
     setComment('');
   };
 
+  const [successPopup, setSuccessPopup] = useState<string | null>(null);
+
   const handleSubmitInterest = async () => {
     if (!interestDialog || !user?.userId) return;
     setSubmitting(true);
@@ -109,8 +111,8 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
         createdOn: new Date().toISOString(),
       });
       setInterestedIds(prev => new Set(prev).add(interestDialog.id));
-      toast({ title: '✅ Interest Submitted!', description: `You've expressed interest in "${interestDialog.title}".` });
       setInterestDialog(null);
+      setSuccessPopup(interestDialog.title);
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to submit interest. Please try again.', variant: 'destructive' });
     }
