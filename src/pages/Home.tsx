@@ -120,6 +120,27 @@ const Home = () => {
     loadFreelancers();
   };
 
+  const getCurrencySymbol = (country?: string) => {
+    if (!country) return '$';
+    const c = country.toLowerCase();
+    if (c.includes('india')) return '₹';
+    if (c.includes('united kingdom')) return '£';
+    return '$';
+  };
+
+  const handleDemoClick = (freelancer: FreelancerProfileDto) => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    setSelectedFreelancer(freelancer);
+    setDemoForm({
+      projectTitle: '', description: '', clientBudget: '',
+      contactEmail: user?.email || '', contactPhone: '',
+    });
+    setDemoOpen(true);
+  };
+
   const handleDemoSubmit = async () => {
     if (!selectedFreelancer) return;
     if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim()) {
@@ -152,9 +173,28 @@ const Home = () => {
   };
 
   const handleHireTalentClick = () => {
-    if (!hasLoaded) loadFreelancers();
     freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Extract unique skills and countries for filter dropdowns
+  const uniqueSkills = useMemo(() => {
+    const skills = new Set<string>();
+    freelancers.forEach(f => {
+      f.primarySkills?.split(',').forEach(s => {
+        const trimmed = s.trim();
+        if (trimmed) skills.add(trimmed);
+      });
+    });
+    return Array.from(skills).sort();
+  }, [freelancers]);
+
+  const uniqueCountries = useMemo(() => {
+    const countries = new Set<string>();
+    freelancers.forEach(f => {
+      if (f.country?.trim()) countries.add(f.country.trim());
+    });
+    return Array.from(countries).sort();
+  }, [freelancers]);
 
   const stats = [
     { value: '500+', label: 'Active Freelancers' },
