@@ -52,6 +52,7 @@ const ClientOverview = () => {
 
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const loadProfiles = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
