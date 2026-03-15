@@ -261,7 +261,57 @@ const Home = () => {
     }
   };
 
-  // Extract unique skills and countries for filter dropdowns
+  const openPostRequirement = () => {
+    if (!isAuthenticated) {
+      navigate('/register?role=Client');
+      return;
+    }
+    setPostReqForm({
+      projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '',
+      language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '',
+    });
+    setPostReqOpen(true);
+  };
+
+  const handlePostReqSubmit = async () => {
+    if (!postReqForm.projectTitle.trim() || !postReqForm.requiredSkills.trim() || !postReqForm.contactEmail.trim()) {
+      toast({ title: 'Validation', description: 'Project title, required skills, and email are required.', variant: 'destructive' });
+      return;
+    }
+    if (!postReqForm.contactPhone.trim() || postReqForm.contactPhone.trim().length < 7) {
+      toast({ title: 'Validation', description: 'A valid mobile number is required (min 7 digits).', variant: 'destructive' });
+      return;
+    }
+    setPostReqSubmitting(true);
+    try {
+      await postRequirement({
+        id: 0,
+        clientUserId: Number(user?.userId) || 0,
+        mobileNumber: `${postReqForm.countryCode}${postReqForm.contactPhone}`,
+        email: postReqForm.contactEmail,
+        title: postReqForm.projectTitle,
+        description: postReqForm.description,
+        skillsRequired: postReqForm.requiredSkills,
+        minExperience: Number(postReqForm.experienceLevel) || 0,
+        budget: Number(postReqForm.budget) || 0,
+        country: postReqForm.country,
+        language: postReqForm.language,
+        status: 'Pending',
+        allocatedFreelancerId: 0,
+        createdOn: new Date().toISOString(),
+        updatedOn: new Date().toISOString(),
+      });
+      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers.' });
+      setPostReqOpen(false);
+      // Reload requirements section
+      loadRequirements();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to post requirement.', variant: 'destructive' });
+    } finally {
+      setPostReqSubmitting(false);
+    }
+  };
+
   const uniqueSkills = useMemo(() => {
     const skills = new Set<string>();
     freelancers.forEach(f => {
