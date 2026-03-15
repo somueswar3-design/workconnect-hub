@@ -850,6 +850,7 @@ const Home = () => {
         </div>
       </section>
 
+      {!isAuthenticated && (
         <section className="py-20 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
