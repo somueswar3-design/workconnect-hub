@@ -175,21 +175,31 @@ const ClientOverview = () => {
     <>
     <div className="p-4 sm:p-6 flex flex-col h-[calc(100vh-64px)]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-xl font-bold text-slate-100">Freelancer Directory</h1>
           <p className="text-xs text-slate-400">{profiles.length} professionals found</p>
         </div>
-        <Button
-          variant={showFilters ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setShowFilters(!showFilters)}
-          className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
-        >
-          <Filter className="h-3.5 w-3.5" />
-          Filters
-          {isFiltering && <Badge className="bg-cyan-400 text-[#0A1628] h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={() => navigate('/client/post-requirement')}
+            className="gap-1.5 h-8 text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 font-semibold animate-pulse hover:animate-none"
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            Post Requirement
+          </Button>
+          <Button
+            variant={showFilters ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
+          >
+            <Filter className="h-3.5 w-3.5" />
+            Filters
+            {isFiltering && <Badge className="bg-cyan-400 text-[#0A1628] h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
+          </Button>
+        </div>
       </div>
 
       {/* Filter Panel */}
