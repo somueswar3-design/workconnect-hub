@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Loader2, Users, Briefcase, Clock, Languages, MapPin, 
@@ -52,6 +52,7 @@ const ClientOverview = () => {
 
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const loadProfiles = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
@@ -175,21 +176,31 @@ const ClientOverview = () => {
     <>
     <div className="p-4 sm:p-6 flex flex-col h-[calc(100vh-64px)]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-xl font-bold text-slate-100">Freelancer Directory</h1>
           <p className="text-xs text-slate-400">{profiles.length} professionals found</p>
         </div>
-        <Button
-          variant={showFilters ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setShowFilters(!showFilters)}
-          className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
-        >
-          <Filter className="h-3.5 w-3.5" />
-          Filters
-          {isFiltering && <Badge className="bg-cyan-400 text-[#0A1628] h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={() => navigate('/client/post-requirement')}
+            className="gap-1.5 h-8 text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 font-semibold animate-pulse hover:animate-none"
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            Post Requirement
+          </Button>
+          <Button
+            variant={showFilters ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
+          >
+            <Filter className="h-3.5 w-3.5" />
+            Filters
+            {isFiltering && <Badge className="bg-cyan-400 text-[#0A1628] h-4 w-4 p-0 flex items-center justify-center text-[9px] ml-1">✓</Badge>}
+          </Button>
+        </div>
       </div>
 
       {/* Filter Panel */}
@@ -225,7 +236,7 @@ const ClientOverview = () => {
                   <Button size="sm" onClick={handleApplyFilters} className="gap-1 h-7 text-xs px-3 bg-cyan-500 hover:bg-cyan-600 text-white">
                     <Search className="h-3 w-3" /> Apply
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50">
+                  <Button size="sm" variant="outline" onClick={handleClearFilters} className="gap-1 h-7 text-xs px-3 border-orange-500/30 text-orange-400 hover:bg-orange-500/10 hover:text-orange-300">
                     <X className="h-3 w-3" /> Clear
                   </Button>
                 </div>
@@ -252,10 +263,18 @@ const ClientOverview = () => {
           </Card>
         ) : paginated.length === 0 ? (
           <Card className="border-0 shadow-sm bg-[#0D1B2E]">
-            <CardContent className="py-12 text-center space-y-3">
+            <CardContent className="py-12 text-center space-y-4">
               <Users className="h-10 w-10 text-slate-500 mx-auto" />
               <h3 className="text-base font-semibold text-slate-100">No Freelancers Found</h3>
-              <p className="text-sm text-slate-400">Try adjusting your filters.</p>
+              <p className="text-sm text-slate-400">Try adjusting your filters or post your own requirement.</p>
+              <Button
+                size="sm"
+                onClick={() => navigate('/client/post-requirement')}
+                className="gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 font-semibold"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                Post Your Requirement
+              </Button>
             </CardContent>
           </Card>
         ) : (
@@ -576,6 +595,7 @@ const PostRequirement = () => {
     language: '',
     country: '',
     contactEmail: user?.email || '',
+    countryCode: '+91',
     contactPhone: '',
   });
 
@@ -584,13 +604,17 @@ const PostRequirement = () => {
       toast({ title: 'Validation', description: 'Project title, required skills, and email are required.', variant: 'destructive' });
       return;
     }
+    if (!form.contactPhone.trim() || form.contactPhone.trim().length < 7) {
+      toast({ title: 'Validation', description: 'A valid mobile number with country code is required.', variant: 'destructive' });
+      return;
+    }
     setSubmitting(true);
     try {
       // TODO: Connect to POST API endpoint when ready
-      // await postRequirement({ ...form, clientId: user?.userId });
+      // await postRequirement({ ...form, phone: `${form.countryCode}${form.contactPhone}`, clientId: user?.userId });
       await new Promise(resolve => setTimeout(resolve, 800));
       toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers shortly.' });
-      setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', contactPhone: '' });
+      setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to post requirement.', variant: 'destructive' });
     } finally {
@@ -644,8 +668,25 @@ const PostRequirement = () => {
               <Input placeholder="e.g. India" value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm text-slate-300">Contact Phone</Label>
-              <Input placeholder="Your phone number" value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+              <Label className="text-sm text-slate-300">Mobile Number <span className="text-red-400">*</span></Label>
+              <div className="flex gap-1.5">
+                <Select value={form.countryCode} onValueChange={val => setForm(f => ({ ...f, countryCode: val }))}>
+                  <SelectTrigger className="w-24 h-9 bg-[#0A1628] border-slate-700/50 text-slate-200 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0D1B2E] border-slate-700/50">
+                    <SelectItem value="+91" className="text-slate-200">🇮🇳 +91</SelectItem>
+                    <SelectItem value="+1" className="text-slate-200">🇺🇸 +1</SelectItem>
+                    <SelectItem value="+44" className="text-slate-200">🇬🇧 +44</SelectItem>
+                    <SelectItem value="+61" className="text-slate-200">🇦🇺 +61</SelectItem>
+                    <SelectItem value="+971" className="text-slate-200">🇦🇪 +971</SelectItem>
+                    <SelectItem value="+65" className="text-slate-200">🇸🇬 +65</SelectItem>
+                    <SelectItem value="+49" className="text-slate-200">🇩🇪 +49</SelectItem>
+                    <SelectItem value="+81" className="text-slate-200">🇯🇵 +81</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input placeholder="e.g. 9876543210" value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value.replace(/\D/g, '') }))} className="flex-1 bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" maxLength={15} />
+              </div>
             </div>
           </div>
 
