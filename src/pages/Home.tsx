@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto, getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
+import { submitFreelancerInterest } from '@/services/freelancerApi';
 
 const ITEMS_PER_PAGE = 24;
 
@@ -56,6 +57,13 @@ const Home = () => {
   const [requirements, setRequirements] = useState<ClientRequirementResponse[]>([]);
   const [reqLoading, setReqLoading] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
+
+  // Interest dialog state
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState<ClientRequirementResponse | null>(null);
+  const [interestComment, setInterestComment] = useState('');
+  const [interestSubmitting, setInterestSubmitting] = useState(false);
+  const [interestSuccess, setInterestSuccess] = useState(false);
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
@@ -211,6 +219,37 @@ const Home = () => {
 
   const handleHireTalentClick = () => {
     freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleInterestClick = (req: ClientRequirementResponse) => {
+    if (!isAuthenticated) {
+      navigate('/register?role=FreeLancer');
+      return;
+    }
+    setSelectedRequirement(req);
+    setInterestComment('');
+    setInterestSuccess(false);
+    setInterestOpen(true);
+  };
+
+  const handleInterestSubmit = async () => {
+    if (!selectedRequirement) return;
+    setInterestSubmitting(true);
+    try {
+      await submitFreelancerInterest({
+        id: 0,
+        requirementId: selectedRequirement.id,
+        freelancerUserId: Number(user?.userId) || 0,
+        comment: interestComment.trim(),
+        status: 'Pending',
+        createdOn: new Date().toISOString(),
+      });
+      setInterestSuccess(true);
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to submit interest. Please try again.', variant: 'destructive' });
+    } finally {
+      setInterestSubmitting(false);
+    }
   };
 
   // Extract unique skills and countries for filter dropdowns
@@ -711,13 +750,7 @@ const Home = () => {
 
                         {/* Action */}
                         <Button
-                          onClick={() => {
-                            if (!isAuthenticated) {
-                              navigate('/register?role=FreeLancer');
-                            } else {
-                              navigate('/freelancer');
-                            }
-                          }}
+                          onClick={() => handleInterestClick(req)}
                           size="sm"
                           variant="outline"
                           className={`w-full gap-1 text-xs h-7 font-semibold ${color.text} border-current hover:${color.bg}`}
@@ -1001,6 +1034,80 @@ const Home = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== INTEREST DIALOG ===== */}
+      <Dialog open={interestOpen} onOpenChange={(open) => { setInterestOpen(open); if (!open) setInterestSuccess(false); }}>
+        <DialogContent className="sm:max-w-md">
+          {interestSuccess ? (
+            <div className="text-center py-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200 }}
+                className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4"
+              >
+                <CheckCircle className="h-10 w-10 text-emerald-500" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Interest Submitted! 🎉</h3>
+              <p className="text-gray-500 mb-1">Your interest in <span className="font-semibold text-gray-700">{selectedRequirement?.title}</span> has been sent.</p>
+              <p className="text-sm text-gray-400 mb-6">The client will review and get back to you soon.</p>
+              <Button onClick={() => setInterestOpen(false)} className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8">
+                Done
+              </Button>
+            </div>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-rose-500" />
+                  Express Interest
+                </DialogTitle>
+                <DialogDescription>
+                  Show your interest in <span className="font-semibold text-gray-900">{selectedRequirement?.title}</span>
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Requirement Summary */}
+              <div className="bg-gray-50 rounded-lg p-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Budget</span>
+                  <span className="font-semibold text-gray-900">₹{selectedRequirement?.budget?.toLocaleString() || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Skills</span>
+                  <span className="font-medium text-gray-700 text-right max-w-[200px] truncate">{selectedRequirement?.skillsRequired || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Experience</span>
+                  <span className="font-medium text-gray-700">{selectedRequirement?.minExperience || 0}+ years</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Location</span>
+                  <span className="font-medium text-gray-700">{selectedRequirement?.country || 'Remote'}</span>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm">Message to Client (optional)</Label>
+                <Textarea
+                  placeholder="Why are you a good fit for this project? Share your relevant experience..."
+                  value={interestComment}
+                  onChange={e => setInterestComment(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => setInterestOpen(false)} disabled={interestSubmitting}>Cancel</Button>
+                <Button onClick={handleInterestSubmit} disabled={interestSubmitting} className="gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white">
+                  {interestSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4" />}
+                  Submit Interest
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
