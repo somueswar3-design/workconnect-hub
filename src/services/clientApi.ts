@@ -67,6 +67,31 @@ export interface FreelancerProfileDto {
   updatedOn?: string;
 }
 
+// Client requirement response from GET API
+export interface ClientRequirementResponse {
+  id: number;
+  title: string;
+  description: string;
+  skillsRequired: string;
+  minExperience: number;
+  budget: number;
+  country: string;
+  language: string;
+  status: string;
+  createdOn: string;
+  updatedOn: string;
+}
+
+// GET client requirements (with userId for client role)
+export const getClientRequirements = async (userId?: string): Promise<ClientRequirementResponse[]> => {
+  const params = userId ? `?userId=${userId}` : '';
+  const res = await fetch(`${API_BASE}/api/client/requirements${params}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch requirements');
+  return res.json();
+};
+
 // Filter params for freelancer search
 export interface FreelancerFilterParams {
   skill?: string;
