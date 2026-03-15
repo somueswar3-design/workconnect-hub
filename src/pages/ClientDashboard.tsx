@@ -263,10 +263,18 @@ const ClientOverview = () => {
           </Card>
         ) : paginated.length === 0 ? (
           <Card className="border-0 shadow-sm bg-[#0D1B2E]">
-            <CardContent className="py-12 text-center space-y-3">
+            <CardContent className="py-12 text-center space-y-4">
               <Users className="h-10 w-10 text-slate-500 mx-auto" />
               <h3 className="text-base font-semibold text-slate-100">No Freelancers Found</h3>
-              <p className="text-sm text-slate-400">Try adjusting your filters.</p>
+              <p className="text-sm text-slate-400">Try adjusting your filters or post your own requirement.</p>
+              <Button
+                size="sm"
+                onClick={() => navigate('/client/post-requirement')}
+                className="gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/20 font-semibold"
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                Post Your Requirement
+              </Button>
             </CardContent>
           </Card>
         ) : (
