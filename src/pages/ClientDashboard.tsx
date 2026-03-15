@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Loader2, Users, Search, Briefcase, Clock, Languages, MapPin, 
+  Loader2, Users, Briefcase, Clock, Languages, MapPin, 
   IndianRupee, DollarSign, Calendar, ChevronLeft, ChevronRight, 
-  Star, Zap, Filter, X, Send
+  Star, Zap, Filter, X, Send, Search
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
