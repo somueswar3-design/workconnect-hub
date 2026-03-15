@@ -610,9 +610,23 @@ const PostRequirement = () => {
     }
     setSubmitting(true);
     try {
-      // TODO: Connect to POST API endpoint when ready
-      // await postRequirement({ ...form, phone: `${form.countryCode}${form.contactPhone}`, clientId: user?.userId });
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await postRequirement({
+        id: 0,
+        clientUserId: Number(user?.userId) || 0,
+        mobileNumber: `${form.countryCode}${form.contactPhone}`,
+        email: form.contactEmail,
+        title: form.projectTitle,
+        description: form.description,
+        skillsRequired: form.requiredSkills,
+        minExperience: Number(form.experienceLevel) || 0,
+        budget: Number(form.budget) || 0,
+        country: form.country,
+        language: form.language,
+        status: 'Pending',
+        allocatedFreelancerId: 0,
+        createdOn: new Date().toISOString(),
+        updatedOn: new Date().toISOString(),
+      });
       toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers shortly.' });
       setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     } catch (error) {
