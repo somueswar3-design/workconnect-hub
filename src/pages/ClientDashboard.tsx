@@ -502,8 +502,8 @@ const MyDemoRequests = () => {
             </Card>
             <Card className="border border-slate-700/50 bg-[#0D1B2E]">
               <CardContent className="p-3 text-center">
-                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => r.status?.toLowerCase() === 'pending').length}</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Pending</p>
+                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => ['pending', 'requested'].includes(r.status?.toLowerCase())).length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Requested</p>
               </CardContent>
             </Card>
             <Card className="border border-slate-700/50 bg-[#0D1B2E]">
