@@ -19,9 +19,16 @@ import { getMockFreelancers } from '@/services/mockFreelancerData';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const projectsRef = useRef<HTMLDivElement>(null);
+
+  // Get sample freelancers for the showcase
+  const sampleFreelancers = useMemo(() => {
+    const all = getMockFreelancers();
+    return all.filter(f => f.availability === 'available').slice(0, 12);
+  }, []);
 
   const popularSkills = [
     'React', 'Node.js', 'Python', 'AWS', 'DevOps', '.NET', 'Angular', 'Java',
