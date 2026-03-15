@@ -123,20 +123,24 @@ export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
   if (!res.ok) throw new Error('Failed to submit demo request');
 };
 
+// GET demo requests for a client
+export const getDemoRequests = async (clientId: string): Promise<RequestDemoDto[]> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests?clientId=${clientId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch demo requests');
+  return res.json();
+};
+
 // Get hired freelancers for a client
 export const getHiredFreelancers = async (): Promise<HiredFreelancer[]> => {
-  // TODO: Replace with real API
   return [];
 };
 
 // Get client statistics
 export const getClientStats = async (): Promise<ClientStats> => {
   return {
-    totalSpent: 0,
-    paidAmount: 0,
-    pendingAmount: 0,
-    activeFreelancers: 0,
-    completedProjects: 0,
-    averageRating: 0,
+    totalSpent: 0, paidAmount: 0, pendingAmount: 0,
+    activeFreelancers: 0, completedProjects: 0, averageRating: 0,
   };
 };
