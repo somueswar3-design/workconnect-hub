@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
@@ -7,7 +7,7 @@ import {
   Laptop, BookOpen, Target, Heart, ThumbsUp, MessageSquare, Briefcase,
   ChevronDown, Play, Search, BarChart3, FileText, Cpu, Palette,
   Building2, GraduationCap, Stethoscope, ShoppingCart, Landmark, Truck,
-  Smartphone, Settings, PieChart, MonitorPlay
+  Smartphone, Settings, PieChart, MonitorPlay, User, MapPin, Timer
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import RequirementsGrid from '@/components/RequirementsGrid';
 import { useAuth } from '@/contexts/AuthContext';
+import { getMockFreelancers } from '@/services/mockFreelancerData';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
