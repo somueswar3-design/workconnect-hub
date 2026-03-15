@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight } from 'lucide-react';
+import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/worksupport360-logo.png';
@@ -29,6 +29,13 @@ const Header = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const getDashboardPath = () => {
+    const role = user?.role?.toLowerCase();
+    if (role === 'client') return '/client';
+    if (role === 'admin') return '/admin';
+    return '/freelancer';
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
@@ -52,7 +59,15 @@ const Header = () => {
             </button>
 
             {isAuthenticated ? (
-              <DropdownMenu>
+              <>
+                <Link
+                  to={getDashboardPath()}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  My Works
+                </Link>
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200">
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
@@ -75,6 +90,7 @@ const Header = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
                 <Link
