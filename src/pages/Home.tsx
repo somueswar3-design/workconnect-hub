@@ -28,6 +28,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const freelancerSectionRef = useRef<HTMLDivElement>(null);
+  const worksSectionRef = useRef<HTMLDivElement>(null);
 
   // Freelancer list state (from API)
   const [freelancers, setFreelancers] = useState<FreelancerProfileDto[]>([]);
