@@ -660,8 +660,25 @@ const PostRequirement = () => {
               <Input placeholder="e.g. India" value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm text-slate-300">Contact Phone</Label>
-              <Input placeholder="Your phone number" value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+              <Label className="text-sm text-slate-300">Mobile Number <span className="text-red-400">*</span></Label>
+              <div className="flex gap-1.5">
+                <Select value={form.countryCode} onValueChange={val => setForm(f => ({ ...f, countryCode: val }))}>
+                  <SelectTrigger className="w-24 h-9 bg-[#0A1628] border-slate-700/50 text-slate-200 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0D1B2E] border-slate-700/50">
+                    <SelectItem value="+91" className="text-slate-200">🇮🇳 +91</SelectItem>
+                    <SelectItem value="+1" className="text-slate-200">🇺🇸 +1</SelectItem>
+                    <SelectItem value="+44" className="text-slate-200">🇬🇧 +44</SelectItem>
+                    <SelectItem value="+61" className="text-slate-200">🇦🇺 +61</SelectItem>
+                    <SelectItem value="+971" className="text-slate-200">🇦🇪 +971</SelectItem>
+                    <SelectItem value="+65" className="text-slate-200">🇸🇬 +65</SelectItem>
+                    <SelectItem value="+49" className="text-slate-200">🇩🇪 +49</SelectItem>
+                    <SelectItem value="+81" className="text-slate-200">🇯🇵 +81</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input placeholder="e.g. 9876543210" value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value.replace(/\D/g, '') }))} className="flex-1 bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" maxLength={15} />
+              </div>
             </div>
           </div>
 
