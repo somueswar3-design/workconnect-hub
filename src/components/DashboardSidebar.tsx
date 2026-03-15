@@ -24,10 +24,26 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const [activeStatus, setActiveStatus] = useState(isActive);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const handleStatusToggle = () => {
+  const handleStatusToggle = async () => {
     const newStatus = !activeStatus;
-    setActiveStatus(newStatus);
-    onStatusChange?.(newStatus);
+    const statusText = newStatus ? 'Available' : 'UnAvailable';
+    const userId = user?.userId || '';
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+    const token = localStorage.getItem('auth_token');
+    try {
+      const res = await fetch(`${API_BASE}/api/freelancer/availability?userId=${userId}&status=${statusText}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) throw new Error('Failed to update availability');
+      setActiveStatus(newStatus);
+      onStatusChange?.(newStatus);
+    } catch (err) {
+      console.error('Availability update failed:', err);
+    }
   };
 
   const handleLogout = () => {
