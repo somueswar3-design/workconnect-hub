@@ -130,6 +130,7 @@ const ClientOverview = () => {
       clientBudget: '',
       contactEmail: user?.email || '',
       contactPhone: '',
+      budgetCountry: 'India',
     });
     setDemoOpen(true);
   };
