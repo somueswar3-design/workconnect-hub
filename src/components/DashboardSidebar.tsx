@@ -110,13 +110,13 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
 
       {/* Availability Status */}
       {userType === 'freelancer' && (
-        <div className="px-3 py-2.5 border-b border-border">
+        <div className="px-3 py-2.5 border-b border-slate-700/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              {activeStatus ? <Power className="h-3.5 w-3.5 text-green-500" /> : <PowerOff className="h-3.5 w-3.5 text-muted-foreground" />}
-              <span className="text-xs font-medium text-foreground">{activeStatus ? 'Online' : 'Offline'}</span>
+              {activeStatus ? <Power className="h-3.5 w-3.5 text-emerald-400" /> : <PowerOff className="h-3.5 w-3.5 text-slate-500" />}
+              <span className="text-xs font-medium text-slate-200">{activeStatus ? 'Online' : 'Offline'}</span>
             </div>
-            <Switch checked={activeStatus} onCheckedChange={handleStatusToggle} className="data-[state=checked]:bg-green-500 scale-90" />
+            <Switch checked={activeStatus} onCheckedChange={handleStatusToggle} className="data-[state=checked]:bg-emerald-500 scale-90" />
           </div>
         </div>
       )}
