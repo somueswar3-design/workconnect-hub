@@ -163,8 +163,8 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
       </nav>
 
       {/* Logout */}
-      <div className="p-2 border-t border-border">
-        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-sm" onClick={handleLogout}>
+      <div className="p-2 border-t border-slate-700/50">
+        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 text-sm" onClick={handleLogout}>
           <LogOut className="h-4 w-4" />
           Logout
         </Button>
