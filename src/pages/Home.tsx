@@ -867,13 +867,7 @@ const Home = () => {
                   </div>
                 </div>
                 <Button
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      navigate('/register?role=Client');
-                    } else {
-                      navigate('/client');
-                    }
-                  }}
+                  onClick={openPostRequirement}
                   size="lg"
                   className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold shadow-lg w-fit"
                 >
