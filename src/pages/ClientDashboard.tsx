@@ -262,14 +262,27 @@ const ClientOverview = () => {
 
 
       {/* Results Grid */}
-      {paginated.length === 0 ? (
+      {hasError ? (
+        <Card className="border border-destructive/20 shadow-lg bg-destructive/5">
+          <CardContent className="py-16 text-center space-y-4">
+            <div className="h-20 w-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+              <X className="h-10 w-10 text-destructive" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Unable to Load Freelancers</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">Could not connect to the server. Please check your connection and try again.</p>
+            <Button onClick={() => loadProfiles()} variant="outline" className="gap-2">
+              <Zap className="h-4 w-4" /> Retry
+            </Button>
+          </CardContent>
+        </Card>
+      ) : paginated.length === 0 ? (
         <Card className="border-0 shadow-lg">
           <CardContent className="py-16 text-center space-y-4">
             <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center">
               <Users className="h-10 w-10 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-bold text-foreground">No Freelancers Found</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your search or filter criteria.</p>
+            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your filter criteria to discover talent.</p>
           </CardContent>
         </Card>
       ) : (
