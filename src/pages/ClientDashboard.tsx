@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Loader2, Users, Search, Briefcase, Clock, Languages, MapPin, 
+  Loader2, Users, Briefcase, Clock, Languages, MapPin, 
   IndianRupee, DollarSign, Calendar, ChevronLeft, ChevronRight, 
-  Star, Zap, Filter, X, Send
+  Star, Zap, Filter, X, Send, Search
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,9 +29,9 @@ const freelancingExpLabel: Record<number, string> = {
 const ClientOverview = () => {
   const [profiles, setProfiles] = useState<FreelancerProfileDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [filterSkill, setFilterSkill] = useState('');
   const [filterLanguage, setFilterLanguage] = useState('');
   const [filterCountry, setFilterCountry] = useState('');
@@ -55,6 +55,7 @@ const ClientOverview = () => {
 
   const loadProfiles = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
+    setHasError(false);
     try {
       let data: FreelancerProfileDto[];
       if (filters && (filters.skill || filters.language || filters.country || filters.minExperience !== undefined)) {
@@ -67,7 +68,8 @@ const ClientOverview = () => {
       setProfiles(data);
     } catch (error) {
       console.error('Failed to load freelancer profiles:', error);
-      toast({ title: 'Error', description: 'Failed to load freelancer profiles', variant: 'destructive' });
+      setHasError(true);
+      setProfiles([]);
     } finally {
       setIsLoading(false);
     }
@@ -94,23 +96,8 @@ const ClientOverview = () => {
     setCurrentPage(1);
   };
 
-  const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return profiles;
-    const q = searchQuery.toLowerCase();
-    return profiles.filter(p =>
-      p.fullName?.toLowerCase().includes(q) ||
-      p.primarySkills?.toLowerCase().includes(q) ||
-      p.secondarySkills?.toLowerCase().includes(q) ||
-      p.languagesKnown?.toLowerCase().includes(q) ||
-      p.country?.toLowerCase().includes(q) ||
-      p.currentCompanyRole?.toLowerCase().includes(q)
-    );
-  }, [profiles, searchQuery]);
-
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
+  const totalPages = Math.ceil(profiles.length / ITEMS_PER_PAGE);
+  const paginated = profiles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const getCurrencySymbol = (country?: string) => {
     if (!country) return '$';
@@ -194,7 +181,7 @@ const ClientOverview = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Available Freelancers</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{filtered.length} freelancers found</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{profiles.length} freelancers found</p>
         </div>
         <Button
           variant={showFilters ? 'default' : 'outline'}
@@ -273,26 +260,29 @@ const ClientOverview = () => {
         )}
       </AnimatePresence>
 
-      {/* Search */}
-      <div className="relative max-w-xl">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by name, skill, language, country, role..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-card border-border h-11"
-        />
-      </div>
 
       {/* Results Grid */}
-      {paginated.length === 0 ? (
+      {hasError ? (
+        <Card className="border border-destructive/20 shadow-lg bg-destructive/5">
+          <CardContent className="py-16 text-center space-y-4">
+            <div className="h-20 w-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
+              <X className="h-10 w-10 text-destructive" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Unable to Load Freelancers</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">Could not connect to the server. Please check your connection and try again.</p>
+            <Button onClick={() => loadProfiles()} variant="outline" className="gap-2">
+              <Zap className="h-4 w-4" /> Retry
+            </Button>
+          </CardContent>
+        </Card>
+      ) : paginated.length === 0 ? (
         <Card className="border-0 shadow-lg">
           <CardContent className="py-16 text-center space-y-4">
             <div className="h-20 w-20 mx-auto rounded-full bg-muted flex items-center justify-center">
               <Users className="h-10 w-10 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-bold text-foreground">No Freelancers Found</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your search or filter criteria.</p>
+            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your filter criteria to discover talent.</p>
           </CardContent>
         </Card>
       ) : (
@@ -443,7 +433,7 @@ const ClientOverview = () => {
             <ChevronRight className="h-4 w-4" />
           </Button>
           <span className="text-xs text-muted-foreground ml-3">
-            Page {currentPage} of {totalPages} ({filtered.length} results)
+            Page {currentPage} of {totalPages} ({profiles.length} results)
           </span>
         </div>
       )}
