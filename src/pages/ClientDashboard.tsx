@@ -380,63 +380,37 @@ const ClientOverview = () => {
               Request a Demo
             </DialogTitle>
             <DialogDescription>
-              Request a demo session with <span className="font-semibold text-foreground">{selectedFreelancer?.fullName}</span>. Our admin team will coordinate the process.
+              Request a demo session with <span className="font-semibold text-foreground">{selectedFreelancer?.fullName}</span>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">
               <Label className="text-sm">Project Title <span className="text-destructive">*</span></Label>
-              <Input
-                placeholder="e.g. E-commerce Website Development"
-                value={demoForm.projectTitle}
-                onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))}
-              />
+              <Input placeholder="e.g. E-commerce Website Development" value={demoForm.projectTitle} onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm">Description</Label>
-              <Textarea
-                placeholder="Briefly describe your project requirements..."
-                value={demoForm.description}
-                onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))}
-                rows={3}
-              />
+              <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-sm">Budget</Label>
-                <Input
-                  type="number"
-                  placeholder="e.g. 5000"
-                  value={demoForm.clientBudget}
-                  onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))}
-                  min={0}
-                />
+                <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-sm">Contact Phone</Label>
-                <Input
-                  placeholder="Your phone number"
-                  value={demoForm.contactPhone}
-                  onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))}
-                />
+                <Input placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} />
               </div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm">Contact Email <span className="text-destructive">*</span></Label>
-              <Input
-                type="email"
-                placeholder="your@email.com"
-                value={demoForm.contactEmail}
-                onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))}
-              />
+              <Input type="email" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} />
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>
-                Cancel
-              </Button>
+              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>Cancel</Button>
               <Button onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5">
                 {demoSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Submit Request
+                Submit
               </Button>
             </div>
           </div>
