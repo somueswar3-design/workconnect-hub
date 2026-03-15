@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Search, Briefcase, DollarSign, Clock, Filter, Globe, Languages, ChevronDown, Heart
+  Search, Briefcase, DollarSign, Clock, Filter, Globe, Languages, ChevronDown, Heart, CheckCircle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -88,13 +88,15 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
 
   const handleInterestClick = (req: ClientRequirementResponse) => {
     if (!isAuthenticated) {
-      toast({ title: 'Login Required', description: 'Please login to express interest in this requirement.' });
-      navigate('/login');
+      toast({ title: 'Login Required', description: 'Please create an account or login to express interest.' });
+      navigate('/register?role=FreeLancer');
       return;
     }
     setInterestDialog(req);
     setComment('');
   };
+
+  const [successPopup, setSuccessPopup] = useState<string | null>(null);
 
   const handleSubmitInterest = async () => {
     if (!interestDialog || !user?.userId) return;
@@ -109,8 +111,8 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
         createdOn: new Date().toISOString(),
       });
       setInterestedIds(prev => new Set(prev).add(interestDialog.id));
-      toast({ title: '✅ Interest Submitted!', description: `You've expressed interest in "${interestDialog.title}".` });
       setInterestDialog(null);
+      setSuccessPopup(interestDialog.title);
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to submit interest. Please try again.', variant: 'destructive' });
     }
@@ -327,6 +329,29 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark' }: Requ
                 Cancel
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Popup */}
+      <Dialog open={!!successPopup} onOpenChange={() => setSuccessPopup(null)}>
+        <DialogContent className="sm:max-w-sm text-center">
+          <div className="flex flex-col items-center py-4 space-y-4">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 12 }}
+              className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center"
+            >
+              <CheckCircle className="h-10 w-10 text-emerald-500" />
+            </motion.div>
+            <h3 className="text-xl font-bold text-gray-900">Interest Submitted! 🎉</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              You've successfully expressed interest in <span className="font-semibold text-gray-700">"{successPopup}"</span>. The client will review your profile and get back to you soon.
+            </p>
+            <Button onClick={() => setSuccessPopup(null)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-0">
+              Got it!
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

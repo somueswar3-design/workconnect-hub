@@ -5,7 +5,9 @@ import {
   ArrowRight, Users, Shield, Zap, CheckCircle, Star, Clock, DollarSign,
   Globe, Headphones, Code, Database, Cloud, Lock, TrendingUp, Award,
   Laptop, BookOpen, Target, Heart, ThumbsUp, MessageSquare, Briefcase,
-  ChevronDown, Play, Search
+  ChevronDown, Play, Search, BarChart3, FileText, Cpu, Palette,
+  Building2, GraduationCap, Stethoscope, ShoppingCart, Landmark, Truck,
+  Smartphone, Settings, PieChart, MonitorPlay
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,11 +26,23 @@ const Home = () => {
     { value: '24/7', label: 'Support' },
   ];
 
-  const techSkills = [
-    { name: 'React', icon: Code }, { name: 'Node.js', icon: Database }, { name: 'Python', icon: Code },
-    { name: 'AWS', icon: Cloud }, { name: 'DevOps', icon: Lock }, { name: 'Data Science', icon: TrendingUp },
-    { name: 'Java', icon: Code }, { name: 'Angular', icon: Code }, { name: '.NET', icon: Database },
-    { name: 'Azure', icon: Cloud }, { name: 'Machine Learning', icon: TrendingUp }, { name: 'Cybersecurity', icon: Shield },
+  const domains = [
+    { name: 'IT & Software', icon: Code, color: 'bg-blue-500', lightBg: 'bg-blue-50', textColor: 'text-blue-600' },
+    { name: 'Finance & Banking', icon: Landmark, color: 'bg-emerald-500', lightBg: 'bg-emerald-50', textColor: 'text-emerald-600' },
+    { name: 'Healthcare', icon: Stethoscope, color: 'bg-rose-500', lightBg: 'bg-rose-50', textColor: 'text-rose-600' },
+    { name: 'HR & Recruitment', icon: Users, color: 'bg-violet-500', lightBg: 'bg-violet-50', textColor: 'text-violet-600' },
+    { name: 'E-Commerce', icon: ShoppingCart, color: 'bg-orange-500', lightBg: 'bg-orange-50', textColor: 'text-orange-600' },
+    { name: 'Data & Analytics', icon: BarChart3, color: 'bg-cyan-500', lightBg: 'bg-cyan-50', textColor: 'text-cyan-600' },
+    { name: 'Cloud & DevOps', icon: Cloud, color: 'bg-indigo-500', lightBg: 'bg-indigo-50', textColor: 'text-indigo-600' },
+    { name: 'Cybersecurity', icon: Shield, color: 'bg-red-500', lightBg: 'bg-red-50', textColor: 'text-red-600' },
+    { name: 'Mobile Apps', icon: Smartphone, color: 'bg-pink-500', lightBg: 'bg-pink-50', textColor: 'text-pink-600' },
+    { name: 'AI & Machine Learning', icon: Cpu, color: 'bg-purple-500', lightBg: 'bg-purple-50', textColor: 'text-purple-600' },
+    { name: 'Education & EdTech', icon: GraduationCap, color: 'bg-amber-500', lightBg: 'bg-amber-50', textColor: 'text-amber-600' },
+    { name: 'Logistics & Supply Chain', icon: Truck, color: 'bg-teal-500', lightBg: 'bg-teal-50', textColor: 'text-teal-600' },
+    { name: 'UI/UX Design', icon: Palette, color: 'bg-fuchsia-500', lightBg: 'bg-fuchsia-50', textColor: 'text-fuchsia-600' },
+    { name: 'ERP & CRM', icon: Settings, color: 'bg-slate-500', lightBg: 'bg-slate-50', textColor: 'text-slate-600' },
+    { name: 'Digital Marketing', icon: MonitorPlay, color: 'bg-lime-600', lightBg: 'bg-lime-50', textColor: 'text-lime-700' },
+    { name: 'Business Intelligence', icon: PieChart, color: 'bg-sky-500', lightBg: 'bg-sky-50', textColor: 'text-sky-600' },
   ];
 
   const testimonials = [
@@ -44,8 +58,6 @@ const Home = () => {
     { step: '3', title: 'Express Interest', description: 'Click "I\'m Interested" on projects you love and get connected with clients.', icon: Heart, color: 'bg-orange-500' },
     { step: '4', title: 'Get Paid', description: 'Complete work, track earnings, and receive timely payments for your expertise.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
-
-  const trustedBy = ['TCS', 'Infosys', 'Wipro', 'HCL', 'Tech Mahindra', 'Startups'];
 
   return (
     <div className="flex flex-col bg-white text-gray-900 min-h-screen">
@@ -71,7 +83,7 @@ const Home = () => {
               for your business
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Connect with top-tier IT professionals. Privacy-first, flexible, and built for modern remote work.
+              Connect with top-tier IT professionals across every domain. Privacy-first, flexible, and built for modern remote work.
             </p>
 
             {/* Search Bar */}
@@ -97,19 +109,6 @@ const Home = () => {
                 </span>
               ))}
             </div>
-          </motion.div>
-
-          {/* Trusted By strip */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-16 flex flex-wrap items-center gap-6"
-          >
-            <span className="text-sm text-slate-400 font-medium">Trusted by:</span>
-            {trustedBy.map(name => (
-              <span key={name} className="text-sm font-semibold text-slate-400/80 tracking-wide">{name}</span>
-            ))}
           </motion.div>
         </div>
       </section>
@@ -175,8 +174,37 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== LIVE REQUIREMENTS ===== */}
+      {/* ===== DOMAINS & TECHNOLOGIES ===== */}
       <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <Badge className="mb-3 bg-purple-50 text-purple-600 border-purple-200">All Domains</Badge>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">Explore Every Industry & Technology</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">From IT to Healthcare, Finance to Logistics — find experts across every domain</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-w-5xl mx-auto">
+            {domains.map((domain, i) => (
+              <motion.div
+                key={domain.name}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.03 }}
+                whileHover={{ y: -3, scale: 1.02 }}
+                className={`${domain.lightBg} rounded-xl p-4 border border-transparent hover:border-gray-200 hover:shadow-md transition-all cursor-pointer group`}
+              >
+                <div className={`h-10 w-10 rounded-lg ${domain.color} flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform`}>
+                  <domain.icon className="h-5 w-5 text-white" />
+                </div>
+                <h3 className={`font-semibold text-sm ${domain.textColor}`}>{domain.name}</h3>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== LIVE REQUIREMENTS ===== */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -191,8 +219,8 @@ const Home = () => {
           <RequirementsGrid variant="public" maxItems={9} theme="light" />
           <div className="text-center mt-8">
             <Button asChild variant="outline" size="lg" className="gap-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50">
-              <Link to="/login">
-                Login to See All & Apply <ArrowRight className="h-4 w-4" />
+              <Link to="/register?role=FreeLancer">
+                Join to See All & Apply <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -200,7 +228,7 @@ const Home = () => {
       </section>
 
       {/* ===== STATS ===== */}
-      <section className="py-12 bg-gray-50 border-y border-gray-100">
+      <section className="py-12 bg-white border-y border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-10 md:gap-16">
             {stats.map(stat => (
@@ -220,7 +248,7 @@ const Home = () => {
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">How It Works</h2>
@@ -243,31 +271,6 @@ const Home = () => {
                 <p className="text-sm text-gray-500 leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== SKILLS ===== */}
-      <section className="py-14 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Popular Skills</h2>
-            <p className="text-gray-500">Find talent across all major IT domains</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {techSkills.map(skill => (
-              <motion.div
-                key={skill.name}
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer"
-              >
-                <skill.icon className="h-4 w-4 text-emerald-500" />
-                <span className="font-medium text-sm text-gray-700">{skill.name}</span>
-              </motion.div>
-            ))}
-            <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-200">
-              <span className="font-medium text-sm text-emerald-600">+ 100 more</span>
-            </div>
           </div>
         </div>
       </section>
@@ -331,7 +334,7 @@ const Home = () => {
                   <Link to="/register?role=FreeLancer">Get Started Free <ArrowRight className="h-5 w-5" /></Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="gap-2 text-lg px-8 bg-transparent border-white/30 text-white hover:bg-white/10 font-bold">
-                  <Link to="/browse">Explore Talent</Link>
+                  <Link to="/register?role=Client">Hire Talent</Link>
                 </Button>
               </div>
             </motion.div>
