@@ -128,7 +128,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
           return (
             <NavLink key={item.path} to={item.path} className={cn(
               'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-              isActivePath ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              isActivePath ? 'bg-cyan-500/15 text-cyan-400' : 'text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
             )}>
               <item.icon className="h-4 w-4" />
               {item.label}
