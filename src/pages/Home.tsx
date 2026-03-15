@@ -26,6 +26,7 @@ const ITEMS_PER_PAGE = 24;
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const locationState = useLocation();
   const { toast } = useToast();
   const freelancerSectionRef = useRef<HTMLDivElement>(null);
   const worksSectionRef = useRef<HTMLDivElement>(null);
