@@ -142,7 +142,7 @@ const ClientOverview = () => {
       const payload: RequestDemoDto = {
         id: 0,
         clientId: Number(user?.userId) || 0,
-        freelancerId: selectedFreelancer.id,
+        freelancerId: selectedFreelancer.freelancerId || selectedFreelancer.id || 0,
         projectTitle: demoForm.projectTitle.trim(),
         description: demoForm.description.trim(),
         clientBudget: Number(demoForm.clientBudget) || 0,
