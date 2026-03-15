@@ -49,6 +49,7 @@ const ClientOverview = () => {
     clientBudget: '',
     contactEmail: '',
     contactPhone: '',
+    budgetCountry: 'India',
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
