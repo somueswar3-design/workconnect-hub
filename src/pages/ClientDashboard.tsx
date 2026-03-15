@@ -422,7 +422,7 @@ const ClientOverview = () => {
 
 // ===== My Demo Requests Page =====
 const MyDemoRequests = () => {
-  const [requests, setRequests] = useState<RequestDemoDto[]>([]);
+  const [requests, setRequests] = useState<DemoRequestResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const { user } = useAuth();
