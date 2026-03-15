@@ -237,7 +237,7 @@ const FreelancerOverview = () => {
 
       {/* Notification Popup */}
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
-        <DialogContent className="sm:max-w-md border-0 shadow-2xl overflow-hidden p-0">
+        <DialogContent className="sm:max-w-md border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]">
           <div className="h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
           <div className="p-8 text-center space-y-6">
             <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
