@@ -172,6 +172,7 @@ const ClientOverview = () => {
   }
 
   return (
+    <>
     <div className="p-4 sm:p-6 flex flex-col h-[calc(100vh-64px)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
