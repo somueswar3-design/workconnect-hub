@@ -240,8 +240,7 @@ const FreelancerOverview = () => {
               </div>
             )}
           </div>
-        </TabsContent>
-      </Tabs>
+      </div>
 
       {/* Notification Popup */}
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
