@@ -136,8 +136,8 @@ export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
 };
 
 // GET demo requests for a client
-export const getDemoRequests = async (clientId: string): Promise<RequestDemoDto[]> => {
-  const res = await fetch(`${API_BASE}/api/client/demo-requests?clientId=${clientId}`, {
+export const getDemoRequests = async (userId: string): Promise<DemoRequestResponse[]> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests?userId=${userId}`, {
     headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to fetch demo requests');
