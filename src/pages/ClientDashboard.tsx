@@ -1,17 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Loader2, Users, Search, Briefcase, Clock, Languages, MapPin, 
   IndianRupee, DollarSign, Calendar, ChevronLeft, ChevronRight, 
-  Star, Zap, Filter
+  Star, Zap, Filter, X, Send
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { getFreelancerProfiles, FreelancerProfileDto } from '@/services/clientApi';
+import { useAuth } from '@/contexts/AuthContext';
+import { getFreelancerProfiles, getFilteredFreelancers, FreelancerProfileDto, FreelancerFilterParams, requestDemo, RequestDemoDto } from '@/services/clientApi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import ChangePassword from '@/pages/ChangePassword';
 
@@ -26,23 +31,68 @@ const ClientOverview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const { toast } = useToast();
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterSkill, setFilterSkill] = useState('');
+  const [filterLanguage, setFilterLanguage] = useState('');
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterMinExp, setFilterMinExp] = useState('');
+  const [isFiltering, setIsFiltering] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getFreelancerProfiles();
-        setProfiles(data);
-      } catch (error) {
-        console.error('Failed to load freelancer profiles:', error);
-        toast({ title: 'Error', description: 'Failed to load freelancer profiles', variant: 'destructive' });
-      } finally {
-        setIsLoading(false);
+  // Demo dialog state
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [selectedFreelancer, setSelectedFreelancer] = useState<FreelancerProfileDto | null>(null);
+  const [demoForm, setDemoForm] = useState({
+    projectTitle: '',
+    description: '',
+    clientBudget: '',
+    contactEmail: '',
+    contactPhone: '',
+  });
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
+
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  const loadProfiles = async (filters?: FreelancerFilterParams) => {
+    setIsLoading(true);
+    try {
+      let data: FreelancerProfileDto[];
+      if (filters && (filters.skill || filters.language || filters.country || filters.minExperience !== undefined)) {
+        data = await getFilteredFreelancers(filters);
+        setIsFiltering(true);
+      } else {
+        data = await getFreelancerProfiles();
+        setIsFiltering(false);
       }
-    };
-    load();
-  }, []);
+      setProfiles(data);
+    } catch (error) {
+      console.error('Failed to load freelancer profiles:', error);
+      toast({ title: 'Error', description: 'Failed to load freelancer profiles', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { loadProfiles(); }, []);
+
+  const handleApplyFilters = () => {
+    const filters: FreelancerFilterParams = {};
+    if (filterSkill.trim()) filters.skill = filterSkill.trim();
+    if (filterLanguage.trim()) filters.language = filterLanguage.trim();
+    if (filterCountry.trim()) filters.country = filterCountry.trim();
+    if (filterMinExp) filters.minExperience = Number(filterMinExp);
+    loadProfiles(filters);
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setFilterSkill('');
+    setFilterLanguage('');
+    setFilterCountry('');
+    setFilterMinExp('');
+    loadProfiles();
+    setCurrentPage(1);
+  };
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return profiles;
@@ -85,6 +135,51 @@ const ClientOverview = () => {
     return pages;
   };
 
+  const handleDemoClick = (freelancer: FreelancerProfileDto) => {
+    setSelectedFreelancer(freelancer);
+    setDemoForm({
+      projectTitle: '',
+      description: '',
+      clientBudget: '',
+      contactEmail: user?.email || '',
+      contactPhone: '',
+    });
+    setDemoOpen(true);
+  };
+
+  const handleDemoSubmit = async () => {
+    if (!selectedFreelancer) return;
+    if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim()) {
+      toast({ title: 'Validation', description: 'Project title and email are required', variant: 'destructive' });
+      return;
+    }
+
+    setDemoSubmitting(true);
+    try {
+      const payload: RequestDemoDto = {
+        id: 0,
+        clientId: Number(user?.userId) || 0,
+        freelancerId: selectedFreelancer.id,
+        projectTitle: demoForm.projectTitle.trim(),
+        description: demoForm.description.trim(),
+        clientBudget: Number(demoForm.clientBudget) || 0,
+        contactEmail: demoForm.contactEmail.trim(),
+        contactPhone: demoForm.contactPhone.trim(),
+        status: 'Pending',
+        adminComments: '',
+        createdOn: new Date().toISOString(),
+      };
+      await requestDemo(payload);
+      toast({ title: '🎉 Demo Requested!', description: 'Thank you! Our admin team will coordinate the demo process with you shortly.' });
+      setDemoOpen(false);
+    } catch (error) {
+      console.error('Demo request failed:', error);
+      toast({ title: 'Error', description: 'Failed to submit demo request. Please try again.', variant: 'destructive' });
+    } finally {
+      setDemoSubmitting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -101,7 +196,82 @@ const ClientOverview = () => {
           <h1 className="text-2xl font-bold text-foreground">Available Freelancers</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{filtered.length} freelancers found</p>
         </div>
+        <Button
+          variant={showFilters ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setShowFilters(!showFilters)}
+          className="gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          Filters
+          {isFiltering && <Badge className="bg-primary-foreground text-primary h-5 w-5 p-0 flex items-center justify-center text-[10px]">✓</Badge>}
+        </Button>
       </div>
+
+      {/* Filter Panel */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <Card className="border border-border shadow-sm">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Skill</Label>
+                    <Input
+                      placeholder="e.g. React, Java"
+                      value={filterSkill}
+                      onChange={e => setFilterSkill(e.target.value)}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Language</Label>
+                    <Input
+                      placeholder="e.g. Telugu, Hindi"
+                      value={filterLanguage}
+                      onChange={e => setFilterLanguage(e.target.value)}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Country</Label>
+                    <Input
+                      placeholder="e.g. India"
+                      value={filterCountry}
+                      onChange={e => setFilterCountry(e.target.value)}
+                      className="h-9"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Min Experience (years)</Label>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 4"
+                      value={filterMinExp}
+                      onChange={e => setFilterMinExp(e.target.value)}
+                      className="h-9"
+                      min={0}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-4">
+                  <Button size="sm" onClick={handleApplyFilters} className="gap-1.5">
+                    <Search className="h-3.5 w-3.5" /> Apply Filters
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={handleClearFilters} className="gap-1.5 text-muted-foreground">
+                    <X className="h-3.5 w-3.5" /> Clear
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Search */}
       <div className="relative max-w-xl">
@@ -122,7 +292,7 @@ const ClientOverview = () => {
               <Users className="h-10 w-10 text-muted-foreground" />
             </div>
             <h3 className="text-lg font-bold text-foreground">No Freelancers Found</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your search criteria.</p>
+            <p className="text-muted-foreground max-w-md mx-auto">Try adjusting your search or filter criteria.</p>
           </CardContent>
         </Card>
       ) : (
@@ -198,24 +368,35 @@ const ClientOverview = () => {
                       </div>
                     )}
 
-                    {/* Bottom Row: Rate, Hours, Weekends */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-3 border-t border-border text-sm">
-                      {p.hourRate && (
-                        <span className="font-semibold text-foreground flex items-center gap-1">
-                          {symbol === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> : <DollarSign className="h-3.5 w-3.5 text-primary" />}
-                          {p.hourRate}/hr
-                        </span>
-                      )}
-                      {p.hoursAvailablePerDay && (
-                        <span className="text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5" /> {p.hoursAvailablePerDay} hrs/day
-                        </span>
-                      )}
-                      {p.isAvailbleInweeknds && (
-                        <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-green-500/30 text-green-600">
-                          <Calendar className="h-3 w-3 mr-1" /> Weekends
-                        </Badge>
-                      )}
+                    {/* Bottom Row: Rate, Hours, Weekends, Demo Button */}
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 pt-3 border-t border-border text-sm">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                        {p.hourRate && (
+                          <span className="font-semibold text-foreground flex items-center gap-1">
+                            {symbol === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-primary" /> : <DollarSign className="h-3.5 w-3.5 text-primary" />}
+                            {p.hourRate}/hr
+                          </span>
+                        )}
+                        {p.hoursAvailablePerDay && (
+                          <span className="text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" /> {p.hoursAvailablePerDay} hrs/day
+                          </span>
+                        )}
+                        {p.isAvailbleInweeknds && (
+                          <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-green-500/30 text-green-600">
+                            <Calendar className="h-3 w-3 mr-1" /> Weekends
+                          </Badge>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="gap-1.5 h-8 text-xs font-semibold"
+                        onClick={() => handleDemoClick(p)}
+                      >
+                        <Zap className="h-3.5 w-3.5" />
+                        Request Demo
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -266,6 +447,78 @@ const ClientOverview = () => {
           </span>
         </div>
       )}
+
+      {/* Demo Request Dialog */}
+      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              Request a Demo
+            </DialogTitle>
+            <DialogDescription>
+              Request a demo session with <span className="font-semibold text-foreground">{selectedFreelancer?.fullName}</span>. Our admin team will coordinate the process.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-sm">Project Title <span className="text-destructive">*</span></Label>
+              <Input
+                placeholder="e.g. E-commerce Website Development"
+                value={demoForm.projectTitle}
+                onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm">Description</Label>
+              <Textarea
+                placeholder="Briefly describe your project requirements..."
+                value={demoForm.description}
+                onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Budget</Label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 5000"
+                  value={demoForm.clientBudget}
+                  onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))}
+                  min={0}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Contact Phone</Label>
+                <Input
+                  placeholder="Your phone number"
+                  value={demoForm.contactPhone}
+                  onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm">Contact Email <span className="text-destructive">*</span></Label>
+              <Input
+                type="email"
+                placeholder="your@email.com"
+                value={demoForm.contactEmail}
+                onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>
+                Cancel
+              </Button>
+              <Button onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5">
+                {demoSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Submit Request
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
