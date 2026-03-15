@@ -6,7 +6,8 @@ import {
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
   Languages, Lock, ChevronDown, DollarSign, TrendingUp, Users, CheckCircle2,
   Wifi, WifiOff, Zap, Award, Target, Sparkles, Calendar, Search, Filter,
-  Building2, IndianRupee, Timer, Eye, Send, Bell, MessageCircle, ArrowRight
+  Building2, IndianRupee, Timer, Eye, Send, Bell, MessageCircle, ArrowRight,
+  LayoutGrid
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
+import RequirementsGrid from '@/components/RequirementsGrid';
 import {
   Dialog,
   DialogContent,
