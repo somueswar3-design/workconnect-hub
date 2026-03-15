@@ -420,12 +420,168 @@ const ClientOverview = () => {
   );
 };
 
+// ===== My Demo Requests Page =====
+const MyDemoRequests = () => {
+  const [requests, setRequests] = useState<RequestDemoDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setHasError(false);
+      try {
+        const data = await getDemoRequests(user?.userId || '');
+        setRequests(data);
+      } catch (err) {
+        console.error('Failed to load demo requests:', err);
+        setHasError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [user?.userId]);
+
+  const getStatusColor = (status: string) => {
+    const s = status?.toLowerCase();
+    if (s === 'approved' || s === 'accepted') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    if (s === 'rejected' || s === 'declined') return 'bg-red-500/10 text-red-400 border-red-500/20';
+    if (s === 'in progress' || s === 'inprogress') return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+    return 'bg-amber-500/10 text-amber-400 border-amber-500/20'; // pending
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 space-y-5">
+      <div>
+        <h1 className="text-xl font-bold text-slate-100">My Demo Requests</h1>
+        <p className="text-xs text-slate-400 mt-0.5">Track your submitted demo requests and their status</p>
+      </div>
+
+      {hasError ? (
+        <Card className="border border-red-500/20 bg-red-500/5">
+          <CardContent className="py-12 text-center space-y-3">
+            <X className="h-10 w-10 text-red-400 mx-auto" />
+            <h3 className="text-base font-semibold text-slate-100">Unable to Load Requests</h3>
+            <p className="text-sm text-slate-400">Could not connect to server.</p>
+            <Button variant="outline" size="sm" onClick={() => window.location.reload()} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+              <Zap className="h-3.5 w-3.5 mr-1" /> Retry
+            </Button>
+          </CardContent>
+        </Card>
+      ) : requests.length === 0 ? (
+        <Card className="border-0 bg-[#0D1B2E]">
+          <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
+          <CardContent className="py-16 text-center space-y-4">
+            <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center">
+              <Send className="h-10 w-10 text-cyan-400" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-100">No Demo Requests Yet</h3>
+            <p className="text-slate-400 max-w-md mx-auto">Browse the freelancer directory and request demos to get started with your projects.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {/* Summary Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+              <CardContent className="p-3 text-center">
+                <p className="text-2xl font-extrabold text-slate-100">{requests.length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Total</p>
+              </CardContent>
+            </Card>
+            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+              <CardContent className="p-3 text-center">
+                <p className="text-2xl font-extrabold text-amber-400">{requests.filter(r => r.status?.toLowerCase() === 'pending').length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Pending</p>
+              </CardContent>
+            </Card>
+            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+              <CardContent className="p-3 text-center">
+                <p className="text-2xl font-extrabold text-emerald-400">{requests.filter(r => ['approved', 'accepted'].includes(r.status?.toLowerCase())).length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">Approved</p>
+              </CardContent>
+            </Card>
+            <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+              <CardContent className="p-3 text-center">
+                <p className="text-2xl font-extrabold text-indigo-400">{requests.filter(r => r.status?.toLowerCase().includes('progress')).length}</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider">In Progress</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Request Cards */}
+          {requests.map((req, idx) => (
+            <motion.div
+              key={req.id || idx}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.03 }}
+            >
+              <Card className="border border-slate-700/50 bg-[#0D1B2E] hover:border-cyan-500/30 transition-all">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-slate-100 text-sm truncate">{req.projectTitle}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">Freelancer ID: {req.freelancerId}</p>
+                    </div>
+                    <Badge className={`text-[10px] shrink-0 ${getStatusColor(req.status)}`}>
+                      {req.status || 'Pending'}
+                    </Badge>
+                  </div>
+
+                  {req.description && (
+                    <p className="text-xs text-slate-400 mb-3 line-clamp-2">{req.description}</p>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/30">
+                    {req.clientBudget > 0 && (
+                      <span className="flex items-center gap-1">
+                        <DollarSign className="h-3 w-3 text-cyan-400" />
+                        <span className="text-slate-200 font-medium">₹{req.clientBudget.toLocaleString()}</span>
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(req.createdOn).toLocaleDateString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Send className="h-3 w-3" />
+                      {req.contactEmail}
+                    </span>
+                    {req.adminComments && (
+                      <span className="flex items-center gap-1 text-indigo-300">
+                        <Star className="h-3 w-3" />
+                        {req.adminComments}
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ClientDashboard = () => {
   return (
     <DashboardLayout userType="client">
       <Routes>
         <Route path="/" element={<ClientOverview />} />
         <Route path="/freelancers" element={<ClientOverview />} />
+        <Route path="/demo-requests" element={<MyDemoRequests />} />
         <Route path="/history" element={<ClientOverview />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="/settings/*" element={<ClientOverview />} />
