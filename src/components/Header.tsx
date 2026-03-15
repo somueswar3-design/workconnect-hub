@@ -59,7 +59,15 @@ const Header = () => {
             </button>
 
             {isAuthenticated ? (
-              <DropdownMenu>
+              <>
+                <Link
+                  to={getDashboardPath()}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  My Works
+                </Link>
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200">
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center text-white text-sm font-bold">
