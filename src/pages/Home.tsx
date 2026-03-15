@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import RequirementsGrid from '@/components/RequirementsGrid';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Home = () => {
   const [heroSearch, setHeroSearch] = useState('');
