@@ -420,7 +420,7 @@ const ClientOverview = () => {
             <ChevronRight className="h-4 w-4" />
           </Button>
           <span className="text-xs text-muted-foreground ml-3">
-            Page {currentPage} of {totalPages} ({filtered.length} results)
+            Page {currentPage} of {totalPages} ({profiles.length} results)
           </span>
         </div>
       )}
