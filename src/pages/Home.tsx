@@ -58,6 +58,13 @@ const Home = () => {
   const [reqLoading, setReqLoading] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
 
+  // Interest dialog state
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState<ClientRequirementResponse | null>(null);
+  const [interestComment, setInterestComment] = useState('');
+  const [interestSubmitting, setInterestSubmitting] = useState(false);
+  const [interestSuccess, setInterestSuccess] = useState(false);
+
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
     setHasError(false);
