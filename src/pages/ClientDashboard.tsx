@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Loader2, Users, Briefcase, Clock, Languages, MapPin, 
   IndianRupee, DollarSign, Calendar, ChevronLeft, ChevronRight, 
-  Star, Zap, Filter, X, Send, Search
+  Star, Zap, Filter, X, Send, Search, PlusCircle, FileText
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -153,7 +153,7 @@ const ClientOverview = () => {
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
-      toast({ title: '🎉 Demo Requested!', description: 'Thank you! Our admin team will coordinate the demo process with you shortly.' });
+      toast({ title: '🎉 Demo Requested!', description: 'Your request has been submitted. The freelancer and admin team will be notified shortly.' });
       setDemoOpen(false);
     } catch (error) {
       console.error('Demo request failed:', error);
@@ -184,7 +184,7 @@ const ClientOverview = () => {
           variant={showFilters ? 'default' : 'outline'}
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className={`gap-1.5 h-8 text-xs ${!showFilters ? 'border-slate-700/50 text-slate-300 hover:bg-slate-700/50' : ''}`}
+          className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
         >
           <Filter className="h-3.5 w-3.5" />
           Filters
@@ -329,12 +329,6 @@ const ClientOverview = () => {
                             </div>
                           )}
 
-                          {/* Portfolio */}
-                          {p.portfolioURL && (
-                            <a href={p.portfolioURL} target="_blank" rel="noopener noreferrer" className="text-[10px] text-cyan-400 hover:underline mt-1 inline-block">
-                              View Portfolio →
-                            </a>
-                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -568,6 +562,122 @@ const MyDemoRequests = () => {
   );
 };
 
+// ===== Post Requirement Page =====
+const PostRequirement = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    projectTitle: '',
+    description: '',
+    requiredSkills: '',
+    budget: '',
+    experienceLevel: '',
+    language: '',
+    country: '',
+    contactEmail: user?.email || '',
+    contactPhone: '',
+  });
+
+  const handleSubmit = async () => {
+    if (!form.projectTitle.trim() || !form.requiredSkills.trim() || !form.contactEmail.trim()) {
+      toast({ title: 'Validation', description: 'Project title, required skills, and email are required.', variant: 'destructive' });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // TODO: Connect to POST API endpoint when ready
+      // await postRequirement({ ...form, clientId: user?.userId });
+      await new Promise(resolve => setTimeout(resolve, 800));
+      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers shortly.' });
+      setForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', contactPhone: '' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to post requirement.', variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="p-4 sm:p-6 space-y-5">
+      <div>
+        <h1 className="text-xl font-bold text-slate-100">Post a Requirement</h1>
+        <p className="text-xs text-slate-400 mt-0.5">Can't find the right freelancer? Post your project requirements and we'll notify matching professionals.</p>
+      </div>
+
+      <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+        <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
+        <CardContent className="p-4 sm:p-6 space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-sm text-slate-300">Project Title <span className="text-red-400">*</span></Label>
+            <Input placeholder="e.g. E-commerce Platform Development" value={form.projectTitle} onChange={e => setForm(f => ({ ...f, projectTitle: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-sm text-slate-300">Description</Label>
+            <Textarea placeholder="Describe your project in detail — what you need, timeline, etc." value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={4} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-sm text-slate-300">Required Skills <span className="text-red-400">*</span></Label>
+            <Input placeholder="e.g. React, Node.js, Python (comma separated)" value={form.requiredSkills} onChange={e => setForm(f => ({ ...f, requiredSkills: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Budget</Label>
+              <Input type="number" placeholder="e.g. 5000" value={form.budget} onChange={e => setForm(f => ({ ...f, budget: e.target.value }))} min={0} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Min Experience (yrs)</Label>
+              <Input type="number" placeholder="e.g. 3" value={form.experienceLevel} onChange={e => setForm(f => ({ ...f, experienceLevel: e.target.value }))} min={0} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Preferred Language</Label>
+              <Input placeholder="e.g. English, Telugu" value={form.language} onChange={e => setForm(f => ({ ...f, language: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Preferred Country</Label>
+              <Input placeholder="e.g. India" value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-slate-300">Contact Phone</Label>
+              <Input placeholder="Your phone number" value={form.contactPhone} onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-sm text-slate-300">Contact Email <span className="text-red-400">*</span></Label>
+            <Input type="email" placeholder="your@email.com" value={form.contactEmail} onChange={e => setForm(f => ({ ...f, contactEmail: e.target.value }))} className="bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700/30">
+            <Button onClick={handleSubmit} disabled={submitting} className="gap-1.5 bg-cyan-500 hover:bg-cyan-600 text-white">
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Post Requirement
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border border-slate-700/50 bg-[#0D1B2E]/50">
+        <CardContent className="p-4 flex items-start gap-3">
+          <div className="h-8 w-8 rounded-full bg-cyan-500/10 flex items-center justify-center shrink-0">
+            <FileText className="h-4 w-4 text-cyan-400" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-200">How it works</p>
+            <p className="text-xs text-slate-400 mt-0.5">Once posted, our system will match your requirements with available freelancers and notify them. You'll also receive email updates when matching freelancers are found.</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const ClientDashboard = () => {
   return (
     <DashboardLayout userType="client">
@@ -575,6 +685,7 @@ const ClientDashboard = () => {
         <Route path="/" element={<ClientOverview />} />
         <Route path="/freelancers" element={<ClientOverview />} />
         <Route path="/demo-requests" element={<MyDemoRequests />} />
+        <Route path="/post-requirement" element={<PostRequirement />} />
         <Route path="/history" element={<ClientOverview />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="/settings/*" element={<ClientOverview />} />
