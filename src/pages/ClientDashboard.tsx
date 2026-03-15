@@ -184,7 +184,7 @@ const ClientOverview = () => {
           variant={showFilters ? 'default' : 'outline'}
           size="sm"
           onClick={() => setShowFilters(!showFilters)}
-          className={`gap-1.5 h-8 text-xs ${!showFilters ? 'border-slate-700/50 text-slate-300 hover:bg-slate-700/50' : ''}`}
+          className={`gap-1.5 h-8 text-xs ${showFilters ? 'bg-cyan-500 hover:bg-cyan-600 text-white' : 'border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10'}`}
         >
           <Filter className="h-3.5 w-3.5" />
           Filters
