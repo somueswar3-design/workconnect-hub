@@ -914,8 +914,10 @@ const Home = () => {
           )}
         </div>
       </section>
+      )}
 
-      {/* ===== CAN'T FIND WORK? POST YOUR JD ===== */}
+      {/* ===== CAN'T FIND WORK? POST YOUR JD (Clients & Guests only) ===== */}
+      {!isFreelancer && (
       <section className="py-14 bg-gradient-to-r from-indigo-50 via-white to-purple-50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-indigo-100 overflow-hidden">
