@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Users, UserCheck, Clock, DollarSign, CheckCircle2, XCircle, ChevronDown,
   LogOut, Briefcase, Search, Filter, ArrowRight, Video, Send, Loader2,
-  Calendar, Globe, MessageSquare, ExternalLink, Edit
+  Calendar, Globe, MessageSquare, ExternalLink, Edit, CreditCard, AlertCircle,
+  RotateCcw, FileText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,13 +25,6 @@ import {
 } from '@/services/clientApi';
 
 // ─── Types ───
-interface Freelancer {
-  id: string; name: string; email: string; skills: string[]; hourlyRate: string; experience: string;
-  availability: 'available' | 'busy' | 'offline';
-}
-interface Client {
-  id: string; name: string; email: string; company: string; projectTitle: string; budget: string;
-}
 interface Assignment {
   id: string; freelancerId: string; freelancerName: string; clientId: string; clientName: string;
   projectTitle: string; hourlyRate: string;
@@ -38,22 +32,50 @@ interface Assignment {
   assignedDate: string; approvedDate?: string; totalHours?: number; totalAmount?: number;
 }
 
+interface BillingRecord {
+  id: string;
+  assignmentId: string;
+  freelancerName: string;
+  clientName: string;
+  projectTitle: string;
+  invoiceAmount: number;
+  paidAmount: number;
+  pendingAmount: number;
+  commission: number;
+  billingStatus: 'pending' | 'partial' | 'paid' | 'overdue';
+  followUpStatus: 'none' | 'reminder_sent' | 'escalated' | 'resolved';
+  followUpNotes: string;
+  invoiceDate: string;
+  dueDate: string;
+  lastFollowUp?: string;
+}
+
 // ─── Mock Data ───
-const mockFreelancers: Freelancer[] = [
-  { id: 'f1', name: 'Ravi Kumar', email: 'ravi@test.com', skills: ['React', 'Node.js'], hourlyRate: '$75', experience: '5 Years', availability: 'available' },
-  { id: 'f2', name: 'Priya Sharma', email: 'priya@test.com', skills: ['Python', 'AWS'], hourlyRate: '$85', experience: '7 Years', availability: 'available' },
-  { id: 'f3', name: 'Arjun Reddy', email: 'arjun@test.com', skills: ['Java', 'Spring'], hourlyRate: '$90', experience: '8 Years', availability: 'busy' },
-  { id: 'f4', name: 'Sneha Patel', email: 'sneha@test.com', skills: ['Angular', 'TypeScript'], hourlyRate: '$70', experience: '4 Years', availability: 'available' },
-];
-const mockClients: Client[] = [
-  { id: 'c1', name: 'TechCorp Inc', email: 'admin@techcorp.com', company: 'TechCorp Solutions', projectTitle: 'E-commerce Platform', budget: '$10,000' },
-  { id: 'c2', name: 'StartupX Labs', email: 'cto@startupx.com', company: 'StartupX', projectTitle: 'Mobile App Backend', budget: '$15,000' },
-  { id: 'c3', name: 'DataFlow Analytics', email: 'pm@dataflow.com', company: 'DataFlow', projectTitle: 'Analytics Dashboard', budget: '$8,000' },
-];
 const initialAssignments: Assignment[] = [
   { id: 'a1', freelancerId: 'f1', freelancerName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01' },
   { id: 'a2', freelancerId: 'f2', freelancerName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
   { id: 'a3', freelancerId: 'f3', freelancerName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
+];
+
+const initialBilling: BillingRecord[] = [
+  {
+    id: 'b1', assignmentId: 'a2', freelancerName: 'Priya Sharma', clientName: 'StartupX Labs',
+    projectTitle: 'Mobile App Backend', invoiceAmount: 10200, paidAmount: 5000, pendingAmount: 5200,
+    commission: 1020, billingStatus: 'partial', followUpStatus: 'reminder_sent',
+    followUpNotes: 'Sent payment reminder on Dec 10', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
+  },
+  {
+    id: 'b2', assignmentId: 'a3', freelancerName: 'Arjun Reddy', clientName: 'DataFlow Analytics',
+    projectTitle: 'Analytics Dashboard', invoiceAmount: 18000, paidAmount: 0, pendingAmount: 18000,
+    commission: 1800, billingStatus: 'overdue', followUpStatus: 'escalated',
+    followUpNotes: 'Escalated to management. Client requested extension.', invoiceDate: '2024-10-15', dueDate: '2024-11-15', lastFollowUp: '2024-12-01',
+  },
+  {
+    id: 'b3', assignmentId: 'a1', freelancerName: 'Ravi Kumar', clientName: 'TechCorp Inc',
+    projectTitle: 'E-commerce Platform', invoiceAmount: 7500, paidAmount: 7500, pendingAmount: 0,
+    commission: 750, billingStatus: 'paid', followUpStatus: 'resolved',
+    followUpNotes: 'Payment completed successfully.', invoiceDate: '2024-09-01', dueDate: '2024-10-01', lastFollowUp: '2024-10-02',
+  },
 ];
 
 // ─── Timezone Data ───
@@ -79,6 +101,8 @@ const TIME_SLOTS = [
 ];
 
 const DEMO_STATUSES = ['Pending', 'Scheduled', 'Demo Completed', 'Approved', 'Rejected', 'On Hold'];
+const BILLING_STATUSES = ['pending', 'partial', 'paid', 'overdue'];
+const FOLLOWUP_STATUSES = ['none', 'reminder_sent', 'escalated', 'resolved'];
 
 const AdminDashboard = () => {
   const { logout } = useAuth();
@@ -87,9 +111,6 @@ const AdminDashboard = () => {
 
   // Assignments state
   const [assignments, setAssignments] = useState<Assignment[]>(initialAssignments);
-  const [showAssignDialog, setShowAssignDialog] = useState(false);
-  const [selectedFreelancer, setSelectedFreelancer] = useState('');
-  const [selectedClient, setSelectedClient] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
@@ -99,16 +120,23 @@ const AdminDashboard = () => {
   const [demoSearch, setDemoSearch] = useState('');
   const [demoFilterStatus, setDemoFilterStatus] = useState('all');
 
+  // Billing state
+  const [billing, setBilling] = useState<BillingRecord[]>(initialBilling);
+  const [billingSearch, setBillingSearch] = useState('');
+  const [billingFilterStatus, setBillingFilterStatus] = useState('all');
+  const [billingUpdateOpen, setBillingUpdateOpen] = useState(false);
+  const [selectedBilling, setSelectedBilling] = useState<BillingRecord | null>(null);
+  const [billingForm, setBillingForm] = useState({
+    billingStatus: '', followUpStatus: '', followUpNotes: '', paidAmount: 0,
+  });
+  const [billingUpdating, setBillingUpdating] = useState(false);
+
   // Schedule / Update dialog state
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedDemo, setSelectedDemo] = useState<DemoRequestResponse | null>(null);
   const [scheduleForm, setScheduleForm] = useState({
-    timezone: 'Asia/Kolkata',
-    scheduledDate: '',
-    scheduledTime: '',
-    demoLink: '',
-    adminComments: '',
-    status: 'Scheduled',
+    timezone: 'Asia/Kolkata', scheduledDate: '', scheduledTime: '',
+    demoLink: '', adminComments: '', status: 'Scheduled',
   });
   const [scheduleSending, setScheduleSending] = useState(false);
 
@@ -134,26 +162,6 @@ const AdminDashboard = () => {
   useEffect(() => { loadDemoRequests(); }, []);
 
   // ─── Assignment Handlers ───
-  const handleAssign = () => {
-    if (!selectedFreelancer || !selectedClient) {
-      toast({ title: 'Error', description: 'Select both freelancer and client', variant: 'destructive' });
-      return;
-    }
-    const freelancer = mockFreelancers.find(f => f.id === selectedFreelancer);
-    const client = mockClients.find(c => c.id === selectedClient);
-    if (!freelancer || !client) return;
-    const newAssignment: Assignment = {
-      id: `a${Date.now()}`, freelancerId: freelancer.id, freelancerName: freelancer.name,
-      clientId: client.id, clientName: client.name, projectTitle: client.projectTitle,
-      hourlyRate: freelancer.hourlyRate, status: 'pending_approval',
-      assignedDate: new Date().toISOString().split('T')[0],
-    };
-    setAssignments(prev => [newAssignment, ...prev]);
-    setShowAssignDialog(false);
-    setSelectedFreelancer(''); setSelectedClient('');
-    toast({ title: 'Assignment Created', description: `${freelancer.name} assigned to ${client.name} — awaiting approval.` });
-  };
-
   const handleApprove = (id: string) => {
     setAssignments(prev => prev.map(a => a.id === id ? { ...a, status: 'approved', approvedDate: new Date().toISOString().split('T')[0] } : a));
     toast({ title: 'Approved', description: 'Assignment approved.' });
@@ -167,6 +175,37 @@ const AdminDashboard = () => {
     toast({ title: 'Payment Started' });
   };
 
+  // ─── Billing Handlers ───
+  const openBillingUpdate = (record: BillingRecord) => {
+    setSelectedBilling(record);
+    setBillingForm({
+      billingStatus: record.billingStatus,
+      followUpStatus: record.followUpStatus,
+      followUpNotes: record.followUpNotes,
+      paidAmount: record.paidAmount,
+    });
+    setBillingUpdateOpen(true);
+  };
+
+  const handleBillingUpdate = () => {
+    if (!selectedBilling) return;
+    setBillingUpdating(true);
+    setTimeout(() => {
+      setBilling(prev => prev.map(b => b.id === selectedBilling.id ? {
+        ...b,
+        billingStatus: billingForm.billingStatus as BillingRecord['billingStatus'],
+        followUpStatus: billingForm.followUpStatus as BillingRecord['followUpStatus'],
+        followUpNotes: billingForm.followUpNotes,
+        paidAmount: billingForm.paidAmount,
+        pendingAmount: b.invoiceAmount - billingForm.paidAmount,
+        lastFollowUp: new Date().toISOString().split('T')[0],
+      } : b));
+      toast({ title: '✅ Billing Updated', description: `Billing for ${selectedBilling.clientName} updated.` });
+      setBillingUpdateOpen(false);
+      setBillingUpdating(false);
+    }, 500);
+  };
+
   // ─── Demo Schedule Handler ───
   const handleScheduleDemo = async () => {
     if (!selectedDemo) return;
@@ -176,28 +215,14 @@ const AdminDashboard = () => {
     }
     setScheduleSending(true);
     try {
-      // Update demo request with schedule info
       await updateDemoRequest({
-        demoId: selectedDemo.demoId,
-        status: scheduleForm.status,
-        adminComments: scheduleForm.adminComments,
-        scheduledDate: scheduleForm.scheduledDate,
-        scheduledTime: scheduleForm.scheduledTime,
-        timezone: scheduleForm.timezone,
+        demoId: selectedDemo.demoId, status: scheduleForm.status,
+        adminComments: scheduleForm.adminComments, scheduledDate: scheduleForm.scheduledDate,
+        scheduledTime: scheduleForm.scheduledTime, timezone: scheduleForm.timezone,
         demoLink: scheduleForm.demoLink,
       });
-      // Send demo link to client & freelancer
-      await sendDemoLink(
-        selectedDemo.demoId,
-        scheduleForm.demoLink,
-        scheduleForm.scheduledDate,
-        scheduleForm.scheduledTime,
-        scheduleForm.timezone,
-      );
-      toast({
-        title: '✅ Demo Scheduled & Link Sent!',
-        description: `Demo link has been sent to the client and freelancer (${selectedDemo.freelancerName}).`,
-      });
+      await sendDemoLink(selectedDemo.demoId, scheduleForm.demoLink, scheduleForm.scheduledDate, scheduleForm.scheduledTime, scheduleForm.timezone);
+      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and freelancer (${selectedDemo.freelancerName}).` });
       setScheduleOpen(false);
       loadDemoRequests();
     } catch {
@@ -212,11 +237,7 @@ const AdminDashboard = () => {
     if (!updateDemo) return;
     setUpdateSending(true);
     try {
-      await updateDemoRequest({
-        demoId: updateDemo.demoId,
-        status: updateForm.status,
-        adminComments: updateForm.adminComments,
-      });
+      await updateDemoRequest({ demoId: updateDemo.demoId, status: updateForm.status, adminComments: updateForm.adminComments });
       toast({ title: '✅ Status Updated', description: `Demo #${updateDemo.demoId} updated to "${updateForm.status}".` });
       setUpdateOpen(false);
       loadDemoRequests();
@@ -227,17 +248,12 @@ const AdminDashboard = () => {
     }
   };
 
-  // ─── Open schedule dialog ───
   const openSchedule = (demo: DemoRequestResponse) => {
     setSelectedDemo(demo);
-    setScheduleForm({
-      timezone: 'Asia/Kolkata', scheduledDate: '', scheduledTime: '',
-      demoLink: '', adminComments: demo.adminComments || '', status: 'Scheduled',
-    });
+    setScheduleForm({ timezone: 'Asia/Kolkata', scheduledDate: '', scheduledTime: '', demoLink: '', adminComments: demo.adminComments || '', status: 'Scheduled' });
     setScheduleOpen(true);
   };
 
-  // ─── Open update dialog ───
   const openUpdate = (demo: DemoRequestResponse) => {
     setUpdateDemo(demo);
     setUpdateForm({ status: demo.status, adminComments: demo.adminComments || '' });
@@ -259,6 +275,13 @@ const AdminDashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
+  const filteredBilling = billing.filter(b => {
+    const matchesSearch = b.freelancerName.toLowerCase().includes(billingSearch.toLowerCase()) ||
+      b.clientName.toLowerCase().includes(billingSearch.toLowerCase());
+    const matchesFilter = billingFilterStatus === 'all' || b.billingStatus === billingFilterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
   const stats = {
     total: assignments.length,
     pending: assignments.filter(a => a.status === 'pending_approval').length,
@@ -271,6 +294,13 @@ const AdminDashboard = () => {
     pending: demoRequests.filter(d => d.status === 'Pending' || d.status === 'Requested').length,
     scheduled: demoRequests.filter(d => d.status === 'Scheduled').length,
     completed: demoRequests.filter(d => d.status === 'Demo Completed' || d.status === 'Approved').length,
+  };
+
+  const billingStats = {
+    totalInvoiced: billing.reduce((s, b) => s + b.invoiceAmount, 0),
+    totalPending: billing.reduce((s, b) => s + b.pendingAmount, 0),
+    totalCommission: billing.reduce((s, b) => s + b.commission, 0),
+    overdue: billing.filter(b => b.billingStatus === 'overdue').length,
   };
 
   const statusConfig: Record<string, { label: string; className: string }> = {
@@ -292,6 +322,26 @@ const AdminDashboard = () => {
       'On Hold': 'bg-muted text-muted-foreground border-border',
     };
     return map[status] || 'bg-muted text-muted-foreground border-border';
+  };
+
+  const billingStatusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+      partial: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+      paid: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+      overdue: 'bg-destructive/10 text-destructive border-destructive/20',
+    };
+    return map[status] || 'bg-muted text-muted-foreground border-border';
+  };
+
+  const followUpBadge = (status: string) => {
+    const map: Record<string, { label: string; className: string }> = {
+      none: { label: 'No Follow-up', className: 'bg-muted text-muted-foreground border-border' },
+      reminder_sent: { label: 'Reminder Sent', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+      escalated: { label: 'Escalated', className: 'bg-destructive/10 text-destructive border-destructive/20' },
+      resolved: { label: 'Resolved', className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+    };
+    return map[status] || { label: status, className: 'bg-muted text-muted-foreground border-border' };
   };
 
   const handleLogout = () => { logout(); navigate('/'); };
@@ -317,10 +367,10 @@ const AdminDashboard = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Total Assignments', value: stats.total, icon: Users, gradient: 'from-primary to-primary/70' },
             { label: 'Demo Requests', value: demoStats.total, icon: Video, gradient: 'from-blue-500 to-blue-400' },
-            { label: 'Demos Pending', value: demoStats.pending, icon: Clock, gradient: 'from-amber-500 to-amber-400' },
-            { label: 'Demos Completed', value: demoStats.completed, icon: CheckCircle2, gradient: 'from-emerald-500 to-emerald-400' },
+            { label: 'Assignments', value: stats.total, icon: Users, gradient: 'from-primary to-primary/70' },
+            { label: 'Pending Billing', value: `$${billingStats.totalPending.toLocaleString()}`, icon: AlertCircle, gradient: 'from-amber-500 to-amber-400' },
+            { label: 'Commission (10%)', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, gradient: 'from-emerald-500 to-emerald-400' },
           ].map(s => (
             <Card key={s.label} className="border-0 shadow-md overflow-hidden">
               <div className={`h-1 bg-gradient-to-r ${s.gradient}`} />
@@ -337,7 +387,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - only Demo, Assignments, Billing */}
         <Tabs defaultValue="demo-requests" className="space-y-4">
           <TabsList>
             <TabsTrigger value="demo-requests" className="gap-1.5">
@@ -348,17 +398,14 @@ const AdminDashboard = () => {
               <Users className="h-4 w-4" /> Assignments
               <Badge variant="secondary" className="ml-1 h-5 text-xs">{filteredAssignments.length}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="freelancers" className="gap-1.5">
-              <UserCheck className="h-4 w-4" /> Freelancers
-            </TabsTrigger>
-            <TabsTrigger value="clients" className="gap-1.5">
-              <Briefcase className="h-4 w-4" /> Clients
+            <TabsTrigger value="billing" className="gap-1.5">
+              <CreditCard className="h-4 w-4" /> Billing & Follow-up
+              <Badge variant="secondary" className="ml-1 h-5 text-xs">{billing.length}</Badge>
             </TabsTrigger>
           </TabsList>
 
           {/* ═══════════ DEMO REQUESTS TAB ═══════════ */}
           <TabsContent value="demo-requests">
-            {/* Search & Filter Bar */}
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -401,7 +448,6 @@ const AdminDashboard = () => {
                 {filteredDemos.map(demo => (
                   <Card key={demo.demoId} className="border border-border shadow-sm hover:shadow-md transition-shadow bg-card">
                     <CardContent className="p-5 space-y-3">
-                      {/* Header */}
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-foreground truncate">{demo.projectTitle || 'Untitled Project'}</p>
@@ -409,10 +455,7 @@ const AdminDashboard = () => {
                         </div>
                         <Badge className={demoStatusBadge(demo.status)}>{demo.status}</Badge>
                       </div>
-
                       <Separator />
-
-                      {/* Details */}
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2">
                           <UserCheck className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -433,10 +476,7 @@ const AdminDashboard = () => {
                           </div>
                         )}
                       </div>
-
                       <Separator />
-
-                      {/* Actions */}
                       <div className="flex gap-2">
                         {(demo.status === 'Pending' || demo.status === 'Requested') && (
                           <Button size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => openSchedule(demo)}>
@@ -481,9 +521,6 @@ const AdminDashboard = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={() => setShowAssignDialog(true)} className="gap-2">
-                <UserCheck className="h-4 w-4" /> Assign Freelancer
-              </Button>
             </div>
 
             <Card className="border-0 shadow-lg">
@@ -538,104 +575,118 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* ═══════════ FREELANCERS TAB ═══════════ */}
-          <TabsContent value="freelancers">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockFreelancers.map(f => (
-                <Card key={f.id} className="border-0 shadow-md">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <UserCheck className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground">{f.name}</h3>
-                      <p className="text-xs text-muted-foreground">{f.email} · {f.experience}</p>
-                      <div className="flex gap-1 mt-1 flex-wrap">
-                        {f.skills.map(s => <Badge key={s} variant="outline" className="text-xs h-5">{s}</Badge>)}
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-semibold text-foreground">{f.hourlyRate}/hr</p>
-                      <Badge className={f.availability === 'available' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 border-amber-500/20'}>
-                        {f.availability}
-                      </Badge>
+          {/* ═══════════ BILLING & FOLLOW-UP TAB ═══════════ */}
+          <TabsContent value="billing">
+            {/* Billing Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+              {[
+                { label: 'Total Invoiced', value: `$${billingStats.totalInvoiced.toLocaleString()}`, icon: FileText, cls: 'text-blue-600 bg-blue-100' },
+                { label: 'Pending Amount', value: `$${billingStats.totalPending.toLocaleString()}`, icon: Clock, cls: 'text-amber-600 bg-amber-100' },
+                { label: 'Commission (10%)', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
+                { label: 'Overdue', value: billingStats.overdue, icon: AlertCircle, cls: 'text-destructive bg-destructive/10' },
+              ].map(s => (
+                <Card key={s.label} className="border border-border">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${s.cls}`}><s.icon className="h-4 w-4" /></div>
+                    <div>
+                      <p className="text-lg font-bold text-foreground">{s.value}</p>
+                      <p className="text-xs text-muted-foreground">{s.label}</p>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </TabsContent>
 
-          {/* ═══════════ CLIENTS TAB ═══════════ */}
-          <TabsContent value="clients">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockClients.map(c => (
-                <Card key={c.id} className="border-0 shadow-md">
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                      <Briefcase className="h-6 w-6 text-secondary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground">{c.name}</h3>
-                      <p className="text-xs text-muted-foreground">{c.company} · {c.email}</p>
-                      <p className="text-sm text-foreground mt-1">{c.projectTitle}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-semibold text-foreground">{c.budget}</p>
-                      <p className="text-xs text-muted-foreground">Budget</p>
-                    </div>
+            {/* Search & Filter */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input value={billingSearch} onChange={e => setBillingSearch(e.target.value)}
+                  placeholder="Search client or freelancer..." className="pl-9" />
+              </div>
+              <Select value={billingFilterStatus} onValueChange={setBillingFilterStatus}>
+                <SelectTrigger className="w-44">
+                  <Filter className="h-4 w-4 mr-2" /><SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Billing Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filteredBilling.map(b => {
+                const fu = followUpBadge(b.followUpStatus);
+                return (
+                  <Card key={b.id} className="border border-border shadow-sm hover:shadow-md transition-shadow bg-card">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground truncate">{b.projectTitle}</p>
+                          <p className="text-sm text-muted-foreground">{b.clientName}</p>
+                        </div>
+                        <Badge className={billingStatusBadge(b.billingStatus)}>{b.billingStatus}</Badge>
+                      </div>
+                      <Separator />
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Freelancer</span>
+                          <span className="font-medium text-foreground">{b.freelancerName}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Invoice</span>
+                          <span className="font-medium text-foreground">${b.invoiceAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Paid</span>
+                          <span className="font-medium text-emerald-600">${b.paidAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Pending</span>
+                          <span className="font-bold text-amber-600">${b.pendingAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Commission</span>
+                          <span className="font-medium text-primary">${b.commission.toLocaleString()}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Follow-up</span>
+                          <Badge className={fu.className}>{fu.label}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">Due: {b.dueDate}</span>
+                          {b.lastFollowUp && <span className="text-muted-foreground">Last: {b.lastFollowUp}</span>}
+                        </div>
+                        {b.followUpNotes && (
+                          <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded line-clamp-2">{b.followUpNotes}</p>
+                        )}
+                      </div>
+                      <Separator />
+                      <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs" onClick={() => openBillingUpdate(b)}>
+                        <RotateCcw className="h-3.5 w-3.5" /> Update Billing & Follow-up
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {filteredBilling.length === 0 && (
+                <Card className="col-span-full border-0 shadow-md">
+                  <CardContent className="py-16 text-center text-muted-foreground">
+                    <CreditCard className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                    <p className="font-medium">No billing records found</p>
                   </CardContent>
                 </Card>
-              ))}
+              )}
             </div>
           </TabsContent>
         </Tabs>
       </main>
-
-      {/* ═══════════ ASSIGN DIALOG ═══════════ */}
-      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5 text-primary" /> Assign Freelancer to Client
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-sm font-medium">Select Freelancer *</Label>
-              <Select value={selectedFreelancer} onValueChange={setSelectedFreelancer}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder="Choose freelancer" /></SelectTrigger>
-                <SelectContent>
-                  {mockFreelancers.filter(f => f.availability === 'available').map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.name} — {f.hourlyRate}/hr · {f.skills.join(', ')}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-center"><ArrowRight className="h-5 w-5 text-muted-foreground" /></div>
-            <div>
-              <Label className="text-sm font-medium">Select Client / Project *</Label>
-              <Select value={selectedClient} onValueChange={setSelectedClient}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder="Choose client" /></SelectTrigger>
-                <SelectContent>
-                  {mockClients.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.name} — {c.projectTitle} ({c.budget})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-xs text-muted-foreground">
-                ⓘ Assignment will be created in <strong>Pending Approval</strong> status.
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAssignDialog(false)}>Cancel</Button>
-            <Button onClick={handleAssign} className="gap-2"><UserCheck className="h-4 w-4" /> Create Assignment</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* ═══════════ SCHEDULE DEMO DIALOG ═══════════ */}
       <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
@@ -649,81 +700,47 @@ const AdminDashboard = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            {/* Timezone */}
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5">
-                <Globe className="h-3.5 w-3.5" /> Timezone *
-              </Label>
+              <Label className="text-sm font-medium flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" /> Timezone *</Label>
               <Select value={scheduleForm.timezone} onValueChange={v => setScheduleForm(f => ({ ...f, timezone: v }))}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {TIMEZONES.map(tz => (
-                    <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
-                  ))}
-                </SelectContent>
+                <SelectContent>{TIMEZONES.map(tz => <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-
-            {/* Date & Time Slot */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-medium flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5" /> Date *
-                </Label>
+                <Label className="text-sm font-medium flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Date *</Label>
                 <Input type="date" className="mt-1" value={scheduleForm.scheduledDate}
                   min={new Date().toISOString().split('T')[0]}
                   onChange={e => setScheduleForm(f => ({ ...f, scheduledDate: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-sm font-medium flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5" /> Time Slot *
-                </Label>
+                <Label className="text-sm font-medium flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Time Slot *</Label>
                 <Select value={scheduleForm.scheduledTime} onValueChange={v => setScheduleForm(f => ({ ...f, scheduledTime: v }))}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Select time" /></SelectTrigger>
-                  <SelectContent>
-                    {TIME_SLOTS.map(slot => (
-                      <SelectItem key={slot} value={slot}>{slot}</SelectItem>
-                    ))}
-                  </SelectContent>
+                  <SelectContent>{TIME_SLOTS.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
-
-            {/* Demo Link */}
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5">
-                <ExternalLink className="h-3.5 w-3.5" /> Demo Meeting Link *
-              </Label>
+              <Label className="text-sm font-medium flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Demo Meeting Link *</Label>
               <Input className="mt-1" placeholder="https://meet.google.com/... or https://zoom.us/..."
-                value={scheduleForm.demoLink}
-                onChange={e => setScheduleForm(f => ({ ...f, demoLink: e.target.value }))} />
+                value={scheduleForm.demoLink} onChange={e => setScheduleForm(f => ({ ...f, demoLink: e.target.value }))} />
             </div>
-
-            {/* Status */}
             <div>
               <Label className="text-sm font-medium">Status</Label>
               <Select value={scheduleForm.status} onValueChange={v => setScheduleForm(f => ({ ...f, status: v }))}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
+                <SelectContent>{DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-
-            {/* Admin Comments */}
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5">
-                <MessageSquare className="h-3.5 w-3.5" /> Admin Description / Comments
-              </Label>
+              <Label className="text-sm font-medium flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> Admin Description / Comments</Label>
               <Textarea className="mt-1" rows={3} placeholder="Add notes about this demo..."
-                value={scheduleForm.adminComments}
-                onChange={e => setScheduleForm(f => ({ ...f, adminComments: e.target.value }))} />
+                value={scheduleForm.adminComments} onChange={e => setScheduleForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
-
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs text-blue-700">
-                📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>freelancer</strong>.
-              </p>
+              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>freelancer</strong>.</p>
             </div>
           </div>
           <DialogFooter>
@@ -740,28 +757,21 @@ const AdminDashboard = () => {
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Edit className="h-5 w-5 text-primary" /> Update Demo Status
-            </DialogTitle>
-            <DialogDescription>
-              Update status for <strong>{updateDemo?.projectTitle}</strong> (Demo #{updateDemo?.demoId})
-            </DialogDescription>
+            <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5 text-primary" /> Update Demo Status</DialogTitle>
+            <DialogDescription>Update status for <strong>{updateDemo?.projectTitle}</strong> (Demo #{updateDemo?.demoId})</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
               <Label className="text-sm font-medium">Status *</Label>
               <Select value={updateForm.status} onValueChange={v => setUpdateForm(f => ({ ...f, status: v }))}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
+                <SelectContent>{DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
               <Label className="text-sm font-medium">Admin Description / Comments</Label>
               <Textarea className="mt-1" rows={4} placeholder="Add post-demo notes, feedback..."
-                value={updateForm.adminComments}
-                onChange={e => setUpdateForm(f => ({ ...f, adminComments: e.target.value }))} />
+                value={updateForm.adminComments} onChange={e => setUpdateForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
           </div>
           <DialogFooter>
@@ -769,6 +779,61 @@ const AdminDashboard = () => {
             <Button onClick={handleUpdateStatus} disabled={updateSending} className="gap-2">
               {updateSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
               {updateSending ? 'Updating...' : 'Update Status'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════ BILLING UPDATE DIALOG ═══════════ */}
+      <Dialog open={billingUpdateOpen} onOpenChange={setBillingUpdateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5 text-primary" /> Update Billing & Follow-up</DialogTitle>
+            <DialogDescription>
+              {selectedBilling?.projectTitle} — {selectedBilling?.clientName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-sm font-medium">Billing Status *</Label>
+              <Select value={billingForm.billingStatus} onValueChange={v => setBillingForm(f => ({ ...f, billingStatus: v }))}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {BILLING_STATUSES.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Paid Amount ($)</Label>
+              <Input type="number" className="mt-1" value={billingForm.paidAmount}
+                onChange={e => setBillingForm(f => ({ ...f, paidAmount: Number(e.target.value) }))} />
+              {selectedBilling && (
+                <p className="text-xs text-muted-foreground mt-1">Invoice total: ${selectedBilling.invoiceAmount.toLocaleString()}</p>
+              )}
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Follow-up Status</Label>
+              <Select value={billingForm.followUpStatus} onValueChange={v => setBillingForm(f => ({ ...f, followUpStatus: v }))}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No Follow-up</SelectItem>
+                  <SelectItem value="reminder_sent">Reminder Sent</SelectItem>
+                  <SelectItem value="escalated">Escalated</SelectItem>
+                  <SelectItem value="resolved">Resolved</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Follow-up Notes</Label>
+              <Textarea className="mt-1" rows={3} placeholder="Add follow-up details, next steps..."
+                value={billingForm.followUpNotes} onChange={e => setBillingForm(f => ({ ...f, followUpNotes: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBillingUpdateOpen(false)}>Cancel</Button>
+            <Button onClick={handleBillingUpdate} disabled={billingUpdating} className="gap-2">
+              {billingUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              {billingUpdating ? 'Updating...' : 'Update Billing'}
             </Button>
           </DialogFooter>
         </DialogContent>
