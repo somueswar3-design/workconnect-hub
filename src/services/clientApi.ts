@@ -169,6 +169,46 @@ export const getDemoRequests = async (userId: string): Promise<DemoRequestRespon
   return res.json();
 };
 
+// GET all demo requests (admin)
+export const getAllDemoRequests = async (): Promise<DemoRequestResponse[]> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch all demo requests');
+  return res.json();
+};
+
+// Admin update demo request DTO
+export interface UpdateDemoRequestDto {
+  demoId: number;
+  status: string;
+  adminComments: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  timezone?: string;
+  demoLink?: string;
+}
+
+// PUT update demo request (admin)
+export const updateDemoRequest = async (data: UpdateDemoRequestDto): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests/${data.demoId}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to update demo request');
+};
+
+// POST send demo link to client and freelancer
+export const sendDemoLink = async (demoId: number, demoLink: string, scheduledDate: string, scheduledTime: string, timezone: string): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests/${demoId}/send-link`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ demoId, demoLink, scheduledDate, scheduledTime, timezone }),
+  });
+  if (!res.ok) throw new Error('Failed to send demo link');
+};
+
 // Post client requirement DTO
 export interface PostRequirementDto {
   id: number;
