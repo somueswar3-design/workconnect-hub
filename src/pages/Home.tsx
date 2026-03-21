@@ -604,7 +604,7 @@ const Home = () => {
           {/* Error */}
           {hasError && !isLoading && (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Could not load freelancers from server.</p>
+              <p className="text-gray-500 mb-4">Could not load professionals from server.</p>
               <Button onClick={() => loadFreelancers()} variant="outline" className="gap-2">
                 <Zap className="h-4 w-4" /> Retry
               </Button>
