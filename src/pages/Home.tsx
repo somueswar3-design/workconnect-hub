@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { countries } from '@/data/countries';
 
 const ITEMS_PER_PAGE = 24;
+const HERO_VIDEO_URL = 'https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4';
 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
@@ -393,10 +394,10 @@ const Home = () => {
 
       {/* ===== HERO WITH VIDEO BACKGROUND ===== */}
       <section className="relative overflow-hidden text-white min-h-[500px] md:min-h-[600px]">
-        {/* Video Background */}
+        {/* Stable fallback background (prevents image-swap flicker) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted to-background" />
         <div
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${heroVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
-          style={{ backgroundImage: "url('https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1920')" }}
+          className={`absolute inset-0 bg-gradient-to-br from-primary/25 via-accent/20 to-secondary/25 transition-opacity duration-700 ${heroVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
         />
         <video
           autoPlay
@@ -404,17 +405,16 @@ const Home = () => {
           loop
           playsInline
           preload="auto"
-          onLoadStart={() => setHeroVideoLoaded(false)}
           onLoadedData={() => setHeroVideoLoaded(true)}
-          onCanPlay={() => setHeroVideoLoaded(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${heroVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
-          poster="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1920"
+          onCanPlayThrough={() => setHeroVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${heroVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          aria-hidden="true"
         >
-          <source src="https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4" type="video/mp4" />
+          <source src={HERO_VIDEO_URL} type="video/mp4" />
         </video>
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/65 to-background/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/65 via-transparent to-background/35" />
 
         <div className="relative z-10 container mx-auto px-4 py-20 md:py-28">
           <motion.div
@@ -424,12 +424,12 @@ const Home = () => {
             className="max-w-3xl"
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Hire Smart, Work Fast <br />
-              <span className="text-emerald-400">Expert IT Support</span> <br />
-              Anytime, Any Scale
+              Hire Expert <br />
+              <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Professionals</span> <br />
+              IT Work Support, On Demand
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Get verified IT professionals on demand — hourly, part-time, or full-time. We hire the right talent and provide them to you, so you can focus on what matters.
+              Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible and ready for your project timeline.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -509,7 +509,7 @@ const Home = () => {
 
       {/* ===== FREELANCER SHOWCASE (Clients & Guests only) ===== */}
       {!isFreelancer && (
-      <section ref={freelancerSectionRef} className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <section ref={freelancerSectionRef} className="py-16 bg-gradient-to-b from-background via-primary/5 to-background">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -517,11 +517,11 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200 text-sm px-4 py-1">🔥 Top Talent</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-              Hire Expert <span className="text-emerald-500">Professionals</span>
+            <Badge className="mb-3 bg-gradient-to-r from-primary/15 to-accent/15 text-primary border-primary/30 text-sm px-4 py-1">🔥 Top Talent</Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
+              Hire Expert <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Professionals</span>
             </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
           </motion.div>
 
           {/* Filters */}
@@ -776,15 +776,15 @@ const Home = () => {
 
       {/* ===== CURRENT FREELANCER WORKS / LIVE REQUIREMENTS (Freelancers & Guests only) ===== */}
       {!isClient && (
-      <section ref={worksSectionRef} className="py-16 bg-white">
+      <section ref={worksSectionRef} className="py-16 bg-gradient-to-b from-background via-secondary/10 to-background">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
-              <Badge className="mb-2 bg-indigo-50 text-indigo-600 border-indigo-200 text-sm px-4 py-1">📋 Live Openings</Badge>
-              <h2 className="text-3xl font-extrabold text-gray-900">
-                Current Work <span className="text-indigo-500">Openings</span>
+              <Badge className="mb-2 bg-gradient-to-r from-secondary/20 to-primary/20 text-secondary border-secondary/30 text-sm px-4 py-1">📋 Live Projects</Badge>
+              <h2 className="text-3xl font-extrabold text-foreground">
+                Current <span className="bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent">Live Projects</span>
               </h2>
-              <p className="text-gray-500 mt-1">Active hourly work support openings posted by clients — find assignments that match your skills</p>
+              <p className="text-muted-foreground mt-1">Active hourly work support projects posted by clients — pick opportunities that match your skills.</p>
             </div>
             {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
               <Button
@@ -828,7 +828,8 @@ const Home = () => {
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.04 }}
                   >
-                    <Card className={`border-l-4 ${color.border} shadow-sm hover:shadow-lg transition-all duration-300 h-full bg-white hover:-translate-y-0.5`}>
+                    <Card className={`border-l-4 ${color.border} shadow-sm hover:shadow-lg transition-all duration-300 h-full bg-white hover:-translate-y-0.5 overflow-hidden`}>
+                      <div className={`h-1 ${color.bg}`} />
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="font-bold text-sm text-gray-900 line-clamp-1">{req.title}</h3>
@@ -877,7 +878,7 @@ const Home = () => {
                           onClick={() => handleInterestClick(req)}
                           size="sm"
                           variant="outline"
-                          className={`w-full gap-1 text-xs h-7 font-semibold ${color.text} border-current hover:${color.bg}`}
+                          className={`w-full gap-1 text-xs h-7 font-semibold ${color.text} border-current hover:bg-muted/80`}
                         >
                           <Heart className="h-3 w-3" /> I'm Interested
                         </Button>
