@@ -394,12 +394,20 @@ const Home = () => {
       {/* ===== HERO WITH VIDEO BACKGROUND ===== */}
       <section className="relative overflow-hidden text-white min-h-[500px] md:min-h-[600px]">
         {/* Video Background */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ${heroVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
+          style={{ backgroundImage: "url('https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1920')" }}
+        />
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          preload="auto"
+          onLoadStart={() => setHeroVideoLoaded(false)}
+          onLoadedData={() => setHeroVideoLoaded(true)}
+          onCanPlay={() => setHeroVideoLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${heroVideoLoaded ? 'opacity-100' : 'opacity-0'}`}
           poster="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1920"
         >
           <source src="https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4" type="video/mp4" />
