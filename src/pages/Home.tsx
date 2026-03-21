@@ -533,7 +533,7 @@ const Home = () => {
               >
                 <Filter className="h-4 w-4" /> {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
-              <p className="text-sm text-gray-500">{filtered.length} freelancers found</p>
+              <p className="text-sm text-gray-500">{filtered.length} professionals found</p>
             </div>
 
             <AnimatePresence>
