@@ -66,6 +66,17 @@ const textVariants = {
 };
 
 const HeroSlider = () => {
+  const particles = useMemo(() => 
+    [...Array(5)].map(() => ({
+      width: Math.random() * 300 + 100,
+      height: Math.random() * 300 + 100,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      xMove: Math.random() * 100 - 50,
+      yMove: Math.random() * 100 - 50,
+      duration: Math.random() * 10 + 10,
+    })), []);
+
   const [[currentSlide, direction], setSlide] = useState([0, 0]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
