@@ -336,7 +336,7 @@ const Home = () => {
   const isClient = isAuthenticated && user?.role?.toLowerCase() === 'client';
 
   const stats = [
-    { value: '500+', label: 'Active Freelancers' },
+    { value: '500+', label: 'Active Professionals' },
     { value: '1,200+', label: 'Projects Delivered' },
     { value: '98%', label: 'Satisfaction Rate' },
     { value: '24/7', label: 'Support' },
