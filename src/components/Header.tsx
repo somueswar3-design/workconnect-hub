@@ -201,8 +201,8 @@ const Header = () => {
                 <Briefcase className="h-6 w-6 text-emerald-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900 mb-1">I'm a Freelancer</h3>
-                <p className="text-sm text-gray-500">I want to offer my IT skills and get freelance work</p>
+                <h3 className="font-bold text-gray-900 mb-1">I'm a Professional</h3>
+                <p className="text-sm text-gray-500">I want to offer my IT skills and earn hourly, part-time, or full-time</p>
               </div>
               <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-emerald-500 mt-1 transition-colors" />
             </button>
@@ -216,7 +216,7 @@ const Header = () => {
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-gray-900 mb-1">Need Work Support</h3>
-                <p className="text-sm text-gray-500">I want to find and hire IT professionals for my projects</p>
+                <p className="text-sm text-gray-500">I want to hire IT professionals on hourly basis for my projects</p>
               </div>
               <ArrowRight className="h-5 w-5 text-gray-300 group-hover:text-blue-500 mt-1 transition-colors" />
             </button>

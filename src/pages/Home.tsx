@@ -302,7 +302,7 @@ const Home = () => {
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers.' });
+      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will match the right professional and coordinate a demo.' });
       setPostReqOpen(false);
       // Reload requirements section
       loadRequirements();
@@ -336,7 +336,7 @@ const Home = () => {
   const isClient = isAuthenticated && user?.role?.toLowerCase() === 'client';
 
   const stats = [
-    { value: '500+', label: 'Active Freelancers' },
+    { value: '500+', label: 'Active Professionals' },
     { value: '1,200+', label: 'Projects Delivered' },
     { value: '98%', label: 'Satisfaction Rate' },
     { value: '24/7', label: 'Support' },
@@ -370,9 +370,9 @@ const Home = () => {
 
   const howItWorks = [
     { step: '1', title: 'Create Your Profile', description: 'Sign up, upload your resume, and let our smart system auto-fill your skills.', icon: Laptop, color: 'bg-emerald-500' },
-    { step: '2', title: 'Browse & Match', description: 'Find projects that match your skills or get matched by clients looking for talent.', icon: Search, color: 'bg-blue-500' },
-    { step: '3', title: 'Express Interest', description: 'Click "I\'m Interested" on projects you love and get connected with clients.', icon: Heart, color: 'bg-orange-500' },
-    { step: '4', title: 'Get Paid', description: 'Complete work, track earnings, and receive timely payments for your expertise.', icon: DollarSign, color: 'bg-emerald-600' },
+    { step: '2', title: 'Get Discovered', description: 'Clients browse professionals by skill, domain & hourly rate. Get matched to the right work.', icon: Search, color: 'bg-blue-500' },
+    { step: '3', title: 'Demo & Connect', description: 'Our admin coordinates a demo call. Once approved, assignments are created based on hours.', icon: Heart, color: 'bg-orange-500' },
+    { step: '4', title: 'Work & Get Paid', description: 'Work hourly, track time, receive invoices with transparent billing. 10% platform fee only.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
 
   // Colorful gradient sets for freelancer cards
@@ -415,12 +415,12 @@ const Home = () => {
             className="max-w-3xl"
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Find the perfect <br />
-              <span className="text-emerald-400">IT freelance</span> services <br />
-              for your business
+              Your Work, Your Hours <br />
+              <span className="text-emerald-400">IT Work Support</span> <br />
+              on Demand
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Connect with top-tier IT professionals across every domain. Privacy-first, flexible, and built for modern remote work.
+              Hire skilled IT professionals hourly, part-time, or full-time. Or register as a professional and earn on your own terms. Privacy-first & flexible.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -439,7 +439,7 @@ const Home = () => {
                   className="gap-2 text-lg px-8 bg-transparent border-white/30 text-white hover:bg-white/10 font-bold"
                 >
                   <Link to="/register?role=FreeLancer">
-                    <Briefcase className="h-5 w-5" /> Register as Freelancer
+                    <Briefcase className="h-5 w-5" /> Join as Professional
                   </Link>
                 </Button>
               )}
@@ -471,7 +471,7 @@ const Home = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-lg font-bold">Complete Your Profile & Get Matched</h2>
-                      <p className="text-white/80 text-sm mt-0.5">Update your skills & availability — we'll match you with the right clients.</p>
+                      <p className="text-white/80 text-sm mt-0.5">Update your skills, hourly rate & availability — we'll match you with the right work assignments.</p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2 bg-white/15 rounded-lg px-3 py-2 border border-white/20">
                       <DollarSign className="h-4 w-4 text-yellow-300" />
@@ -517,9 +517,9 @@ const Home = () => {
           >
             <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200 text-sm px-4 py-1">🔥 Top Talent</Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-              Hire Expert <span className="text-emerald-500">Freelancers</span>
+              Hire Expert <span className="text-emerald-500">Professionals</span>
             </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT professionals. Hourly, Part-Time, or Full-Time — flexible for your needs.</p>
+            <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
           </motion.div>
 
           {/* Filters */}
@@ -533,7 +533,7 @@ const Home = () => {
               >
                 <Filter className="h-4 w-4" /> {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
-              <p className="text-sm text-gray-500">{filtered.length} freelancers found</p>
+              <p className="text-sm text-gray-500">{filtered.length} professionals found</p>
             </div>
 
             <AnimatePresence>
@@ -604,7 +604,7 @@ const Home = () => {
           {/* Error */}
           {hasError && !isLoading && (
             <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Could not load freelancers from server.</p>
+              <p className="text-gray-500 mb-4">Could not load professionals from server.</p>
               <Button onClick={() => loadFreelancers()} variant="outline" className="gap-2">
                 <Zap className="h-4 w-4" /> Retry
               </Button>
@@ -617,7 +617,7 @@ const Home = () => {
               {paginated.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">No freelancers found. Try different filters.</p>
+                  <p className="text-gray-500">No professionals found. Try different filters.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
@@ -780,9 +780,9 @@ const Home = () => {
             <div>
               <Badge className="mb-2 bg-indigo-50 text-indigo-600 border-indigo-200 text-sm px-4 py-1">📋 Live Openings</Badge>
               <h2 className="text-3xl font-extrabold text-gray-900">
-                Current Freelancer <span className="text-indigo-500">Works</span>
+                Current Work <span className="text-indigo-500">Openings</span>
               </h2>
-              <p className="text-gray-500 mt-1">Active projects posted by clients — find work that matches your skills</p>
+              <p className="text-gray-500 mt-1">Active hourly work support openings posted by clients — find assignments that match your skills</p>
             </div>
             {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
               <Button
@@ -915,7 +915,7 @@ const Home = () => {
                   Can't find the right talent?
                 </h3>
                 <p className="text-gray-600 mb-4 leading-relaxed">
-                  Post your <span className="font-semibold text-indigo-600">Job Description</span> and we'll assign the perfect freelancer for your project. Our team reviews every requirement and matches you with verified professionals.
+                  Post your <span className="font-semibold text-indigo-600">Job Description</span> and we'll assign the right work support professional. Our team reviews, conducts a demo, and matches you — billed hourly with transparent invoicing.
                 </p>
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -985,10 +985,10 @@ const Home = () => {
               >
                 <Badge className="mb-4 bg-white/20 text-white border-white/30 text-sm px-4 py-1 backdrop-blur-sm">💰 Earn Money</Badge>
                 <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight">
-                  Become a Freelancer & <br />Start Earning Today
+                  Become a Work Support <br />Professional & Earn
                 </h2>
                 <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                  Join thousands of IT professionals earning on their own terms. Work part-time while keeping your job, or go full-time freelancing.
+                  Join thousands of IT professionals earning on their own terms. Work hourly, part-time or full-time — set your own rates and get paid per hour.
                 </p>
                 <div className="space-y-3 mb-8">
                   {[
@@ -1013,7 +1013,7 @@ const Home = () => {
                     className="gap-2 text-lg px-8 bg-white text-orange-600 hover:bg-white/90 font-bold shadow-xl"
                   >
                     <Link to="/register?role=FreeLancer">
-                      <Briefcase className="h-5 w-5" /> Register as Freelancer
+                      <Briefcase className="h-5 w-5" /> Join as Professional
                     </Link>
                   </Button>
                   <Button
@@ -1038,8 +1038,8 @@ const Home = () => {
                 {[
                   { label: 'Avg. Earnings', value: '₹50K+/mo', icon: DollarSign, bg: 'bg-white/20' },
                   { label: 'Active Projects', value: '1,200+', icon: Briefcase, bg: 'bg-white/15' },
-                  { label: 'Freelancers', value: '500+', icon: Users, bg: 'bg-white/20' },
-                  { label: 'Part-Time Earners', value: '60%', icon: Clock, bg: 'bg-white/15' },
+                  { label: 'Professionals', value: '500+', icon: Users, bg: 'bg-white/20' },
+                  { label: 'Hourly Earners', value: '60%', icon: Clock, bg: 'bg-white/15' },
                 ].map((stat, i) => (
                   <div key={i} className={`${stat.bg} backdrop-blur-sm rounded-2xl p-5 text-center border border-white/10`}>
                     <stat.icon className="h-8 w-8 mx-auto mb-2 text-white/80" />
@@ -1116,8 +1116,8 @@ const Home = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">What Our Freelancers Say</h2>
-            <p className="text-gray-500">Join thousands of satisfied IT professionals</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">What Our Professionals Say</h2>
+            <p className="text-gray-500">Join thousands of satisfied IT work support professionals</p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
             {testimonials.map((t, i) => (
@@ -1324,7 +1324,7 @@ const Home = () => {
               Post Your Requirement
             </DialogTitle>
             <DialogDescription>
-              Share your project details and we'll match you with the right freelancer.
+              Share your project details. We'll match you with the right professional — hourly-based assignments with transparent invoicing.
             </DialogDescription>
           </DialogHeader>
 

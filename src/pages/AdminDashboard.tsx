@@ -26,10 +26,11 @@ import {
 
 // ─── Types ───
 interface Assignment {
-  id: string; freelancerId: string; freelancerName: string; clientId: string; clientName: string;
-  projectTitle: string; hourlyRate: string;
+  id: string; professionalId: string; professionalName: string; clientId: string; clientName: string;
+  projectTitle: string; hourlyRate: string; totalHours?: number;
   status: 'pending_approval' | 'approved' | 'rejected' | 'active' | 'completed';
-  assignedDate: string; approvedDate?: string; totalHours?: number; totalAmount?: number;
+  assignedDate: string; approvedDate?: string; totalAmount?: number;
+  invoiceGenerated?: boolean;
 }
 
 interface BillingRecord {
@@ -52,9 +53,9 @@ interface BillingRecord {
 
 // ─── Mock Data ───
 const initialAssignments: Assignment[] = [
-  { id: 'a1', freelancerId: 'f1', freelancerName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01' },
-  { id: 'a2', freelancerId: 'f2', freelancerName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
-  { id: 'a3', freelancerId: 'f3', freelancerName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
+  { id: 'a1', professionalId: 'f1', professionalName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01', totalHours: 0 },
+  { id: 'a2', professionalId: 'f2', professionalName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
+  { id: 'a3', professionalId: 'f3', professionalName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
 ];
 
 const initialBilling: BillingRecord[] = [
@@ -62,7 +63,7 @@ const initialBilling: BillingRecord[] = [
     id: 'b1', assignmentId: 'a2', freelancerName: 'Priya Sharma', clientName: 'StartupX Labs',
     projectTitle: 'Mobile App Backend', invoiceAmount: 10200, paidAmount: 5000, pendingAmount: 5200,
     commission: 1020, billingStatus: 'partial', followUpStatus: 'reminder_sent',
-    followUpNotes: 'Sent payment reminder on Dec 10', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
+    followUpNotes: 'Sent payment reminder on Dec 10. 120hrs × $85/hr billed.', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
   },
   {
     id: 'b2', assignmentId: 'a3', freelancerName: 'Arjun Reddy', clientName: 'DataFlow Analytics',
@@ -222,7 +223,7 @@ const AdminDashboard = () => {
         demoLink: scheduleForm.demoLink,
       });
       await sendDemoLink(selectedDemo.demoId, scheduleForm.demoLink, scheduleForm.scheduledDate, scheduleForm.scheduledTime, scheduleForm.timezone);
-      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and freelancer (${selectedDemo.freelancerName}).` });
+      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and professional (${selectedDemo.freelancerName}).` });
       setScheduleOpen(false);
       loadDemoRequests();
     } catch {
@@ -262,7 +263,7 @@ const AdminDashboard = () => {
 
   // ─── Filters ───
   const filteredAssignments = assignments.filter(a => {
-    const matchesSearch = a.freelancerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = a.professionalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       a.clientName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || a.status === filterStatus;
     return matchesSearch && matchesFilter;
@@ -355,7 +356,7 @@ const AdminDashboard = () => {
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <Briefcase className="h-5 w-5 text-primary-foreground" />
             </div>
-            <h1 className="text-lg font-bold text-foreground">Admin Dashboard</h1>
+            <h1 className="text-lg font-bold text-foreground">WorkSupport360 Admin</h1>
           </div>
           <Button variant="ghost" size="sm" className="gap-1.5 text-destructive" onClick={handleLogout}>
             <LogOut className="h-4 w-4" /> Logout
@@ -528,18 +529,19 @@ const AdminDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Freelancer</TableHead><TableHead>Client</TableHead><TableHead>Project</TableHead>
-                      <TableHead>Rate</TableHead><TableHead>Status</TableHead><TableHead>Assigned</TableHead>
+                      <TableHead>Professional</TableHead><TableHead>Client</TableHead><TableHead>Project</TableHead>
+                      <TableHead>Rate</TableHead><TableHead>Hours</TableHead><TableHead>Status</TableHead><TableHead>Assigned</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredAssignments.map(a => (
                       <TableRow key={a.id}>
-                        <TableCell className="font-medium">{a.freelancerName}</TableCell>
+                        <TableCell className="font-medium">{a.professionalName}</TableCell>
                         <TableCell>{a.clientName}</TableCell>
                         <TableCell className="max-w-[200px] truncate">{a.projectTitle}</TableCell>
                         <TableCell>{a.hourlyRate}/hr</TableCell>
+                        <TableCell className="text-sm">{a.totalHours || 0}h</TableCell>
                         <TableCell><Badge className={statusConfig[a.status]?.className}>{statusConfig[a.status]?.label}</Badge></TableCell>
                         <TableCell className="text-muted-foreground text-sm">{a.assignedDate}</TableCell>
                         <TableCell className="text-right">
@@ -567,7 +569,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     ))}
                     {filteredAssignments.length === 0 && (
-                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No assignments found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No assignments found</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
@@ -635,7 +637,7 @@ const AdminDashboard = () => {
                       <Separator />
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Freelancer</span>
+                         <span className="text-muted-foreground">Professional</span>
                           <span className="font-medium text-foreground">{b.freelancerName}</span>
                         </div>
                         <div className="flex items-center justify-between">
@@ -696,7 +698,7 @@ const AdminDashboard = () => {
               <Video className="h-5 w-5 text-primary" /> Schedule Demo & Send Link
             </DialogTitle>
             <DialogDescription>
-              Schedule a demo for <strong>{selectedDemo?.projectTitle}</strong> with <strong>{selectedDemo?.freelancerName}</strong>
+              Schedule a demo for <strong>{selectedDemo?.projectTitle}</strong> with <strong>{selectedDemo?.freelancerName}</strong>. After demo approval, hourly work assignment will be created.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -740,7 +742,7 @@ const AdminDashboard = () => {
                 value={scheduleForm.adminComments} onChange={e => setScheduleForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>freelancer</strong>.</p>
+              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>professional</strong>.</p>
             </div>
           </div>
           <DialogFooter>
