@@ -371,7 +371,7 @@ const AdminDashboard = () => {
             { label: 'Demo Requests', value: demoStats.total, icon: Video, gradient: 'from-blue-500 to-blue-400' },
             { label: 'Assignments', value: stats.total, icon: Users, gradient: 'from-primary to-primary/70' },
             { label: 'Pending Billing', value: `$${billingStats.totalPending.toLocaleString()}`, icon: AlertCircle, gradient: 'from-amber-500 to-amber-400' },
-            { label: 'Commission (10%)', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, gradient: 'from-emerald-500 to-emerald-400' },
+            { label: 'Total Commission', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, gradient: 'from-emerald-500 to-emerald-400' },
           ].map(s => (
             <Card key={s.label} className="border-0 shadow-md overflow-hidden">
               <div className={`h-1 bg-gradient-to-r ${s.gradient}`} />
@@ -584,7 +584,7 @@ const AdminDashboard = () => {
               {[
                 { label: 'Total Invoiced', value: `$${billingStats.totalInvoiced.toLocaleString()}`, icon: FileText, cls: 'text-blue-600 bg-blue-100' },
                 { label: 'Pending Amount', value: `$${billingStats.totalPending.toLocaleString()}`, icon: Clock, cls: 'text-amber-600 bg-amber-100' },
-                { label: 'Commission (10%)', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
+                { label: 'Total Commission', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
                 { label: 'Overdue', value: billingStats.overdue, icon: AlertCircle, cls: 'text-destructive bg-destructive/10' },
               ].map(s => (
                 <Card key={s.label} className="border border-border">

@@ -372,7 +372,7 @@ const Home = () => {
     { step: '1', title: 'Create Your Profile', description: 'Sign up, upload your resume, and let our smart system auto-fill your skills.', icon: Laptop, color: 'bg-emerald-500' },
     { step: '2', title: 'Get Discovered', description: 'Clients browse professionals by skill, domain & hourly rate. Get matched to the right work.', icon: Search, color: 'bg-blue-500' },
     { step: '3', title: 'Demo & Connect', description: 'Our admin coordinates a demo call. Once approved, assignments are created based on hours.', icon: Heart, color: 'bg-orange-500' },
-    { step: '4', title: 'Work & Get Paid', description: 'Work hourly, track time, receive invoices with transparent billing. 10% platform fee only.', icon: DollarSign, color: 'bg-emerald-600' },
+    { step: '4', title: 'Work & Get Paid', description: 'Work hourly, track time, and receive invoices with transparent billing.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
 
   // Colorful gradient sets for freelancer cards
@@ -471,14 +471,7 @@ const Home = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-lg font-bold">Complete Your Profile & Get Matched</h2>
-                      <p className="text-white/80 text-sm mt-0.5">Update your skills, hourly rate & availability — we'll match you with the right work assignments.</p>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-2 bg-white/15 rounded-lg px-3 py-2 border border-white/20">
-                      <DollarSign className="h-4 w-4 text-yellow-300" />
-                      <div className="text-center">
-                        <p className="text-xs text-white/70">Commission</p>
-                        <p className="text-xl font-extrabold leading-tight">10%</p>
-                      </div>
+                      <p className="text-white/80 text-sm mt-0.5">Update your skills, hourly rate & availability — we hire and provide the right candidate to clients on your behalf.</p>
                     </div>
                   </div>
                   <div className="flex gap-2 mt-4">
@@ -940,20 +933,20 @@ const Home = () => {
                 </Button>
               </div>
 
-              {/* Right — Platform Fee */}
+              {/* Right — How We Work */}
               <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-violet-600 p-8 md:p-10 text-white flex flex-col justify-center items-center text-center">
                 <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center mb-4 backdrop-blur-sm">
-                  <DollarSign className="h-8 w-8 text-white" />
+                  <Users className="h-8 w-8 text-white" />
                 </div>
-                <p className="text-sm text-white/80 font-medium mb-1">Platform Service Fee</p>
-                <p className="text-5xl font-extrabold mb-2">10%</p>
+                <p className="text-sm text-white/80 font-medium mb-1">How We Work</p>
+                <p className="text-2xl font-extrabold mb-2">We Hire & Provide</p>
                 <p className="text-white/80 text-sm mb-6 max-w-xs leading-relaxed">
-                  Only a flat 10% service fee on successful project assignments. No hidden charges — pay only when you hire.
+                  Share your requirements — we hire the right work support professional or freelancer and provide them to you. No hassle, no searching.
                 </p>
                 <div className="space-y-2 text-left w-full max-w-xs">
                   {[
-                    'No upfront costs',
-                    'Fee applied only on assignment',
+                    'We find & verify the right candidate',
+                    'Admin-coordinated demo & onboarding',
                     'Transparent billing & invoicing',
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm text-white/90">
@@ -1392,12 +1385,12 @@ const Home = () => {
               <Input type="email" placeholder="your@email.com" value={postReqForm.contactEmail} onChange={e => setPostReqForm(f => ({ ...f, contactEmail: e.target.value }))} />
             </div>
 
-            {/* Platform fee note */}
+            {/* How we work note */}
             <div className="bg-indigo-50 rounded-lg p-3 flex items-start gap-3 border border-indigo-100">
-              <DollarSign className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
+              <Users className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-indigo-700">10% Platform Service Fee</p>
-                <p className="text-xs text-indigo-500 mt-0.5">A flat 10% fee is applied only on successful project assignments. No hidden charges.</p>
+                <p className="text-sm font-semibold text-indigo-700">We Hire & Provide the Right Professional</p>
+                <p className="text-xs text-indigo-500 mt-0.5">Share your requirement — we'll find, verify, and assign the right work support professional to your project.</p>
               </div>
             </div>
 
