@@ -517,9 +517,9 @@ const Home = () => {
           >
             <Badge className="mb-3 bg-emerald-50 text-emerald-600 border-emerald-200 text-sm px-4 py-1">🔥 Top Talent</Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-              Hire Expert <span className="text-emerald-500">Freelancers</span>
+              Hire Expert <span className="text-emerald-500">Professionals</span>
             </h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT professionals. Hourly, Part-Time, or Full-Time — flexible for your needs.</p>
+            <p className="text-gray-500 max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
           </motion.div>
 
           {/* Filters */}
