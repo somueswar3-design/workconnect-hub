@@ -137,24 +137,24 @@ const HeroSlider = () => {
 
       {/* Animated particles/shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(5)].map((_, i) => (
+        {particles.map((p, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-primary/10"
             style={{
-              width: Math.random() * 300 + 100,
-              height: Math.random() * 300 + 100,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50, 0],
-              y: [0, Math.random() * 100 - 50, 0],
+              x: [0, p.xMove, 0],
+              y: [0, p.yMove, 0],
               scale: [1, 1.2, 1],
               opacity: [0.1, 0.2, 0.1],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: p.duration,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
