@@ -53,9 +53,9 @@ interface BillingRecord {
 
 // ─── Mock Data ───
 const initialAssignments: Assignment[] = [
-  { id: 'a1', freelancerId: 'f1', freelancerName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01' },
-  { id: 'a2', freelancerId: 'f2', freelancerName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
-  { id: 'a3', freelancerId: 'f3', freelancerName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
+  { id: 'a1', professionalId: 'f1', professionalName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01', totalHours: 0 },
+  { id: 'a2', professionalId: 'f2', professionalName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
+  { id: 'a3', professionalId: 'f3', professionalName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
 ];
 
 const initialBilling: BillingRecord[] = [
