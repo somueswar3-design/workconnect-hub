@@ -471,7 +471,7 @@ const Home = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h2 className="text-lg font-bold">Complete Your Profile & Get Matched</h2>
-                      <p className="text-white/80 text-sm mt-0.5">Update your skills & availability — we'll match you with the right clients.</p>
+                      <p className="text-white/80 text-sm mt-0.5">Update your skills, hourly rate & availability — we'll match you with the right work assignments.</p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2 bg-white/15 rounded-lg px-3 py-2 border border-white/20">
                       <DollarSign className="h-4 w-4 text-yellow-300" />
