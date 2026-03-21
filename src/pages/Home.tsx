@@ -1116,8 +1116,8 @@ const Home = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">What Our Freelancers Say</h2>
-            <p className="text-gray-500">Join thousands of satisfied IT professionals</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">What Our Professionals Say</h2>
+            <p className="text-gray-500">Join thousands of satisfied IT work support professionals</p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
             {testimonials.map((t, i) => (
