@@ -372,7 +372,7 @@ const Home = () => {
     { step: '1', title: 'Create Your Profile', description: 'Sign up, upload your resume, and let our smart system auto-fill your skills.', icon: Laptop, color: 'bg-emerald-500' },
     { step: '2', title: 'Get Discovered', description: 'Clients browse professionals by skill, domain & hourly rate. Get matched to the right work.', icon: Search, color: 'bg-blue-500' },
     { step: '3', title: 'Demo & Connect', description: 'Our admin coordinates a demo call. Once approved, assignments are created based on hours.', icon: Heart, color: 'bg-orange-500' },
-    { step: '4', title: 'Work & Get Paid', description: 'Work hourly, track time, receive invoices with transparent billing. 10% platform fee only.', icon: DollarSign, color: 'bg-emerald-600' },
+    { step: '4', title: 'Work & Get Paid', description: 'Work hourly, track time, and receive invoices with transparent billing.', icon: DollarSign, color: 'bg-emerald-600' },
   ];
 
   // Colorful gradient sets for freelancer cards
