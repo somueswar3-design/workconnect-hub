@@ -263,7 +263,7 @@ const AdminDashboard = () => {
 
   // ─── Filters ───
   const filteredAssignments = assignments.filter(a => {
-    const matchesSearch = a.freelancerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = a.professionalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       a.clientName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || a.status === filterStatus;
     return matchesSearch && matchesFilter;
