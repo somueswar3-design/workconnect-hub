@@ -356,7 +356,7 @@ const AdminDashboard = () => {
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <Briefcase className="h-5 w-5 text-primary-foreground" />
             </div>
-            <h1 className="text-lg font-bold text-foreground">Admin Dashboard</h1>
+            <h1 className="text-lg font-bold text-foreground">WorkSupport360 Admin</h1>
           </div>
           <Button variant="ghost" size="sm" className="gap-1.5 text-destructive" onClick={handleLogout}>
             <LogOut className="h-4 w-4" /> Logout
