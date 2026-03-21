@@ -915,7 +915,7 @@ const Home = () => {
                   Can't find the right talent?
                 </h3>
                 <p className="text-gray-600 mb-4 leading-relaxed">
-                  Post your <span className="font-semibold text-indigo-600">Job Description</span> and we'll assign the perfect freelancer for your project. Our team reviews every requirement and matches you with verified professionals.
+                  Post your <span className="font-semibold text-indigo-600">Job Description</span> and we'll assign the right work support professional. Our team reviews, conducts a demo, and matches you — billed hourly with transparent invoicing.
                 </p>
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 text-sm text-gray-700">
