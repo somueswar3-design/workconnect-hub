@@ -302,7 +302,7 @@ const Home = () => {
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will notify matching freelancers.' });
+      toast({ title: '🎉 Requirement Posted!', description: 'Your requirement has been posted. We will match the right professional and coordinate a demo.' });
       setPostReqOpen(false);
       // Reload requirements section
       loadRequirements();
