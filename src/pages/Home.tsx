@@ -439,7 +439,7 @@ const Home = () => {
                   className="gap-2 text-lg px-8 bg-transparent border-white/30 text-white hover:bg-white/10 font-bold"
                 >
                   <Link to="/register?role=FreeLancer">
-                    <Briefcase className="h-5 w-5" /> Register as Freelancer
+                    <Briefcase className="h-5 w-5" /> Join as Professional
                   </Link>
                 </Button>
               )}
