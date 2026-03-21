@@ -584,7 +584,7 @@ const AdminDashboard = () => {
               {[
                 { label: 'Total Invoiced', value: `$${billingStats.totalInvoiced.toLocaleString()}`, icon: FileText, cls: 'text-blue-600 bg-blue-100' },
                 { label: 'Pending Amount', value: `$${billingStats.totalPending.toLocaleString()}`, icon: Clock, cls: 'text-amber-600 bg-amber-100' },
-                { label: 'Commission (10%)', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
+                { label: 'Total Commission', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
                 { label: 'Overdue', value: billingStats.overdue, icon: AlertCircle, cls: 'text-destructive bg-destructive/10' },
               ].map(s => (
                 <Card key={s.label} className="border border-border">

@@ -1385,12 +1385,12 @@ const Home = () => {
               <Input type="email" placeholder="your@email.com" value={postReqForm.contactEmail} onChange={e => setPostReqForm(f => ({ ...f, contactEmail: e.target.value }))} />
             </div>
 
-            {/* Platform fee note */}
+            {/* How we work note */}
             <div className="bg-indigo-50 rounded-lg p-3 flex items-start gap-3 border border-indigo-100">
-              <DollarSign className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
+              <Users className="h-5 w-5 text-indigo-500 mt-0.5 shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-indigo-700">10% Platform Service Fee</p>
-                <p className="text-xs text-indigo-500 mt-0.5">A flat 10% fee is applied only on successful project assignments. No hidden charges.</p>
+                <p className="text-sm font-semibold text-indigo-700">We Hire & Provide the Right Professional</p>
+                <p className="text-xs text-indigo-500 mt-0.5">Share your requirement — we'll find, verify, and assign the right work support professional to your project.</p>
               </div>
             </div>
 
