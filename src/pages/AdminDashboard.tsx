@@ -543,6 +543,7 @@ const AdminDashboard = () => {
                         <TableCell>{a.hourlyRate}/hr</TableCell>
                         <TableCell className="text-sm">{a.totalHours || 0}h</TableCell>
                         <TableCell><Badge className={statusConfig[a.status]?.className}>{statusConfig[a.status]?.label}</Badge></TableCell>
+                        <TableCell className="text-muted-foreground text-sm">{a.assignedDate}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex gap-1 justify-end">
                             {a.status === 'pending_approval' && (
