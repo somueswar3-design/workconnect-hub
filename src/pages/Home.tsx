@@ -617,7 +617,7 @@ const Home = () => {
               {paginated.length === 0 ? (
                 <div className="text-center py-12">
                   <Users className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500">No freelancers found. Try different filters.</p>
+                  <p className="text-gray-500">No professionals found. Try different filters.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
