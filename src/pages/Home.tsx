@@ -780,9 +780,9 @@ const Home = () => {
             <div>
               <Badge className="mb-2 bg-indigo-50 text-indigo-600 border-indigo-200 text-sm px-4 py-1">📋 Live Openings</Badge>
               <h2 className="text-3xl font-extrabold text-gray-900">
-                Current Freelancer <span className="text-indigo-500">Works</span>
+                Current Work <span className="text-indigo-500">Openings</span>
               </h2>
-              <p className="text-gray-500 mt-1">Active projects posted by clients — find work that matches your skills</p>
+              <p className="text-gray-500 mt-1">Active hourly work support openings posted by clients — find assignments that match your skills</p>
             </div>
             {isAuthenticated && user?.role?.toLowerCase() === 'client' && (
               <Button
