@@ -223,7 +223,7 @@ const AdminDashboard = () => {
         demoLink: scheduleForm.demoLink,
       });
       await sendDemoLink(selectedDemo.demoId, scheduleForm.demoLink, scheduleForm.scheduledDate, scheduleForm.scheduledTime, scheduleForm.timezone);
-      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and freelancer (${selectedDemo.freelancerName}).` });
+      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and professional (${selectedDemo.freelancerName}).` });
       setScheduleOpen(false);
       loadDemoRequests();
     } catch {
