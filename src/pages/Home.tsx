@@ -985,10 +985,10 @@ const Home = () => {
               >
                 <Badge className="mb-4 bg-white/20 text-white border-white/30 text-sm px-4 py-1 backdrop-blur-sm">💰 Earn Money</Badge>
                 <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight">
-                  Become a Freelancer & <br />Start Earning Today
+                  Become a Work Support <br />Professional & Earn
                 </h2>
                 <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                  Join thousands of IT professionals earning on their own terms. Work part-time while keeping your job, or go full-time freelancing.
+                  Join thousands of IT professionals earning on their own terms. Work hourly, part-time or full-time — set your own rates and get paid per hour.
                 </p>
                 <div className="space-y-3 mb-8">
                   {[
