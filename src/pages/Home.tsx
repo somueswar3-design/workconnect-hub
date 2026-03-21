@@ -394,10 +394,10 @@ const Home = () => {
 
       {/* ===== HERO WITH VIDEO BACKGROUND ===== */}
       <section className="relative overflow-hidden text-white min-h-[500px] md:min-h-[600px]">
-        {/* Stable fallback background (prevents image-swap flicker) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted to-background" />
+        {/* Stable dark fallback background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800" />
         <div
-          className={`absolute inset-0 bg-gradient-to-br from-primary/25 via-accent/20 to-secondary/25 transition-opacity duration-700 ${heroVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 bg-gradient-to-br from-emerald-900/30 via-blue-900/20 to-purple-900/30 transition-opacity duration-700 ${heroVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
         />
         <video
           autoPlay
@@ -413,8 +413,8 @@ const Home = () => {
           <source src={HERO_VIDEO_URL} type="video/mp4" />
         </video>
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/65 to-background/35" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/65 via-transparent to-background/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
 
         <div className="relative z-10 container mx-auto px-4 py-20 md:py-28">
           <motion.div
