@@ -568,7 +568,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     ))}
                     {filteredAssignments.length === 0 && (
-                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No assignments found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No assignments found</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
