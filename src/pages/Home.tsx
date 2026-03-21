@@ -1038,8 +1038,8 @@ const Home = () => {
                 {[
                   { label: 'Avg. Earnings', value: '₹50K+/mo', icon: DollarSign, bg: 'bg-white/20' },
                   { label: 'Active Projects', value: '1,200+', icon: Briefcase, bg: 'bg-white/15' },
-                  { label: 'Freelancers', value: '500+', icon: Users, bg: 'bg-white/20' },
-                  { label: 'Part-Time Earners', value: '60%', icon: Clock, bg: 'bg-white/15' },
+                  { label: 'Professionals', value: '500+', icon: Users, bg: 'bg-white/20' },
+                  { label: 'Hourly Earners', value: '60%', icon: Clock, bg: 'bg-white/15' },
                 ].map((stat, i) => (
                   <div key={i} className={`${stat.bg} backdrop-blur-sm rounded-2xl p-5 text-center border border-white/10`}>
                     <stat.icon className="h-8 w-8 mx-auto mb-2 text-white/80" />
