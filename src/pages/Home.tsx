@@ -1324,7 +1324,7 @@ const Home = () => {
               Post Your Requirement
             </DialogTitle>
             <DialogDescription>
-              Share your project details and we'll match you with the right freelancer.
+              Share your project details. We'll match you with the right professional — hourly-based assignments with transparent invoicing.
             </DialogDescription>
           </DialogHeader>
 
