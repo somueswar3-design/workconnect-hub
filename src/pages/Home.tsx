@@ -933,20 +933,20 @@ const Home = () => {
                 </Button>
               </div>
 
-              {/* Right — Platform Fee */}
+              {/* Right — How We Work */}
               <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-violet-600 p-8 md:p-10 text-white flex flex-col justify-center items-center text-center">
                 <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center mb-4 backdrop-blur-sm">
-                  <DollarSign className="h-8 w-8 text-white" />
+                  <Users className="h-8 w-8 text-white" />
                 </div>
-                <p className="text-sm text-white/80 font-medium mb-1">Platform Service Fee</p>
-                <p className="text-5xl font-extrabold mb-2">10%</p>
+                <p className="text-sm text-white/80 font-medium mb-1">How We Work</p>
+                <p className="text-2xl font-extrabold mb-2">We Hire & Provide</p>
                 <p className="text-white/80 text-sm mb-6 max-w-xs leading-relaxed">
-                  Only a flat 10% service fee on successful project assignments. No hidden charges — pay only when you hire.
+                  Share your requirements — we hire the right work support professional or freelancer and provide them to you. No hassle, no searching.
                 </p>
                 <div className="space-y-2 text-left w-full max-w-xs">
                   {[
-                    'No upfront costs',
-                    'Fee applied only on assignment',
+                    'We find & verify the right candidate',
+                    'Admin-coordinated demo & onboarding',
                     'Transparent billing & invoicing',
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm text-white/90">
