@@ -697,7 +697,7 @@ const AdminDashboard = () => {
               <Video className="h-5 w-5 text-primary" /> Schedule Demo & Send Link
             </DialogTitle>
             <DialogDescription>
-              Schedule a demo for <strong>{selectedDemo?.projectTitle}</strong> with <strong>{selectedDemo?.freelancerName}</strong>
+              Schedule a demo for <strong>{selectedDemo?.projectTitle}</strong> with <strong>{selectedDemo?.freelancerName}</strong>. After demo approval, hourly work assignment will be created.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
