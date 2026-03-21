@@ -529,8 +529,8 @@ const AdminDashboard = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Freelancer</TableHead><TableHead>Client</TableHead><TableHead>Project</TableHead>
-                      <TableHead>Rate</TableHead><TableHead>Status</TableHead><TableHead>Assigned</TableHead>
+                      <TableHead>Professional</TableHead><TableHead>Client</TableHead><TableHead>Project</TableHead>
+                      <TableHead>Rate</TableHead><TableHead>Hours</TableHead><TableHead>Status</TableHead><TableHead>Assigned</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
