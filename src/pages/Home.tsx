@@ -1013,7 +1013,7 @@ const Home = () => {
                     className="gap-2 text-lg px-8 bg-white text-orange-600 hover:bg-white/90 font-bold shadow-xl"
                   >
                     <Link to="/register?role=FreeLancer">
-                      <Briefcase className="h-5 w-5" /> Register as Freelancer
+                      <Briefcase className="h-5 w-5" /> Join as Professional
                     </Link>
                   </Button>
                   <Button
