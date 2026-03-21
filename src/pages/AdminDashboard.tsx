@@ -636,7 +636,7 @@ const AdminDashboard = () => {
                       <Separator />
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Freelancer</span>
+                         <span className="text-muted-foreground">Professional</span>
                           <span className="font-medium text-foreground">{b.freelancerName}</span>
                         </div>
                         <div className="flex items-center justify-between">
