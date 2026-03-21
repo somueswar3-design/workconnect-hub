@@ -63,7 +63,7 @@ const initialBilling: BillingRecord[] = [
     id: 'b1', assignmentId: 'a2', freelancerName: 'Priya Sharma', clientName: 'StartupX Labs',
     projectTitle: 'Mobile App Backend', invoiceAmount: 10200, paidAmount: 5000, pendingAmount: 5200,
     commission: 1020, billingStatus: 'partial', followUpStatus: 'reminder_sent',
-    followUpNotes: 'Sent payment reminder on Dec 10', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
+    followUpNotes: 'Sent payment reminder on Dec 10. 120hrs × $85/hr billed.', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
   },
   {
     id: 'b2', assignmentId: 'a3', freelancerName: 'Arjun Reddy', clientName: 'DataFlow Analytics',
