@@ -26,10 +26,11 @@ import {
 
 // ─── Types ───
 interface Assignment {
-  id: string; freelancerId: string; freelancerName: string; clientId: string; clientName: string;
-  projectTitle: string; hourlyRate: string;
+  id: string; professionalId: string; professionalName: string; clientId: string; clientName: string;
+  projectTitle: string; hourlyRate: string; totalHours?: number;
   status: 'pending_approval' | 'approved' | 'rejected' | 'active' | 'completed';
-  assignedDate: string; approvedDate?: string; totalHours?: number; totalAmount?: number;
+  assignedDate: string; approvedDate?: string; totalAmount?: number;
+  invoiceGenerated?: boolean;
 }
 
 interface BillingRecord {
