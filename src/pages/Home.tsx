@@ -74,6 +74,7 @@ const Home = () => {
     projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '',
     language: '', country: '', contactEmail: '', countryCode: '+91', contactPhone: '',
   });
+  const [heroVideoLoaded, setHeroVideoLoaded] = useState(false);
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true);
