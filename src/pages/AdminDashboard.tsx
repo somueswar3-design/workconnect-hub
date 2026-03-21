@@ -741,7 +741,7 @@ const AdminDashboard = () => {
                 value={scheduleForm.adminComments} onChange={e => setScheduleForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>freelancer</strong>.</p>
+              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>professional</strong>.</p>
             </div>
           </div>
           <DialogFooter>
