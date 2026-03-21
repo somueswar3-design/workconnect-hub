@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Users, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
@@ -66,6 +66,17 @@ const textVariants = {
 };
 
 const HeroSlider = () => {
+  const particles = useMemo(() => 
+    [...Array(5)].map(() => ({
+      width: Math.random() * 300 + 100,
+      height: Math.random() * 300 + 100,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      xMove: Math.random() * 100 - 50,
+      yMove: Math.random() * 100 - 50,
+      duration: Math.random() * 10 + 10,
+    })), []);
+
   const [[currentSlide, direction], setSlide] = useState([0, 0]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
@@ -126,24 +137,24 @@ const HeroSlider = () => {
 
       {/* Animated particles/shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(5)].map((_, i) => (
+        {particles.map((p, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-primary/10"
             style={{
-              width: Math.random() * 300 + 100,
-              height: Math.random() * 300 + 100,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50, 0],
-              y: [0, Math.random() * 100 - 50, 0],
+              x: [0, p.xMove, 0],
+              y: [0, p.yMove, 0],
               scale: [1, 1.2, 1],
               opacity: [0.1, 0.2, 0.1],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: p.duration,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
