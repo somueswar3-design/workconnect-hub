@@ -424,12 +424,12 @@ const Home = () => {
             className="max-w-3xl"
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Your Work, Your Hours <br />
-              <span className="text-emerald-400">IT Work Support</span> <br />
-              on Demand
+              Hire Smart, Work Fast <br />
+              <span className="text-emerald-400">Expert IT Support</span> <br />
+              Anytime, Any Scale
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Hire skilled IT professionals hourly, part-time, or full-time. Or register as a professional and earn on your own terms. Privacy-first & flexible.
+              Get verified IT professionals on demand — hourly, part-time, or full-time. We hire the right talent and provide them to you, so you can focus on what matters.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
