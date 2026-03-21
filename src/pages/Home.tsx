@@ -415,12 +415,12 @@ const Home = () => {
             className="max-w-3xl"
           >
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Find the perfect <br />
-              <span className="text-emerald-400">IT freelance</span> services <br />
-              for your business
+              Your Work, Your Hours <br />
+              <span className="text-emerald-400">IT Work Support</span> <br />
+              on Demand
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-xl">
-              Connect with top-tier IT professionals across every domain. Privacy-first, flexible, and built for modern remote work.
+              Hire skilled IT professionals hourly, part-time, or full-time. Or register as a professional and earn on your own terms. Privacy-first & flexible.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
