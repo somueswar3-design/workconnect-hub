@@ -517,9 +517,8 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <Badge className="mb-3 bg-gradient-to-r from-primary/15 to-accent/15 text-primary border-primary/30 text-sm px-4 py-1">🔥 Top Talent</Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
-              Hire Expert <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">Professionals</span>
+              Hire Expert <span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent">Professionals</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
           </motion.div>
