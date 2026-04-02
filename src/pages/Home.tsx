@@ -24,7 +24,7 @@ import { submitFreelancerInterest } from '@/services/freelancerApi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { countries } from '@/data/countries';
 
-const ITEMS_PER_PAGE = 24;
+const ITEMS_PER_PAGE = 48;
 const HERO_VIDEO_URL = 'https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4';
 
 const Home = () => {
