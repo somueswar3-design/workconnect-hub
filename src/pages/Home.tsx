@@ -214,7 +214,7 @@ const Home = () => {
         description: demoForm.description.trim(),
         clientBudget: Number(demoForm.clientBudget) || 0,
         contactEmail: demoForm.contactEmail.trim(),
-        contactPhone: demoForm.contactPhone.trim(),
+        contactPhone: `${demoForm.phoneCountryCode}${demoForm.contactPhone.trim()}`,
         status: 'Pending',
         adminComments: '',
         createdOn: new Date().toISOString(),
