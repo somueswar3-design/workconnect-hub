@@ -289,12 +289,18 @@ const FreelancerOverview = () => {
                           <p className="text-sm text-slate-400 mt-1 line-clamp-2">{interest.requirement.description}</p>
                         )}
                       </div>
-                      <Badge className={`shrink-0 text-[10px] ${
-                        interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
-                        interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
-                        interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
-                        'bg-slate-700 text-slate-400'
-                      }`}>{interest.status}</Badge>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <Badge className={`text-[10px] ${
+                          interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
+                          interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                          interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                          'bg-slate-700 text-slate-400'
+                        }`}>{interest.status}</Badge>
+                        <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
                     </div>
 
                     {interest.requirement?.skillsRequired && (
