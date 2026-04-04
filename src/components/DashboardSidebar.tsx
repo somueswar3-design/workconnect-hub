@@ -67,7 +67,8 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
     { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
     { icon: Briefcase, label: 'My Requests', path: '/client/demo-requests' },
-    { icon: Users, label: 'Post Requirement', path: '/client/post-requirement' },
+    { icon: Users, label: 'Browse Talent', path: '/client/freelancers' },
+    { icon: Briefcase, label: 'Post Requirement', path: '/client/post-requirement' },
   ];
 
   const menuItems = userType === 'freelancer' ? freelancerMenuItems : clientMenuItems;

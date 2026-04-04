@@ -935,14 +935,14 @@ const ClientDashboard = () => {
   return (
     <DashboardLayout userType="client">
       <Routes>
-        <Route path="/" element={<ClientOverview />} />
+        <Route path="/" element={<MyRequests />} />
         <Route path="/freelancers" element={<ClientOverview />} />
         <Route path="/demo-requests" element={<MyRequests />} />
         <Route path="/post-requirement" element={<PostRequirement />} />
-        <Route path="/history" element={<ClientOverview />} />
+        <Route path="/history" element={<MyRequests />} />
         <Route path="/settings/password" element={<ChangePassword />} />
-        <Route path="/settings/*" element={<ClientOverview />} />
-        <Route path="*" element={<ClientOverview />} />
+        <Route path="/settings/*" element={<MyRequests />} />
+        <Route path="*" element={<MyRequests />} />
       </Routes>
     </DashboardLayout>
   );
