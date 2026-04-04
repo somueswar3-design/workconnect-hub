@@ -113,11 +113,15 @@ const Header = () => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
-                    <User className="h-4 w-4 mr-2" />
-                    Update Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  {user?.role?.toLowerCase() === 'freelancer' && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
+                        <User className="h-4 w-4 mr-2" />
+                        Update Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout

@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard, Home
+  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard, Home, PlusCircle
 } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
@@ -67,7 +67,8 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
     { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
     { icon: Briefcase, label: 'My Requests', path: '/client/demo-requests' },
-    { icon: Users, label: 'Post Requirement', path: '/client/post-requirement' },
+    { icon: Users, label: 'Browse Talent', path: '/client/freelancers' },
+    { icon: PlusCircle, label: 'Post Requirement', path: '/client/post-requirement' },
   ];
 
   const menuItems = userType === 'freelancer' ? freelancerMenuItems : clientMenuItems;

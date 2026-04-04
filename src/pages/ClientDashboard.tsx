@@ -146,7 +146,7 @@ const ClientOverview = () => {
     try {
       const payload: RequestDemoDto = {
         id: 0,
-        clientId: Number(user?.userId) || 0,
+        clientId: parseInt(user?.userId || '0', 10) || 0,
         freelancerId: selectedFreelancer.freelancerId || selectedFreelancer.id || 0,
         projectTitle: demoForm.projectTitle.trim(),
         description: demoForm.description.trim(),
@@ -510,7 +510,7 @@ const MyRequests = () => {
     try {
       const payload: RequestDemoDto = {
         id: 0,
-        clientId: Number(user?.userId) || 0,
+        clientId: parseInt(user?.userId || '0', 10) || 0,
         freelancerId: 0,
         projectTitle: req.title,
         description: req.description || '',
@@ -935,14 +935,14 @@ const ClientDashboard = () => {
   return (
     <DashboardLayout userType="client">
       <Routes>
-        <Route path="/" element={<ClientOverview />} />
+        <Route path="/" element={<MyRequests />} />
         <Route path="/freelancers" element={<ClientOverview />} />
         <Route path="/demo-requests" element={<MyRequests />} />
         <Route path="/post-requirement" element={<PostRequirement />} />
-        <Route path="/history" element={<ClientOverview />} />
+        <Route path="/history" element={<MyRequests />} />
         <Route path="/settings/password" element={<ChangePassword />} />
-        <Route path="/settings/*" element={<ClientOverview />} />
-        <Route path="*" element={<ClientOverview />} />
+        <Route path="/settings/*" element={<MyRequests />} />
+        <Route path="*" element={<MyRequests />} />
       </Routes>
     </DashboardLayout>
   );
