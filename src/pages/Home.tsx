@@ -1186,29 +1186,29 @@ const Home = () => {
 
       {/* ===== DEMO REQUEST DIALOG ===== */}
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-emerald-500" />
+        <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="pb-1">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Zap className="h-4 w-4 text-emerald-500" />
               Request a Demo
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs">
               Request a demo session with <span className="font-semibold text-gray-900">{selectedFreelancer?.fullName}</span>.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-sm">Project Title <span className="text-red-500">*</span></Label>
-              <Input placeholder="e.g. E-commerce Website Development" value={demoForm.projectTitle} onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))} />
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Project Title <span className="text-red-500">*</span></Label>
+              <Input className="h-9 text-sm" placeholder="e.g. E-commerce Website Development" value={demoForm.projectTitle} onChange={e => setDemoForm(f => ({ ...f, projectTitle: e.target.value }))} />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm">Description</Label>
-              <Textarea placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={3} />
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Description</Label>
+              <Textarea className="text-sm min-h-[60px]" placeholder="Briefly describe your project requirements..." value={demoForm.description} onChange={e => setDemoForm(f => ({ ...f, description: e.target.value }))} rows={2} />
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm">Country (Currency)</Label>
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Country (Currency)</Label>
               <Select value={demoForm.budgetCountry} onValueChange={v => setDemoForm(f => ({ ...f, budgetCountry: v }))}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Select country" /></SelectTrigger>
+                <SelectTrigger className="w-full h-9 text-sm"><SelectValue placeholder="Select country" /></SelectTrigger>
                 <SelectContent className="max-h-60">
                   {countries.map(c => (
                     <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol} {c.currency})</SelectItem>
@@ -1216,27 +1216,27 @@ const Home = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm">Budget ({countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'})</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs font-medium">Budget ({countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'})</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">{countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'}</span>
-                  <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="pl-8" />
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">{countries.find(c => c.name === demoForm.budgetCountry)?.currencySymbol || '₹'}</span>
+                  <Input type="number" placeholder="e.g. 5000" value={demoForm.clientBudget} onChange={e => setDemoForm(f => ({ ...f, clientBudget: e.target.value }))} min={0} className="pl-7 h-9 text-sm" />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-sm">Contact Phone</Label>
-                <Input placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} />
+              <div className="space-y-1">
+                <Label className="text-xs font-medium">Contact Phone</Label>
+                <Input className="h-9 text-sm" placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm">Contact Email <span className="text-red-500">*</span></Label>
-              <Input type="email" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} />
+            <div className="space-y-1">
+              <Label className="text-xs font-medium">Contact Email <span className="text-red-500">*</span></Label>
+              <Input type="email" className="h-9 text-sm" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} />
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>Cancel</Button>
-              <Button onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white">
-                {demoSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            <div className="flex justify-end gap-2 pt-1">
+              <Button variant="outline" size="sm" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>Cancel</Button>
+              <Button size="sm" onClick={handleDemoSubmit} disabled={demoSubmitting} className="gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white">
+                {demoSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 Submit
               </Button>
             </div>
