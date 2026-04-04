@@ -200,8 +200,8 @@ const Home = () => {
 
   const handleDemoSubmit = async () => {
     if (!selectedFreelancer) return;
-    if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim()) {
-      toast({ title: 'Validation', description: 'Project title and email are required', variant: 'destructive' });
+    if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim() || !demoForm.contactPhone.trim()) {
+      toast({ title: 'Validation', description: 'Project title, phone number, and email are required', variant: 'destructive' });
       return;
     }
     setDemoSubmitting(true);
