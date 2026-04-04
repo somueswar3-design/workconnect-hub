@@ -62,13 +62,19 @@ const FreelancerOverview = () => {
 
       try {
         const userId = user?.userId || '';
-        const o = await getJobOpenings(userId);
-        setOpenings(o);
+        const [o, i] = await Promise.all([
+          getJobOpenings(userId),
+          getFreelancerInterests(userId),
+        ]);
+        setOpenings(Array.isArray(o) ? o : []);
+        setInterests(Array.isArray(i) ? i : []);
       } catch (err) {
-        console.error('Failed to load openings:', err);
+        console.error('Failed to load openings/interests:', err);
         setOpenings([]);
+        setInterests([]);
       }
       setOpeningsLoading(false);
+      setInterestsLoading(false);
     };
     load();
   }, [user?.userId]);
