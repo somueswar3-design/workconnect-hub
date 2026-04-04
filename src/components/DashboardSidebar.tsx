@@ -66,8 +66,6 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const clientMenuItems = [
     { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
-    { icon: Briefcase, label: 'My Requests', path: '/client/demo-requests' },
-    { icon: Users, label: 'Browse Talent', path: '/client/freelancers' },
     { icon: PlusCircle, label: 'Post Requirement', path: '/client/post-requirement' },
   ];
 
