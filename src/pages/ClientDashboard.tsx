@@ -469,7 +469,7 @@ const MyRequests = () => {
       setHasErrorDemo(false);
       try {
         const data = await getDemoRequests(user?.userId || '');
-        setDemoRequests(data);
+        setDemoRequests(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Failed to load demo requests:', err);
         setHasErrorDemo(true);
@@ -482,8 +482,9 @@ const MyRequests = () => {
       setHasErrorReq(false);
       try {
         const data = await getClientRequirements(user?.userId || '');
-        data.sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime());
-        setRequirements(data);
+        const arr = Array.isArray(data) ? data : [];
+        arr.sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime());
+        setRequirements(arr);
       } catch (err) {
         console.error('Failed to load requirements:', err);
         setHasErrorReq(true);
@@ -526,7 +527,7 @@ const MyRequests = () => {
       // Refresh demo requests
       try {
         const data = await getDemoRequests(user?.userId || '');
-        setDemoRequests(data);
+        setDemoRequests(Array.isArray(data) ? data : []);
       } catch {}
     } catch (error) {
       console.error('Connect request failed:', error);
