@@ -520,7 +520,7 @@ const Home = () => {
             <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-3">
               Hire Expert <span className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 bg-clip-text text-transparent">Professionals</span>
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">Browse verified IT work support professionals. Hourly, Part-Time, or Full-Time — flexible based on your needs.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Freelancing & IT Work Support, On Demand. Browse verified professionals — Hourly, Part-Time, or Full-Time.</p>
           </motion.div>
 
           {/* Filters */}
