@@ -45,36 +45,39 @@ const FreelancerOverview = () => {
 
   useEffect(() => {
     const load = async () => {
+      const userId = user?.userId || '';
       setLoading(true);
       setOpeningsLoading(true);
+      setInterestsLoading(true);
+
       try {
-        const userId = user?.userId || '';
         const [a, e] = await Promise.all([
-          getAssignments(userId),
-          getFreelancerEarnings(userId),
+          getAssignments(userId).catch(() => []),
+          getFreelancerEarnings(userId).catch(() => null),
         ]);
-        setAssignments(a);
+        setAssignments(Array.isArray(a) ? a : []);
         setEarnings(e);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       }
       setLoading(false);
 
-      try {
-        const userId = user?.userId || '';
-        const [o, i] = await Promise.all([
-          getJobOpenings(userId),
-          getFreelancerInterests(userId),
-        ]);
-        setOpenings(Array.isArray(o) ? o : []);
-        setInterests(Array.isArray(i) ? i : []);
-      } catch (err) {
-        console.error('Failed to load openings/interests:', err);
-        setOpenings([]);
-        setInterests([]);
-      }
-      setOpeningsLoading(false);
-      setInterestsLoading(false);
+      // Fetch openings and interests independently
+      getJobOpenings(userId)
+        .then(o => setOpenings(Array.isArray(o) ? o : []))
+        .catch(() => setOpenings([]))
+        .finally(() => setOpeningsLoading(false));
+
+      getFreelancerInterests(userId)
+        .then(i => {
+          console.log('Freelancer interests response:', i);
+          setInterests(Array.isArray(i) ? i : []);
+        })
+        .catch(err => {
+          console.error('Failed to load interests:', err);
+          setInterests([]);
+        })
+        .finally(() => setInterestsLoading(false));
     };
     load();
   }, [user?.userId]);
