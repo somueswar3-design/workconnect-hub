@@ -527,7 +527,7 @@ const MyRequests = () => {
       // Refresh demo requests
       try {
         const data = await getDemoRequests(user?.userId || '');
-        setDemoRequests(data);
+        setDemoRequests(Array.isArray(data) ? data : []);
       } catch {}
     } catch (error) {
       console.error('Connect request failed:', error);
