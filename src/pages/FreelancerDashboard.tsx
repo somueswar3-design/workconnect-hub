@@ -17,7 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
+import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, getFreelancerInterests, AssignmentDto, EarningsDto, JobOpeningDto, FreelancerInterestResponseDto } from '@/services/freelancerApi';
 import RequirementsGrid from '@/components/RequirementsGrid';
 import {
   Dialog,
