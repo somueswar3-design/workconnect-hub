@@ -52,7 +52,7 @@ const Home = () => {
   const [demoOpen, setDemoOpen] = useState(false);
   const [selectedFreelancer, setSelectedFreelancer] = useState<FreelancerProfileDto | null>(null);
   const [demoForm, setDemoForm] = useState({
-    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India',
+    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India', phoneCountryCode: '+91',
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
@@ -193,15 +193,15 @@ const Home = () => {
     setSelectedFreelancer(freelancer);
     setDemoForm({
       projectTitle: '', description: '', clientBudget: '',
-      contactEmail: user?.email || '', contactPhone: '', budgetCountry: 'India',
+      contactEmail: user?.email || '', contactPhone: '', budgetCountry: 'India', phoneCountryCode: '+91',
     });
     setDemoOpen(true);
   };
 
   const handleDemoSubmit = async () => {
     if (!selectedFreelancer) return;
-    if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim()) {
-      toast({ title: 'Validation', description: 'Project title and email are required', variant: 'destructive' });
+    if (!demoForm.projectTitle.trim() || !demoForm.contactEmail.trim() || !demoForm.contactPhone.trim()) {
+      toast({ title: 'Validation', description: 'Project title, phone number, and email are required', variant: 'destructive' });
       return;
     }
     setDemoSubmitting(true);
@@ -214,7 +214,7 @@ const Home = () => {
         description: demoForm.description.trim(),
         clientBudget: Number(demoForm.clientBudget) || 0,
         contactEmail: demoForm.contactEmail.trim(),
-        contactPhone: demoForm.contactPhone.trim(),
+        contactPhone: `${demoForm.phoneCountryCode}${demoForm.contactPhone.trim()}`,
         status: 'Pending',
         adminComments: '',
         createdOn: new Date().toISOString(),
@@ -1225,13 +1225,28 @@ const Home = () => {
                 </div>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs font-medium">Contact Phone</Label>
-                <Input className="h-9 text-sm" placeholder="Your phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value }))} />
+                <Label className="text-xs font-medium">Contact Phone <span className="text-red-500">*</span></Label>
+                <div className="flex gap-1.5">
+                  <Select value={demoForm.phoneCountryCode} onValueChange={v => setDemoForm(f => ({ ...f, phoneCountryCode: v }))}>
+                    <SelectTrigger className="w-[90px] h-9 text-xs shrink-0"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                      <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                      <SelectItem value="+65">🇸🇬 +65</SelectItem>
+                      <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                      <SelectItem value="+81">🇯🇵 +81</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input className="h-9 text-sm flex-1" placeholder="Phone number" value={demoForm.contactPhone} onChange={e => setDemoForm(f => ({ ...f, contactPhone: e.target.value.replace(/[^0-9]/g, '') }))} maxLength={15} />
+                </div>
               </div>
             </div>
             <div className="space-y-1">
               <Label className="text-xs font-medium">Contact Email <span className="text-red-500">*</span></Label>
-              <Input type="email" className="h-9 text-sm" placeholder="your@email.com" value={demoForm.contactEmail} onChange={e => setDemoForm(f => ({ ...f, contactEmail: e.target.value }))} />
+              <Input type="email" className="h-9 text-sm bg-muted/50 cursor-not-allowed" placeholder="your@email.com" value={demoForm.contactEmail} readOnly />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button variant="outline" size="sm" onClick={() => setDemoOpen(false)} disabled={demoSubmitting}>Cancel</Button>
