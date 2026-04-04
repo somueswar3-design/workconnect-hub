@@ -52,7 +52,7 @@ const Home = () => {
   const [demoOpen, setDemoOpen] = useState(false);
   const [selectedFreelancer, setSelectedFreelancer] = useState<FreelancerProfileDto | null>(null);
   const [demoForm, setDemoForm] = useState({
-    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India',
+    projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India', phoneCountryCode: '+91',
   });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
 
