@@ -251,7 +251,7 @@ const Home = () => {
       await submitFreelancerInterest({
         id: 0,
         requirementId: selectedRequirement.id,
-        freelancerUserId: Number(user?.userId) || 0,
+        freelancerUserId: parseInt(user?.userId || '0', 10) || 0,
         comment: interestComment.trim(),
         status: 'Pending',
         createdOn: new Date().toISOString(),

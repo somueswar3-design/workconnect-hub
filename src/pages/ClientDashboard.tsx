@@ -510,7 +510,7 @@ const MyRequests = () => {
     try {
       const payload: RequestDemoDto = {
         id: 0,
-        clientId: Number(user?.userId) || 0,
+        clientId: parseInt(user?.userId || '0', 10) || 0,
         freelancerId: 0,
         projectTitle: req.title,
         description: req.description || '',
