@@ -89,8 +89,39 @@ export const getJobOpenings = async (userId: string): Promise<JobOpeningDto[]> =
   return res.json();
 };
 
+// Interest requirement details from GET response
+export interface InterestRequirementDto {
+  id: number;
+  title: string;
+  description: string;
+  skillsRequired: string;
+  minExperience: number;
+  budget: number;
+  country: string;
+  language: string;
+  status: string;
+  createdOn: string;
+}
+
+// Interest DTO for GET response
+export interface FreelancerInterestResponseDto {
+  interestId: number;
+  freelancerUserId: number;
+  requirementId: number;
+  status: string;
+  createdOn: string;
+  requirement: InterestRequirementDto;
+}
+
 // Interest DTO for POST
 export interface FreelancerInterestDto {
+  id: number;
+  requirementId: number;
+  freelancerUserId: number;
+  comment: string;
+  status: string;
+  createdOn: string;
+}
   id: number;
   requirementId: number;
   freelancerUserId: number;
