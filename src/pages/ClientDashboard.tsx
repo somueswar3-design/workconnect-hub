@@ -469,7 +469,7 @@ const MyRequests = () => {
       setHasErrorDemo(false);
       try {
         const data = await getDemoRequests(user?.userId || '');
-        setDemoRequests(data);
+        setDemoRequests(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('Failed to load demo requests:', err);
         setHasErrorDemo(true);
