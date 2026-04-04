@@ -146,15 +146,14 @@ const ClientOverview = () => {
     try {
       const payload: RequestDemoDto = {
         id: 0,
-        clientId: parseInt(user?.userId || '0', 10) || 0,
-        freelancerId: selectedFreelancer.freelancerId || selectedFreelancer.id || 0,
+        clientUserId: parseInt(user?.userId || '0', 10) || 0,
+        freelancerUserId: selectedFreelancer.userId || selectedFreelancer.freelancerId || selectedFreelancer.id || 0,
         projectTitle: demoForm.projectTitle.trim(),
-        description: demoForm.description.trim(),
         clientBudget: Number(demoForm.clientBudget) || 0,
         contactEmail: demoForm.contactEmail.trim(),
         contactPhone: demoForm.contactPhone.trim(),
         status: 'Pending',
-        adminComments: '',
+        adminDescription: '',
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
@@ -511,15 +510,14 @@ const MyRequests = () => {
     try {
       const payload: RequestDemoDto = {
         id: 0,
-        clientId: parseInt(user?.userId || '0', 10) || 0,
-        freelancerId: 0,
+        clientUserId: parseInt(user?.userId || '0', 10) || 0,
+        freelancerUserId: 0,
         projectTitle: req.title,
-        description: req.description || '',
         clientBudget: req.budget || 0,
         contactEmail: user?.email || '',
         contactPhone: '',
         status: 'Pending',
-        adminComments: `Skills: ${req.skillsRequired || ''} | Exp: ${req.minExperience || 0}+ yrs | Country: ${req.country || 'Any'} | Language: ${req.language || 'Any'}`,
+        adminDescription: `Skills: ${req.skillsRequired || ''} | Exp: ${req.minExperience || 0}+ yrs | Country: ${req.country || 'Any'} | Language: ${req.language || 'Any'}`,
         createdOn: new Date().toISOString(),
       };
       await requestDemo(payload);
