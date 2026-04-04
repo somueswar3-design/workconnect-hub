@@ -342,7 +342,8 @@ const FreelancerOverview = () => {
         )}
       </div>
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
-        <DialogContent className="sm:max-w-md border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]">
+        <DialogContent className="sm:max-w-md border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">Profile Under Review</DialogTitle>
           <div className="h-2 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
           <div className="p-8 text-center space-y-6">
             <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
