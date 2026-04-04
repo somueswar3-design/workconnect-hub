@@ -45,36 +45,39 @@ const FreelancerOverview = () => {
 
   useEffect(() => {
     const load = async () => {
+      const userId = user?.userId || '';
       setLoading(true);
       setOpeningsLoading(true);
+      setInterestsLoading(true);
+
       try {
-        const userId = user?.userId || '';
         const [a, e] = await Promise.all([
-          getAssignments(userId),
-          getFreelancerEarnings(userId),
+          getAssignments(userId).catch(() => []),
+          getFreelancerEarnings(userId).catch(() => null),
         ]);
-        setAssignments(a);
+        setAssignments(Array.isArray(a) ? a : []);
         setEarnings(e);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       }
       setLoading(false);
 
-      try {
-        const userId = user?.userId || '';
-        const [o, i] = await Promise.all([
-          getJobOpenings(userId),
-          getFreelancerInterests(userId),
-        ]);
-        setOpenings(Array.isArray(o) ? o : []);
-        setInterests(Array.isArray(i) ? i : []);
-      } catch (err) {
-        console.error('Failed to load openings/interests:', err);
-        setOpenings([]);
-        setInterests([]);
-      }
-      setOpeningsLoading(false);
-      setInterestsLoading(false);
+      // Fetch openings and interests independently
+      getJobOpenings(userId)
+        .then(o => setOpenings(Array.isArray(o) ? o : []))
+        .catch(() => setOpenings([]))
+        .finally(() => setOpeningsLoading(false));
+
+      getFreelancerInterests(userId)
+        .then(i => {
+          console.log('Freelancer interests response:', i);
+          setInterests(Array.isArray(i) ? i : []);
+        })
+        .catch(err => {
+          console.error('Failed to load interests:', err);
+          setInterests([]);
+        })
+        .finally(() => setInterestsLoading(false));
     };
     load();
   }, [user?.userId]);
@@ -286,12 +289,18 @@ const FreelancerOverview = () => {
                           <p className="text-sm text-slate-400 mt-1 line-clamp-2">{interest.requirement.description}</p>
                         )}
                       </div>
-                      <Badge className={`shrink-0 text-[10px] ${
-                        interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
-                        interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
-                        interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
-                        'bg-slate-700 text-slate-400'
-                      }`}>{interest.status}</Badge>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <Badge className={`text-[10px] ${
+                          interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
+                          interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                          interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                          'bg-slate-700 text-slate-400'
+                        }`}>{interest.status}</Badge>
+                        <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
                     </div>
 
                     {interest.requirement?.skillsRequired && (
@@ -321,7 +330,9 @@ const FreelancerOverview = () => {
                       {interest.requirement?.status && (
                         <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
                       )}
-                      <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {new Date(interest.createdOn).toLocaleDateString()}</span>
+                      {interest.requirement?.createdOn && (
+                        <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}</span>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
