@@ -17,7 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, AssignmentDto, EarningsDto, JobOpeningDto } from '@/services/freelancerApi';
+import { getAssignments, getFreelancerEarnings, getJobOpenings, getFreelancerProfile, getFreelancerInterests, AssignmentDto, EarningsDto, JobOpeningDto, FreelancerInterestResponseDto } from '@/services/freelancerApi';
 import RequirementsGrid from '@/components/RequirementsGrid';
 import {
   Dialog,
@@ -36,8 +36,10 @@ const FreelancerOverview = () => {
   const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
   const [earnings, setEarnings] = useState<EarningsDto | null>(null);
   const [openings, setOpenings] = useState<JobOpeningDto[]>([]);
+  const [interests, setInterests] = useState<FreelancerInterestResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [openingsLoading, setOpeningsLoading] = useState(true);
+  const [interestsLoading, setInterestsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
 
@@ -60,13 +62,19 @@ const FreelancerOverview = () => {
 
       try {
         const userId = user?.userId || '';
-        const o = await getJobOpenings(userId);
-        setOpenings(o);
+        const [o, i] = await Promise.all([
+          getJobOpenings(userId),
+          getFreelancerInterests(userId),
+        ]);
+        setOpenings(Array.isArray(o) ? o : []);
+        setInterests(Array.isArray(i) ? i : []);
       } catch (err) {
-        console.error('Failed to load openings:', err);
+        console.error('Failed to load openings/interests:', err);
         setOpenings([]);
+        setInterests([]);
       }
       setOpeningsLoading(false);
+      setInterestsLoading(false);
     };
     load();
   }, [user?.userId]);
@@ -242,7 +250,86 @@ const FreelancerOverview = () => {
           </div>
       </div>
 
-      {/* Notification Popup */}
+      {/* My Interests */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
+          <Send className="h-5 w-5 text-indigo-400" /> My Interests
+          <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-xs">{interests.length}</Badge>
+        </h2>
+
+        {interestsLoading ? (
+          <div className="space-y-3">
+            {[1, 2].map(i => (
+              <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
+                <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full" /></CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : interests.length === 0 ? (
+          <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+            <CardContent className="py-10 text-center">
+              <Send className="h-10 w-10 mx-auto text-slate-600 mb-3" />
+              <h3 className="text-base font-medium text-slate-300 mb-1">No interests submitted yet</h3>
+              <p className="text-sm text-slate-500">Express interest in job openings above to see them here.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {interests.map((interest, idx) => (
+              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E]">
+                  <CardContent className="p-5 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-slate-100 text-base truncate">{interest.requirement?.title || `Requirement #${interest.requirementId}`}</h3>
+                        {interest.requirement?.description && (
+                          <p className="text-sm text-slate-400 mt-1 line-clamp-2">{interest.requirement.description}</p>
+                        )}
+                      </div>
+                      <Badge className={`shrink-0 text-[10px] ${
+                        interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
+                        interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                        interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                        'bg-slate-700 text-slate-400'
+                      }`}>{interest.status}</Badge>
+                    </div>
+
+                    {interest.requirement?.skillsRequired && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {interest.requirement.skillsRequired.split(',').map((skill, si) => (
+                          <Badge key={si} className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 text-[11px] px-2 py-0.5 font-normal">{skill.trim()}</Badge>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                      {interest.requirement?.budget !== undefined && (
+                        <span className="flex items-center gap-1 font-medium text-slate-200">
+                          <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
+                          {interest.requirement.budget.toLocaleString()}
+                        </span>
+                      )}
+                      {interest.requirement?.minExperience !== undefined && (
+                        <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" /> {interest.requirement.minExperience}+ yrs exp</span>
+                      )}
+                      {interest.requirement?.country && (
+                        <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {interest.requirement.country}</span>
+                      )}
+                      {interest.requirement?.language && (
+                        <span className="flex items-center gap-1"><Languages className="h-3.5 w-3.5" /> {interest.requirement.language}</span>
+                      )}
+                      {interest.requirement?.status && (
+                        <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
+                      )}
+                      <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {new Date(interest.createdOn).toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
         <DialogContent className="sm:max-w-md border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]">
           <div className="h-2 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />

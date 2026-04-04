@@ -89,6 +89,30 @@ export const getJobOpenings = async (userId: string): Promise<JobOpeningDto[]> =
   return res.json();
 };
 
+// Interest requirement details from GET response
+export interface InterestRequirementDto {
+  id: number;
+  title: string;
+  description: string;
+  skillsRequired: string;
+  minExperience: number;
+  budget: number;
+  country: string;
+  language: string;
+  status: string;
+  createdOn: string;
+}
+
+// Interest DTO for GET response
+export interface FreelancerInterestResponseDto {
+  interestId: number;
+  freelancerUserId: number;
+  requirementId: number;
+  status: string;
+  createdOn: string;
+  requirement: InterestRequirementDto;
+}
+
 // Interest DTO for POST
 export interface FreelancerInterestDto {
   id: number;
@@ -98,6 +122,15 @@ export interface FreelancerInterestDto {
   status: string;
   createdOn: string;
 }
+
+// GET freelancer interests
+export const getFreelancerInterests = async (userId: string): Promise<FreelancerInterestResponseDto[]> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/interest/${userId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch interests');
+  return res.json();
+};
 
 // POST freelancer interest on a requirement
 export const submitFreelancerInterest = async (data: Partial<FreelancerInterestDto>): Promise<void> => {
