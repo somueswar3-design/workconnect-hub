@@ -122,13 +122,6 @@ export interface FreelancerInterestDto {
   status: string;
   createdOn: string;
 }
-  id: number;
-  requirementId: number;
-  freelancerUserId: number;
-  comment: string;
-  status: string;
-  createdOn: string;
-}
 
 // GET freelancer interests
 export const getFreelancerInterests = async (userId: string): Promise<FreelancerInterestResponseDto[]> => {
@@ -141,13 +134,6 @@ export const getFreelancerInterests = async (userId: string): Promise<Freelancer
 
 // POST freelancer interest on a requirement
 export const submitFreelancerInterest = async (data: Partial<FreelancerInterestDto>): Promise<void> => {
-  const res = await fetch(`${API_BASE}/api/freelancer/interest`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Failed to submit interest');
-};
   const res = await fetch(`${API_BASE}/api/freelancer/interest`, {
     method: 'POST',
     headers: getAuthHeaders(),
