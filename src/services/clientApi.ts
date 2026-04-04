@@ -123,18 +123,17 @@ export const getFilteredFreelancers = async (filters: FreelancerFilterParams): P
   return res.json();
 };
 
-// Request demo DTO (for POST)
+// Request demo DTO (for POST) — matches backend DemoRequest entity
 export interface RequestDemoDto {
   id: number;
-  clientId: number;
-  freelancerId: number;
+  clientUserId: number;
+  freelancerUserId: number;
   projectTitle: string;
-  description: string;
   clientBudget: number;
   contactEmail: string;
   contactPhone: string;
   status: string;
-  adminComments: string;
+  adminDescription?: string;
   createdOn: string;
 }
 
