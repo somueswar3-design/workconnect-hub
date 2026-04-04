@@ -330,7 +330,9 @@ const FreelancerOverview = () => {
                       {interest.requirement?.status && (
                         <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
                       )}
-                      <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {new Date(interest.createdOn).toLocaleDateString()}</span>
+                      {interest.requirement?.createdOn && (
+                        <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}</span>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
