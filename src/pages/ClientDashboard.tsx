@@ -21,6 +21,7 @@ import { getFreelancerProfiles, getFilteredFreelancers, getDemoRequests, Freelan
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import ChangePassword from '@/pages/ChangePassword';
+import ClientTimesheets from '@/pages/ClientTimesheets';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -938,6 +939,7 @@ const ClientDashboard = () => {
         <Route path="/freelancers" element={<ClientOverview />} />
         <Route path="/demo-requests" element={<MyRequests />} />
         <Route path="/post-requirement" element={<PostRequirement />} />
+        <Route path="/timesheets" element={<ClientTimesheets />} />
         <Route path="/history" element={<MyRequests />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="/settings/*" element={<MyRequests />} />

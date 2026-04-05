@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import FreelancerMyRequests from './FreelancerMyRequests';
+import FreelancerTimesheets from './FreelancerTimesheets';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Briefcase, Clock, Save, Plus, X, Camera, LogOut, 
@@ -665,6 +666,7 @@ const FreelancerDashboard = () => {
       <Routes>
         <Route path="/" element={<FreelancerOverview />} />
         <Route path="/my-requests" element={<FreelancerMyRequests />} />
+        <Route path="/timesheets" element={<FreelancerTimesheets />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="*" element={<FreelancerOverview />} />
       </Routes>
