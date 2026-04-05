@@ -142,12 +142,46 @@ export interface DemoRequestResponse {
   demoId: number;
   freelancerId: number;
   freelancerName: string;
+  clientUserId?: number;
+  clientName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   projectTitle: string;
   budget: number;
   status: string;
   adminComments: string | null;
+  scheduledDate?: string | null;
+  scheduledTime?: string | null;
+  timezone?: string | null;
+  demoMeetingLink?: string | null;
+  demoNotes?: string | null;
+  clientFeedback?: string | null;
+  freelancerFeedback?: string | null;
+  declineReason?: string | null;
   requestedOn: string;
 }
+
+// Admin create assignment DTO
+export interface CreateAssignmentDto {
+  demoId: number;
+  clientUserId: number;
+  freelancerUserId: number;
+  projectTitle: string;
+  hourlyRate: number;
+  totalHours?: number;
+  status: string;
+  adminComments?: string;
+}
+
+// POST create assignment from demo
+export const createAssignment = async (data: CreateAssignmentDto): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/admin/assignments`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to create assignment');
+};
 
 // POST request demo
 export const requestDemo = async (data: RequestDemoDto): Promise<void> => {
