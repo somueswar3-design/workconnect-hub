@@ -664,6 +664,7 @@ const FreelancerDashboard = () => {
     <DashboardLayout userType="freelancer" isActive={isActive}>
       <Routes>
         <Route path="/" element={<FreelancerOverview />} />
+        <Route path="/my-requests" element={<FreelancerMyRequests />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="*" element={<FreelancerOverview />} />
       </Routes>
