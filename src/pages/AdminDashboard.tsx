@@ -719,7 +719,7 @@ const AdminDashboard = () => {
               </Card>
             ) : (
               <Card className="border border-slate-700/50 shadow-lg bg-[#0D1B2E]">
-                <CardContent className="p-0">
+                <CardContent className="p-0 overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-slate-700/50 hover:bg-transparent">
@@ -727,9 +727,12 @@ const AdminDashboard = () => {
                         <TableHead className="text-slate-400">Client</TableHead>
                         <TableHead className="text-slate-400">Project</TableHead>
                         <TableHead className="text-slate-400">Rate</TableHead>
-                        <TableHead className="text-slate-400">Hours</TableHead>
+                        <TableHead className="text-slate-400">Monthly</TableHead>
+                        <TableHead className="text-slate-400">Advance</TableHead>
+                        <TableHead className="text-slate-400">Pending</TableHead>
+                        <TableHead className="text-slate-400">Next Payment</TableHead>
+                        <TableHead className="text-slate-400">Start</TableHead>
                         <TableHead className="text-slate-400">Status</TableHead>
-                        <TableHead className="text-slate-400">Assigned</TableHead>
                         <TableHead className="text-right text-slate-400">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -738,11 +741,14 @@ const AdminDashboard = () => {
                         <TableRow key={a.id} className="border-slate-700/50 hover:bg-slate-800/30">
                           <TableCell className="font-medium text-slate-200">{a.professionalName}</TableCell>
                           <TableCell className="text-slate-300">{a.clientName}</TableCell>
-                          <TableCell className="max-w-[200px] truncate text-slate-300">{a.projectTitle}</TableCell>
+                          <TableCell className="max-w-[150px] truncate text-slate-300">{a.projectTitle}</TableCell>
                           <TableCell className="text-slate-200">{a.hourlyRate}/hr</TableCell>
-                          <TableCell className="text-sm text-slate-300">{a.totalHours || 0}h</TableCell>
+                          <TableCell className="text-slate-200">{a.monthlyCommitment ? `₹${a.monthlyCommitment.toLocaleString()}` : '-'}</TableCell>
+                          <TableCell className="text-emerald-400">{a.advanceAmount ? `₹${a.advanceAmount.toLocaleString()}` : '-'}</TableCell>
+                          <TableCell className="text-amber-400 font-semibold">{a.pendingAmount ? `₹${a.pendingAmount.toLocaleString()}` : '-'}</TableCell>
+                          <TableCell className="text-blue-400 text-xs">{a.nextPaymentDate || '-'}</TableCell>
+                          <TableCell className="text-slate-400 text-xs">{a.projectStartDate || a.assignedDate}</TableCell>
                           <TableCell><Badge className={statusConfig[a.status]?.className}>{statusConfig[a.status]?.label}</Badge></TableCell>
-                          <TableCell className="text-slate-400 text-sm">{a.assignedDate}</TableCell>
                           <TableCell className="text-right">
                             <div className="flex gap-1 justify-end">
                               {a.status === 'pending_approval' && (
@@ -757,18 +763,20 @@ const AdminDashboard = () => {
                               )}
                               {a.status === 'approved' && (
                                 <Button size="sm" className="h-7 text-xs gap-1" onClick={() => handleStartPayment(a.id)}>
-                                  <DollarSign className="h-3.5 w-3.5" /> Start Payment
+                                  <DollarSign className="h-3.5 w-3.5" /> Start
                                 </Button>
                               )}
-                              {a.status === 'active' && a.totalAmount && (
-                                <span className="text-sm font-semibold text-emerald-400">₹{a.totalAmount.toLocaleString()}</span>
+                              {a.projectNotes && (
+                                <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 text-slate-400" title={a.projectNotes}>
+                                  <FileText className="h-3.5 w-3.5" />
+                                </Button>
                               )}
                             </div>
                           </TableCell>
                         </TableRow>
                       ))}
                       {filteredAssignments.length === 0 && (
-                        <TableRow><TableCell colSpan={8} className="text-center py-8 text-slate-400">No assignments found</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={11} className="text-center py-8 text-slate-400">No projects found</TableCell></TableRow>
                       )}
                     </TableBody>
                   </Table>
