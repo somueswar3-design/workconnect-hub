@@ -32,6 +32,9 @@ interface Assignment {
   status: 'pending_approval' | 'approved' | 'rejected' | 'active' | 'completed';
   assignedDate: string; approvedDate?: string; totalAmount?: number;
   invoiceGenerated?: boolean; demoId?: number;
+  monthlyCommitment?: number; advanceAmount?: number; pendingAmount?: number;
+  nextPaymentDate?: string; projectStartDate?: string; projectEndDate?: string;
+  projectNotes?: string;
 }
 
 interface BillingRecord {
