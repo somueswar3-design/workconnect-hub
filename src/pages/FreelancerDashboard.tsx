@@ -37,12 +37,15 @@ const FreelancerOverview = () => {
   const [earnings, setEarnings] = useState<EarningsDto | null>(null);
   const [openings, setOpenings] = useState<JobOpeningDto[]>([]);
   const [interests, setInterests] = useState<FreelancerInterestResponseDto[]>([]);
+  const [demoRequests, setDemoRequests] = useState<FreelancerDemoRequestDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [openingsLoading, setOpeningsLoading] = useState(true);
   const [interestsLoading, setInterestsLoading] = useState(true);
+  const [demosLoading, setDemosLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState<FreelancerInterestResponseDto | null>(null);
+  const [requestsTab, setRequestsTab] = useState('interests');
 
   useEffect(() => {
     const load = async () => {
