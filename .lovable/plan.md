@@ -1,25 +1,29 @@
 ## Plan
 
-### 1. Freelancer Background Styling
-- Update FreelancerDashboard background to match ClientDashboard's dark navy theme
+### 1. Freelancer Dashboard — My Assignments
+- Show list of assigned projects (from admin) with project title, client, rate, start/end dates, status
+- Each assignment card shows key details
 
-### 2. Admin Dashboard - Demo Management
-- Show all demo requests with full details
-- Status workflow: Pending → Approved → Demo In Progress → Demo Completed → Accepted/Declined
-- If declined: show decline message/reason
-- If approved: add meeting link, timings, timezone, notes fields
-- Add admin comments on client & freelancer feedback
-- Status update buttons for each stage
+### 2. Client Dashboard — Assigned Freelancers
+- Show currently assigned freelancers for the client with project details, rate, status
 
-### 3. Admin Dashboard - Assignment/Project Creation
-- After demo completed & accepted: "Create Assignment" action
-- Select freelancer for the assignment
-- Ability to swap/change freelancer later
-- Track assignment status
+### 3. Freelancer Timesheet Submission
+- Per assignment, "Submit Timesheet" action opens a monthly timesheet view
+- Calendar-style grid showing each day of the month with hours input
+- Filter by start/end date range
+- **Bulk fill**: select date range and fill hours in bulk
+- **Customize**: edit individual day hours
+- Submit timesheet for client approval
 
-### 4. Email via .NET Backend
-- When admin approves demo and adds meeting details, call your .NET API to send emails to client & freelancer (you'll need to confirm the endpoint)
+### 4. Client Timesheet Approval
+- Client sees pending timesheets from freelancers
+- View date-wise hours breakdown
+- Add comments per timesheet or per date
+- Approve or reject timesheet
 
-All features will use your existing .NET API backend endpoints. I'll need to see your current AdminDashboard code to understand the existing structure before implementing.
+### Technical Approach
+- All data via .NET API (mock locally for now until endpoints ready)
+- Add Timesheet types and mock data
+- Add timesheet tab to FreelancerDashboard and ClientDashboard
 
 Does this plan look good?
