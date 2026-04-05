@@ -59,6 +59,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
   const freelancerMenuItems = [
     { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer' },
+    { icon: Briefcase, label: 'My Requests', path: '/freelancer/my-requests' },
     { icon: User, label: 'My Profile', path: '/freelancer-profile' },
     { icon: Users, label: 'Engaged Clients', path: '/freelancer/clients' },
   ];
