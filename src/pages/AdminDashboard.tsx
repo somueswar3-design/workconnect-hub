@@ -4,7 +4,7 @@ import {
   Users, UserCheck, Clock, DollarSign, CheckCircle2, XCircle, ChevronDown,
   LogOut, Briefcase, Search, Filter, ArrowRight, Video, Send, Loader2,
   Calendar, Globe, MessageSquare, ExternalLink, Edit, CreditCard, AlertCircle,
-  RotateCcw, FileText
+  RotateCcw, FileText, PlayCircle, ThumbsUp, ThumbsDown, UserPlus, Eye
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,8 +20,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {
-  getAllDemoRequests, updateDemoRequest, sendDemoLink,
-  DemoRequestResponse, UpdateDemoRequestDto
+  getAllDemoRequests, updateDemoRequest, sendDemoLink, createAssignment,
+  DemoRequestResponse, UpdateDemoRequestDto, CreateAssignmentDto,
+  getFreelancerProfiles, FreelancerProfileDto
 } from '@/services/clientApi';
 
 // ─── Types ───
@@ -30,54 +31,16 @@ interface Assignment {
   projectTitle: string; hourlyRate: string; totalHours?: number;
   status: 'pending_approval' | 'approved' | 'rejected' | 'active' | 'completed';
   assignedDate: string; approvedDate?: string; totalAmount?: number;
-  invoiceGenerated?: boolean;
+  invoiceGenerated?: boolean; demoId?: number;
 }
 
 interface BillingRecord {
-  id: string;
-  assignmentId: string;
-  freelancerName: string;
-  clientName: string;
-  projectTitle: string;
-  invoiceAmount: number;
-  paidAmount: number;
-  pendingAmount: number;
-  commission: number;
-  billingStatus: 'pending' | 'partial' | 'paid' | 'overdue';
+  id: string; assignmentId: string; freelancerName: string; clientName: string;
+  projectTitle: string; invoiceAmount: number; paidAmount: number; pendingAmount: number;
+  commission: number; billingStatus: 'pending' | 'partial' | 'paid' | 'overdue';
   followUpStatus: 'none' | 'reminder_sent' | 'escalated' | 'resolved';
-  followUpNotes: string;
-  invoiceDate: string;
-  dueDate: string;
-  lastFollowUp?: string;
+  followUpNotes: string; invoiceDate: string; dueDate: string; lastFollowUp?: string;
 }
-
-// ─── Mock Data ───
-const initialAssignments: Assignment[] = [
-  { id: 'a1', professionalId: 'f1', professionalName: 'Ravi Kumar', clientId: 'c1', clientName: 'TechCorp Inc', projectTitle: 'E-commerce Platform', hourlyRate: '$75', status: 'pending_approval', assignedDate: '2024-12-01', totalHours: 0 },
-  { id: 'a2', professionalId: 'f2', professionalName: 'Priya Sharma', clientId: 'c2', clientName: 'StartupX Labs', projectTitle: 'Mobile App Backend', hourlyRate: '$85', status: 'approved', assignedDate: '2024-11-15', approvedDate: '2024-11-17', totalHours: 120, totalAmount: 10200 },
-  { id: 'a3', professionalId: 'f3', professionalName: 'Arjun Reddy', clientId: 'c3', clientName: 'DataFlow Analytics', projectTitle: 'Analytics Dashboard', hourlyRate: '$90', status: 'active', assignedDate: '2024-10-01', approvedDate: '2024-10-03', totalHours: 200, totalAmount: 18000 },
-];
-
-const initialBilling: BillingRecord[] = [
-  {
-    id: 'b1', assignmentId: 'a2', freelancerName: 'Priya Sharma', clientName: 'StartupX Labs',
-    projectTitle: 'Mobile App Backend', invoiceAmount: 10200, paidAmount: 5000, pendingAmount: 5200,
-    commission: 1020, billingStatus: 'partial', followUpStatus: 'reminder_sent',
-    followUpNotes: 'Sent payment reminder on Dec 10. 120hrs × $85/hr billed.', invoiceDate: '2024-11-20', dueDate: '2024-12-20', lastFollowUp: '2024-12-10',
-  },
-  {
-    id: 'b2', assignmentId: 'a3', freelancerName: 'Arjun Reddy', clientName: 'DataFlow Analytics',
-    projectTitle: 'Analytics Dashboard', invoiceAmount: 18000, paidAmount: 0, pendingAmount: 18000,
-    commission: 1800, billingStatus: 'overdue', followUpStatus: 'escalated',
-    followUpNotes: 'Escalated to management. Client requested extension.', invoiceDate: '2024-10-15', dueDate: '2024-11-15', lastFollowUp: '2024-12-01',
-  },
-  {
-    id: 'b3', assignmentId: 'a1', freelancerName: 'Ravi Kumar', clientName: 'TechCorp Inc',
-    projectTitle: 'E-commerce Platform', invoiceAmount: 7500, paidAmount: 7500, pendingAmount: 0,
-    commission: 750, billingStatus: 'paid', followUpStatus: 'resolved',
-    followUpNotes: 'Payment completed successfully.', invoiceDate: '2024-09-01', dueDate: '2024-10-01', lastFollowUp: '2024-10-02',
-  },
-];
 
 // ─── Timezone Data ───
 const TIMEZONES = [
@@ -101,9 +64,8 @@ const TIME_SLOTS = [
   '06:00 PM', '06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM',
 ];
 
-const DEMO_STATUSES = ['Pending', 'Scheduled', 'Demo Completed', 'Approved', 'Rejected', 'On Hold'];
+const DEMO_STATUSES = ['Pending', 'Scheduled', 'Demo In Progress', 'Demo Completed', 'Approved', 'Declined', 'On Hold'];
 const BILLING_STATUSES = ['pending', 'partial', 'paid', 'overdue'];
-const FOLLOWUP_STATUSES = ['none', 'reminder_sent', 'escalated', 'resolved'];
 
 const AdminDashboard = () => {
   const { logout } = useAuth();
@@ -111,7 +73,7 @@ const AdminDashboard = () => {
   const { toast } = useToast();
 
   // Assignments state
-  const [assignments, setAssignments] = useState<Assignment[]>(initialAssignments);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 
@@ -122,17 +84,15 @@ const AdminDashboard = () => {
   const [demoFilterStatus, setDemoFilterStatus] = useState('all');
 
   // Billing state
-  const [billing, setBilling] = useState<BillingRecord[]>(initialBilling);
+  const [billing, setBilling] = useState<BillingRecord[]>([]);
   const [billingSearch, setBillingSearch] = useState('');
   const [billingFilterStatus, setBillingFilterStatus] = useState('all');
   const [billingUpdateOpen, setBillingUpdateOpen] = useState(false);
   const [selectedBilling, setSelectedBilling] = useState<BillingRecord | null>(null);
-  const [billingForm, setBillingForm] = useState({
-    billingStatus: '', followUpStatus: '', followUpNotes: '', paidAmount: 0,
-  });
+  const [billingForm, setBillingForm] = useState({ billingStatus: '', followUpStatus: '', followUpNotes: '', paidAmount: 0 });
   const [billingUpdating, setBillingUpdating] = useState(false);
 
-  // Schedule / Update dialog state
+  // Schedule dialog
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [selectedDemo, setSelectedDemo] = useState<DemoRequestResponse | null>(null);
   const [scheduleForm, setScheduleForm] = useState({
@@ -144,8 +104,25 @@ const AdminDashboard = () => {
   // Update status dialog
   const [updateOpen, setUpdateOpen] = useState(false);
   const [updateDemo, setUpdateDemo] = useState<DemoRequestResponse | null>(null);
-  const [updateForm, setUpdateForm] = useState({ status: '', adminComments: '' });
+  const [updateForm, setUpdateForm] = useState({
+    status: '', adminComments: '', declineReason: '',
+    clientFeedback: '', freelancerFeedback: '', demoNotes: '',
+  });
   const [updateSending, setUpdateSending] = useState(false);
+
+  // Demo detail view
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailDemo, setDetailDemo] = useState<DemoRequestResponse | null>(null);
+
+  // Create assignment dialog
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignDemo, setAssignDemo] = useState<DemoRequestResponse | null>(null);
+  const [assignForm, setAssignForm] = useState({
+    hourlyRate: '', totalHours: '', adminComments: '', selectedFreelancerId: 0,
+  });
+  const [assignSending, setAssignSending] = useState(false);
+  const [freelancerList, setFreelancerList] = useState<FreelancerProfileDto[]>([]);
+  const [freelancerListLoading, setFreelancerListLoading] = useState(false);
 
   // ─── Fetch demo requests ───
   const loadDemoRequests = async () => {
@@ -179,29 +156,21 @@ const AdminDashboard = () => {
   // ─── Billing Handlers ───
   const openBillingUpdate = (record: BillingRecord) => {
     setSelectedBilling(record);
-    setBillingForm({
-      billingStatus: record.billingStatus,
-      followUpStatus: record.followUpStatus,
-      followUpNotes: record.followUpNotes,
-      paidAmount: record.paidAmount,
-    });
+    setBillingForm({ billingStatus: record.billingStatus, followUpStatus: record.followUpStatus, followUpNotes: record.followUpNotes, paidAmount: record.paidAmount });
     setBillingUpdateOpen(true);
   };
-
   const handleBillingUpdate = () => {
     if (!selectedBilling) return;
     setBillingUpdating(true);
     setTimeout(() => {
       setBilling(prev => prev.map(b => b.id === selectedBilling.id ? {
-        ...b,
-        billingStatus: billingForm.billingStatus as BillingRecord['billingStatus'],
+        ...b, billingStatus: billingForm.billingStatus as BillingRecord['billingStatus'],
         followUpStatus: billingForm.followUpStatus as BillingRecord['followUpStatus'],
-        followUpNotes: billingForm.followUpNotes,
-        paidAmount: billingForm.paidAmount,
+        followUpNotes: billingForm.followUpNotes, paidAmount: billingForm.paidAmount,
         pendingAmount: b.invoiceAmount - billingForm.paidAmount,
         lastFollowUp: new Date().toISOString().split('T')[0],
       } : b));
-      toast({ title: '✅ Billing Updated', description: `Billing for ${selectedBilling.clientName} updated.` });
+      toast({ title: '✅ Billing Updated' });
       setBillingUpdateOpen(false);
       setBillingUpdating(false);
     }, 500);
@@ -223,7 +192,7 @@ const AdminDashboard = () => {
         demoLink: scheduleForm.demoLink,
       });
       await sendDemoLink(selectedDemo.demoId, scheduleForm.demoLink, scheduleForm.scheduledDate, scheduleForm.scheduledTime, scheduleForm.timezone);
-      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Demo link sent to client and professional (${selectedDemo.freelancerName}).` });
+      toast({ title: '✅ Demo Scheduled & Link Sent!', description: `Meeting invitation sent to both client and professional.` });
       setScheduleOpen(false);
       loadDemoRequests();
     } catch {
@@ -233,12 +202,24 @@ const AdminDashboard = () => {
     }
   };
 
-  // ─── Update Status Handler ───
+  // ─── Update Status Handler (enhanced) ───
   const handleUpdateStatus = async () => {
     if (!updateDemo) return;
     setUpdateSending(true);
     try {
-      await updateDemoRequest({ demoId: updateDemo.demoId, status: updateForm.status, adminComments: updateForm.adminComments });
+      const comments = [
+        updateForm.adminComments,
+        updateForm.demoNotes ? `[Demo Notes] ${updateForm.demoNotes}` : '',
+        updateForm.clientFeedback ? `[Client Feedback] ${updateForm.clientFeedback}` : '',
+        updateForm.freelancerFeedback ? `[Freelancer Feedback] ${updateForm.freelancerFeedback}` : '',
+        updateForm.declineReason ? `[Decline Reason] ${updateForm.declineReason}` : '',
+      ].filter(Boolean).join('\n');
+
+      await updateDemoRequest({
+        demoId: updateDemo.demoId,
+        status: updateForm.status,
+        adminComments: comments,
+      });
       toast({ title: '✅ Status Updated', description: `Demo #${updateDemo.demoId} updated to "${updateForm.status}".` });
       setUpdateOpen(false);
       loadDemoRequests();
@@ -249,16 +230,84 @@ const AdminDashboard = () => {
     }
   };
 
+  // ─── Create Assignment Handler ───
+  const handleCreateAssignment = async () => {
+    if (!assignDemo) return;
+    if (!assignForm.hourlyRate) {
+      toast({ title: 'Missing Fields', description: 'Hourly rate is required.', variant: 'destructive' });
+      return;
+    }
+    setAssignSending(true);
+    try {
+      const freelancerUserId = assignForm.selectedFreelancerId || assignDemo.freelancerId;
+      await createAssignment({
+        demoId: assignDemo.demoId,
+        clientUserId: assignDemo.clientUserId || 0,
+        freelancerUserId,
+        projectTitle: assignDemo.projectTitle,
+        hourlyRate: Number(assignForm.hourlyRate),
+        totalHours: assignForm.totalHours ? Number(assignForm.totalHours) : undefined,
+        status: 'active',
+        adminComments: assignForm.adminComments,
+      });
+
+      // Also add to local assignments list
+      const newAssignment: Assignment = {
+        id: `a-${Date.now()}`,
+        professionalId: String(freelancerUserId),
+        professionalName: freelancerList.find(f => (f.freelancerId || f.id) === freelancerUserId)?.fullName || assignDemo.freelancerName || 'Professional',
+        clientId: String(assignDemo.clientUserId || ''),
+        clientName: assignDemo.clientName || 'Client',
+        projectTitle: assignDemo.projectTitle,
+        hourlyRate: `₹${assignForm.hourlyRate}`,
+        totalHours: assignForm.totalHours ? Number(assignForm.totalHours) : 0,
+        status: 'active',
+        assignedDate: new Date().toISOString().split('T')[0],
+        demoId: assignDemo.demoId,
+      };
+      setAssignments(prev => [...prev, newAssignment]);
+
+      toast({ title: '✅ Assignment Created!', description: `Project "${assignDemo.projectTitle}" has been assigned.` });
+      setAssignOpen(false);
+      loadDemoRequests();
+    } catch {
+      toast({ title: 'Error', description: 'Failed to create assignment.', variant: 'destructive' });
+    } finally {
+      setAssignSending(false);
+    }
+  };
+
   const openSchedule = (demo: DemoRequestResponse) => {
     setSelectedDemo(demo);
     setScheduleForm({ timezone: 'Asia/Kolkata', scheduledDate: '', scheduledTime: '', demoLink: '', adminComments: demo.adminComments || '', status: 'Scheduled' });
     setScheduleOpen(true);
   };
 
-  const openUpdate = (demo: DemoRequestResponse) => {
+  const openUpdate = (demo: DemoRequestResponse, presetStatus?: string) => {
     setUpdateDemo(demo);
-    setUpdateForm({ status: demo.status, adminComments: demo.adminComments || '' });
+    setUpdateForm({ status: presetStatus || demo.status, adminComments: '', declineReason: '', clientFeedback: '', freelancerFeedback: '', demoNotes: '' });
     setUpdateOpen(true);
+  };
+
+  const openDetail = (demo: DemoRequestResponse) => {
+    setDetailDemo(demo);
+    setDetailOpen(true);
+  };
+
+  const openCreateAssignment = async (demo: DemoRequestResponse) => {
+    setAssignDemo(demo);
+    setAssignForm({ hourlyRate: '', totalHours: '', adminComments: '', selectedFreelancerId: demo.freelancerId });
+    setAssignOpen(true);
+    // Load freelancer list for swapping
+    setFreelancerListLoading(true);
+    try {
+      const profiles = await getFreelancerProfiles();
+      setFreelancerList(profiles);
+    } catch {
+      setFreelancerList([]);
+    } finally {
+      setFreelancerListLoading(false);
+    }
   };
 
   // ─── Filters ───
@@ -271,7 +320,8 @@ const AdminDashboard = () => {
 
   const filteredDemos = demoRequests.filter(d => {
     const matchesSearch = d.freelancerName?.toLowerCase().includes(demoSearch.toLowerCase()) ||
-      d.projectTitle?.toLowerCase().includes(demoSearch.toLowerCase());
+      d.projectTitle?.toLowerCase().includes(demoSearch.toLowerCase()) ||
+      d.clientName?.toLowerCase().includes(demoSearch.toLowerCase());
     const matchesFilter = demoFilterStatus === 'all' || d.status === demoFilterStatus;
     return matchesSearch && matchesFilter;
   });
@@ -283,32 +333,21 @@ const AdminDashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const stats = {
-    total: assignments.length,
-    pending: assignments.filter(a => a.status === 'pending_approval').length,
-    approved: assignments.filter(a => a.status === 'approved').length,
-    active: assignments.filter(a => a.status === 'active').length,
-  };
-
   const demoStats = {
     total: demoRequests.length,
     pending: demoRequests.filter(d => d.status === 'Pending' || d.status === 'Requested').length,
     scheduled: demoRequests.filter(d => d.status === 'Scheduled').length,
-    completed: demoRequests.filter(d => d.status === 'Demo Completed' || d.status === 'Approved').length,
-  };
-
-  const billingStats = {
-    totalInvoiced: billing.reduce((s, b) => s + b.invoiceAmount, 0),
-    totalPending: billing.reduce((s, b) => s + b.pendingAmount, 0),
-    totalCommission: billing.reduce((s, b) => s + b.commission, 0),
-    overdue: billing.filter(b => b.billingStatus === 'overdue').length,
+    inProgress: demoRequests.filter(d => d.status === 'Demo In Progress').length,
+    completed: demoRequests.filter(d => d.status === 'Demo Completed').length,
+    approved: demoRequests.filter(d => d.status === 'Approved').length,
+    declined: demoRequests.filter(d => d.status === 'Declined' || d.status === 'Rejected').length,
   };
 
   const statusConfig: Record<string, { label: string; className: string }> = {
     pending_approval: { label: 'Pending Approval', className: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
     approved: { label: 'Approved', className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
     rejected: { label: 'Rejected', className: 'bg-destructive/10 text-destructive border-destructive/20' },
-    active: { label: 'Active (Paid)', className: 'bg-primary/10 text-primary border-primary/20' },
+    active: { label: 'Active', className: 'bg-primary/10 text-primary border-primary/20' },
     completed: { label: 'Completed', className: 'bg-muted text-muted-foreground border-border' },
   };
 
@@ -317,8 +356,10 @@ const AdminDashboard = () => {
       Pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
       Requested: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
       Scheduled: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+      'Demo In Progress': 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
       'Demo Completed': 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
       Approved: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
+      Declined: 'bg-destructive/10 text-destructive border-destructive/20',
       Rejected: 'bg-destructive/10 text-destructive border-destructive/20',
       'On Hold': 'bg-muted text-muted-foreground border-border',
     };
@@ -347,18 +388,97 @@ const AdminDashboard = () => {
 
   const handleLogout = () => { logout(); navigate('/'); };
 
+  // Helper to get action buttons per demo status
+  const getDemoActions = (demo: DemoRequestResponse) => {
+    const status = demo.status;
+    const actions: JSX.Element[] = [];
+
+    // View details always
+    actions.push(
+      <Button key="view" size="sm" variant="ghost" className="gap-1 text-xs h-7" onClick={() => openDetail(demo)}>
+        <Eye className="h-3.5 w-3.5" /> View
+      </Button>
+    );
+
+    if (status === 'Pending' || status === 'Requested') {
+      actions.push(
+        <Button key="schedule" size="sm" className="gap-1 text-xs h-7" onClick={() => openSchedule(demo)}>
+          <Send className="h-3.5 w-3.5" /> Schedule Demo
+        </Button>
+      );
+      actions.push(
+        <Button key="decline" size="sm" variant="outline" className="gap-1 text-xs h-7 text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => openUpdate(demo, 'Declined')}>
+          <XCircle className="h-3.5 w-3.5" /> Decline
+        </Button>
+      );
+    }
+
+    if (status === 'Scheduled') {
+      actions.push(
+        <Button key="start" size="sm" className="gap-1 text-xs h-7 bg-indigo-600 hover:bg-indigo-700" onClick={() => openUpdate(demo, 'Demo In Progress')}>
+          <PlayCircle className="h-3.5 w-3.5" /> Start Demo
+        </Button>
+      );
+    }
+
+    if (status === 'Demo In Progress') {
+      actions.push(
+        <Button key="complete" size="sm" className="gap-1 text-xs h-7 bg-emerald-600 hover:bg-emerald-700" onClick={() => openUpdate(demo, 'Demo Completed')}>
+          <CheckCircle2 className="h-3.5 w-3.5" /> Complete Demo
+        </Button>
+      );
+    }
+
+    if (status === 'Demo Completed') {
+      actions.push(
+        <Button key="approve" size="sm" className="gap-1 text-xs h-7 bg-emerald-600 hover:bg-emerald-700" onClick={() => openUpdate(demo, 'Approved')}>
+          <ThumbsUp className="h-3.5 w-3.5" /> Approve
+        </Button>
+      );
+      actions.push(
+        <Button key="decline2" size="sm" variant="outline" className="gap-1 text-xs h-7 text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => openUpdate(demo, 'Declined')}>
+          <ThumbsDown className="h-3.5 w-3.5" /> Decline
+        </Button>
+      );
+    }
+
+    if (status === 'Approved') {
+      actions.push(
+        <Button key="assign" size="sm" className="gap-1 text-xs h-7 bg-cyan-600 hover:bg-cyan-700" onClick={() => openCreateAssignment(demo)}>
+          <UserPlus className="h-3.5 w-3.5" /> Create Assignment
+        </Button>
+      );
+    }
+
+    // Generic update for any status
+    if (!['Pending', 'Requested'].includes(status)) {
+      actions.push(
+        <Button key="edit" size="sm" variant="outline" className="gap-1 text-xs h-7" onClick={() => openUpdate(demo)}>
+          <Edit className="h-3.5 w-3.5" /> Edit
+        </Button>
+      );
+    }
+
+    return actions;
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0A1628] text-slate-100">
       {/* Top Bar */}
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-slate-700/50 bg-[#0D1B2E]/95 backdrop-blur">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <Briefcase className="h-5 w-5 text-primary-foreground" />
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-lg font-bold text-foreground">WorkSupport360 Admin</h1>
+            <h1 className="text-lg font-bold">
+              <span className="text-orange-500">Work</span>
+              <span className="text-amber-500">Support</span>
+              <span className="text-blue-500">360</span>
+              <span className="text-slate-400 text-sm font-normal ml-2">Admin</span>
+            </h1>
           </div>
-          <Button variant="ghost" size="sm" className="gap-1.5 text-destructive" onClick={handleLogout}>
+          <Button variant="ghost" size="sm" className="gap-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10" onClick={handleLogout}>
             <LogOut className="h-4 w-4" /> Logout
           </Button>
         </div>
@@ -368,78 +488,91 @@ const AdminDashboard = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Demo Requests', value: demoStats.total, icon: Video, gradient: 'from-blue-500 to-blue-400' },
-            { label: 'Assignments', value: stats.total, icon: Users, gradient: 'from-primary to-primary/70' },
-            { label: 'Pending Billing', value: `$${billingStats.totalPending.toLocaleString()}`, icon: AlertCircle, gradient: 'from-amber-500 to-amber-400' },
-            { label: 'Total Commission', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, gradient: 'from-emerald-500 to-emerald-400' },
+            { label: 'Total Demos', value: demoStats.total, icon: Video, gradient: 'from-blue-500 to-blue-400', bg: 'bg-blue-500/10' },
+            { label: 'Pending', value: demoStats.pending, icon: Clock, gradient: 'from-amber-500 to-amber-400', bg: 'bg-amber-500/10' },
+            { label: 'Approved', value: demoStats.approved, icon: CheckCircle2, gradient: 'from-emerald-500 to-emerald-400', bg: 'bg-emerald-500/10' },
+            { label: 'Assignments', value: assignments.length, icon: Users, gradient: 'from-cyan-500 to-cyan-400', bg: 'bg-cyan-500/10' },
           ].map(s => (
-            <Card key={s.label} className="border-0 shadow-md overflow-hidden">
+            <Card key={s.label} className="border border-slate-700/50 shadow-md overflow-hidden bg-[#0D1B2E]">
               <div className={`h-1 bg-gradient-to-r ${s.gradient}`} />
               <CardContent className="p-4 flex items-center gap-4">
-                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${s.gradient} text-primary-foreground`}>
-                  <s.icon className="h-5 w-5" />
+                <div className={`p-2.5 rounded-xl ${s.bg}`}>
+                  <s.icon className="h-5 w-5 text-slate-200" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-2xl font-bold text-slate-100">{s.value}</p>
+                  <p className="text-xs text-slate-400">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Tabs - only Demo, Assignments, Billing */}
+        {/* Tabs */}
         <Tabs defaultValue="demo-requests" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="demo-requests" className="gap-1.5">
+          <TabsList className="bg-slate-800/50 border border-slate-700/50">
+            <TabsTrigger value="demo-requests" className="gap-1.5 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-300 text-slate-400">
               <Video className="h-4 w-4" /> Demo Requests
-              <Badge variant="secondary" className="ml-1 h-5 text-xs">{demoRequests.length}</Badge>
+              <Badge variant="outline" className="ml-1 h-5 text-xs border-slate-700/50 text-slate-400">{demoRequests.length}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="assignments" className="gap-1.5">
+            <TabsTrigger value="assignments" className="gap-1.5 data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300 text-slate-400">
               <Users className="h-4 w-4" /> Assignments
-              <Badge variant="secondary" className="ml-1 h-5 text-xs">{filteredAssignments.length}</Badge>
+              <Badge variant="outline" className="ml-1 h-5 text-xs border-slate-700/50 text-slate-400">{assignments.length}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="billing" className="gap-1.5">
+            <TabsTrigger value="billing" className="gap-1.5 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 text-slate-400">
               <CreditCard className="h-4 w-4" /> Billing & Follow-up
-              <Badge variant="secondary" className="ml-1 h-5 text-xs">{billing.length}</Badge>
+              <Badge variant="outline" className="ml-1 h-5 text-xs border-slate-700/50 text-slate-400">{billing.length}</Badge>
             </TabsTrigger>
           </TabsList>
 
           {/* ═══════════ DEMO REQUESTS TAB ═══════════ */}
           <TabsContent value="demo-requests">
+            {/* Demo Sub-Stats */}
+            <div className="grid grid-cols-3 md:grid-cols-7 gap-2 mb-4">
+              {[
+                { label: 'Pending', count: demoStats.pending, color: 'text-amber-400' },
+                { label: 'Scheduled', count: demoStats.scheduled, color: 'text-blue-400' },
+                { label: 'In Progress', count: demoStats.inProgress, color: 'text-indigo-400' },
+                { label: 'Completed', count: demoStats.completed, color: 'text-emerald-400' },
+                { label: 'Approved', count: demoStats.approved, color: 'text-green-400' },
+                { label: 'Declined', count: demoStats.declined, color: 'text-red-400' },
+                { label: 'Total', count: demoStats.total, color: 'text-slate-200' },
+              ].map(s => (
+                <div key={s.label} className="text-center p-2 rounded-lg bg-slate-800/30 border border-slate-700/30">
+                  <p className={`text-lg font-bold ${s.color}`}>{s.count}</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
                 <Input value={demoSearch} onChange={e => setDemoSearch(e.target.value)}
-                  placeholder="Search by freelancer or project..." className="pl-9" />
+                  placeholder="Search by freelancer, client, or project..." className="pl-9 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
               </div>
               <Select value={demoFilterStatus} onValueChange={setDemoFilterStatus}>
-                <SelectTrigger className="w-44">
+                <SelectTrigger className="w-48 bg-[#0D1B2E] border-slate-700/50 text-slate-200">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Requested">Requested</SelectItem>
-                  <SelectItem value="Scheduled">Scheduled</SelectItem>
-                  <SelectItem value="Demo Completed">Demo Completed</SelectItem>
-                  <SelectItem value="Approved">Approved</SelectItem>
-                  <SelectItem value="Rejected">Rejected</SelectItem>
+                  {DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm" onClick={loadDemoRequests} className="gap-1.5">
+              <Button variant="outline" size="sm" onClick={loadDemoRequests} className="gap-1.5 border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
                 <Loader2 className={`h-4 w-4 ${demoLoading ? 'animate-spin' : ''}`} /> Refresh
               </Button>
             </div>
 
             {demoLoading ? (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
               </div>
             ) : filteredDemos.length === 0 ? (
-              <Card className="border-0 shadow-md">
-                <CardContent className="py-16 text-center text-muted-foreground">
+              <Card className="border border-slate-700/50 shadow-md bg-[#0D1B2E]">
+                <CardContent className="py-16 text-center text-slate-400">
                   <Video className="h-10 w-10 mx-auto mb-3 opacity-40" />
                   <p className="font-medium">No demo requests found</p>
                 </CardContent>
@@ -447,54 +580,75 @@ const AdminDashboard = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredDemos.map(demo => (
-                  <Card key={demo.demoId} className="border border-border shadow-sm hover:shadow-md transition-shadow bg-card">
+                  <Card key={demo.demoId} className="border border-slate-700/50 shadow-sm hover:shadow-md transition-shadow bg-[#0D1B2E] hover:border-slate-600/50">
                     <CardContent className="p-5 space-y-3">
+                      {/* Header */}
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-foreground truncate">{demo.projectTitle || 'Untitled Project'}</p>
-                          <p className="text-sm text-muted-foreground">Demo #{demo.demoId}</p>
+                          <p className="font-semibold text-slate-100 truncate">{demo.projectTitle || 'Untitled Project'}</p>
+                          <p className="text-sm text-slate-400">Demo #{demo.demoId}</p>
                         </div>
                         <Badge className={demoStatusBadge(demo.status)}>{demo.status}</Badge>
                       </div>
-                      <Separator />
+                      <Separator className="bg-slate-700/50" />
+
+                      {/* Info */}
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <UserCheck className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-foreground font-medium">{demo.freelancerName || 'N/A'}</span>
+                          <UserCheck className="h-4 w-4 text-slate-500 shrink-0" />
+                          <span className="text-slate-200 font-medium">{demo.freelancerName || 'N/A'}</span>
+                        </div>
+                        {demo.clientName && (
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-slate-500 shrink-0" />
+                            <span className="text-slate-300">Client: {demo.clientName}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-slate-500 shrink-0" />
+                          <span className="text-slate-300">Budget: {demo.budget ? `₹${demo.budget.toLocaleString()}` : 'N/A'}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-foreground">Budget: {demo.budget ? `₹${demo.budget.toLocaleString()}` : 'N/A'}</span>
+                          <Calendar className="h-4 w-4 text-slate-500 shrink-0" />
+                          <span className="text-slate-400">Requested: {demo.requestedOn ? new Date(demo.requestedOn).toLocaleDateString() : 'N/A'}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-                          <span className="text-muted-foreground">Requested: {demo.requestedOn ? new Date(demo.requestedOn).toLocaleDateString() : 'N/A'}</span>
-                        </div>
-                        {demo.adminComments && (
+
+                        {/* Scheduled info */}
+                        {demo.scheduledDate && (
+                          <div className="p-2 rounded bg-blue-500/5 border border-blue-500/20 text-xs">
+                            <span className="text-blue-400">📅 {new Date(demo.scheduledDate).toLocaleDateString()} at {demo.scheduledTime} ({demo.timezone})</span>
+                          </div>
+                        )}
+
+                        {/* Meeting link */}
+                        {demo.demoMeetingLink && (
+                          <div className="flex items-center gap-2">
+                            <ExternalLink className="h-4 w-4 text-cyan-400 shrink-0" />
+                            <a href={demo.demoMeetingLink} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 text-xs truncate underline">{demo.demoMeetingLink}</a>
+                          </div>
+                        )}
+
+                        {/* Decline reason */}
+                        {(demo.status === 'Declined' || demo.status === 'Rejected') && demo.adminComments && (
+                          <div className="p-2.5 rounded bg-red-500/5 border border-red-500/20">
+                            <p className="text-[10px] text-red-400 uppercase tracking-wider mb-1">Decline Reason</p>
+                            <p className="text-xs text-red-300">{demo.adminComments}</p>
+                          </div>
+                        )}
+
+                        {/* Admin comments for other statuses */}
+                        {demo.adminComments && demo.status !== 'Declined' && demo.status !== 'Rejected' && (
                           <div className="flex items-start gap-2">
-                            <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                            <span className="text-muted-foreground text-xs line-clamp-2">{demo.adminComments}</span>
+                            <MessageSquare className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+                            <span className="text-slate-400 text-xs line-clamp-2">{demo.adminComments}</span>
                           </div>
                         )}
                       </div>
-                      <Separator />
-                      <div className="flex gap-2">
-                        {(demo.status === 'Pending' || demo.status === 'Requested') && (
-                          <Button size="sm" className="flex-1 gap-1.5 text-xs" onClick={() => openSchedule(demo)}>
-                            <Send className="h-3.5 w-3.5" /> Schedule & Send Link
-                          </Button>
-                        )}
-                        {demo.status === 'Scheduled' && (
-                          <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
-                            onClick={() => openUpdate(demo)}>
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Update After Demo
-                          </Button>
-                        )}
-                        {(demo.status !== 'Pending' && demo.status !== 'Requested' && demo.status !== 'Scheduled') && (
-                          <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs" onClick={() => openUpdate(demo)}>
-                            <Edit className="h-3.5 w-3.5" /> Update Status
-                          </Button>
-                        )}
+                      <Separator className="bg-slate-700/50" />
+
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {getDemoActions(demo)}
                       </div>
                     </CardContent>
                   </Card>
@@ -508,11 +662,13 @@ const AdminDashboard = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-between mb-4">
               <div className="flex gap-2 flex-1 max-w-md">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search..." className="pl-9" />
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                  <Input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search..." className="pl-9 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
                 </div>
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-40"><Filter className="h-4 w-4 mr-2" /><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-40 bg-[#0D1B2E] border-slate-700/50 text-slate-200">
+                    <Filter className="h-4 w-4 mr-2" /><SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="pending_approval">Pending</SelectItem>
@@ -524,263 +680,426 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Professional</TableHead><TableHead>Client</TableHead><TableHead>Project</TableHead>
-                      <TableHead>Rate</TableHead><TableHead>Hours</TableHead><TableHead>Status</TableHead><TableHead>Assigned</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredAssignments.map(a => (
-                      <TableRow key={a.id}>
-                        <TableCell className="font-medium">{a.professionalName}</TableCell>
-                        <TableCell>{a.clientName}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{a.projectTitle}</TableCell>
-                        <TableCell>{a.hourlyRate}/hr</TableCell>
-                        <TableCell className="text-sm">{a.totalHours || 0}h</TableCell>
-                        <TableCell><Badge className={statusConfig[a.status]?.className}>{statusConfig[a.status]?.label}</Badge></TableCell>
-                        <TableCell className="text-muted-foreground text-sm">{a.assignedDate}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
-                            {a.status === 'pending_approval' && (
-                              <>
-                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-emerald-600 border-emerald-200 hover:bg-emerald-50" onClick={() => handleApprove(a.id)}>
-                                  <CheckCircle2 className="h-3.5 w-3.5" /> Approve
-                                </Button>
-                                <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => handleReject(a.id)}>
-                                  <XCircle className="h-3.5 w-3.5" /> Reject
-                                </Button>
-                              </>
-                            )}
-                            {a.status === 'approved' && (
-                              <Button size="sm" className="h-7 text-xs gap-1" onClick={() => handleStartPayment(a.id)}>
-                                <DollarSign className="h-3.5 w-3.5" /> Start Payment
-                              </Button>
-                            )}
-                            {a.status === 'active' && a.totalAmount && (
-                              <span className="text-sm font-semibold text-emerald-600">${a.totalAmount.toLocaleString()}</span>
-                            )}
-                          </div>
-                        </TableCell>
+            {assignments.length === 0 ? (
+              <Card className="border border-slate-700/50 shadow-md bg-[#0D1B2E]">
+                <CardContent className="py-16 text-center text-slate-400">
+                  <Briefcase className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                  <p className="font-medium">No assignments yet</p>
+                  <p className="text-sm text-slate-500 mt-1">Approve demos and create assignments to see them here.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border border-slate-700/50 shadow-lg bg-[#0D1B2E]">
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-slate-700/50 hover:bg-transparent">
+                        <TableHead className="text-slate-400">Professional</TableHead>
+                        <TableHead className="text-slate-400">Client</TableHead>
+                        <TableHead className="text-slate-400">Project</TableHead>
+                        <TableHead className="text-slate-400">Rate</TableHead>
+                        <TableHead className="text-slate-400">Hours</TableHead>
+                        <TableHead className="text-slate-400">Status</TableHead>
+                        <TableHead className="text-slate-400">Assigned</TableHead>
+                        <TableHead className="text-right text-slate-400">Actions</TableHead>
                       </TableRow>
-                    ))}
-                    {filteredAssignments.length === 0 && (
-                      <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No assignments found</TableCell></TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredAssignments.map(a => (
+                        <TableRow key={a.id} className="border-slate-700/50 hover:bg-slate-800/30">
+                          <TableCell className="font-medium text-slate-200">{a.professionalName}</TableCell>
+                          <TableCell className="text-slate-300">{a.clientName}</TableCell>
+                          <TableCell className="max-w-[200px] truncate text-slate-300">{a.projectTitle}</TableCell>
+                          <TableCell className="text-slate-200">{a.hourlyRate}/hr</TableCell>
+                          <TableCell className="text-sm text-slate-300">{a.totalHours || 0}h</TableCell>
+                          <TableCell><Badge className={statusConfig[a.status]?.className}>{statusConfig[a.status]?.label}</Badge></TableCell>
+                          <TableCell className="text-slate-400 text-sm">{a.assignedDate}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex gap-1 justify-end">
+                              {a.status === 'pending_approval' && (
+                                <>
+                                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10" onClick={() => handleApprove(a.id)}>
+                                    <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-red-400 border-red-500/20 hover:bg-red-500/10" onClick={() => handleReject(a.id)}>
+                                    <XCircle className="h-3.5 w-3.5" /> Reject
+                                  </Button>
+                                </>
+                              )}
+                              {a.status === 'approved' && (
+                                <Button size="sm" className="h-7 text-xs gap-1" onClick={() => handleStartPayment(a.id)}>
+                                  <DollarSign className="h-3.5 w-3.5" /> Start Payment
+                                </Button>
+                              )}
+                              {a.status === 'active' && a.totalAmount && (
+                                <span className="text-sm font-semibold text-emerald-400">₹{a.totalAmount.toLocaleString()}</span>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {filteredAssignments.length === 0 && (
+                        <TableRow><TableCell colSpan={8} className="text-center py-8 text-slate-400">No assignments found</TableCell></TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* ═══════════ BILLING & FOLLOW-UP TAB ═══════════ */}
           <TabsContent value="billing">
-            {/* Billing Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-              {[
-                { label: 'Total Invoiced', value: `$${billingStats.totalInvoiced.toLocaleString()}`, icon: FileText, cls: 'text-blue-600 bg-blue-100' },
-                { label: 'Pending Amount', value: `$${billingStats.totalPending.toLocaleString()}`, icon: Clock, cls: 'text-amber-600 bg-amber-100' },
-                { label: 'Total Commission', value: `$${billingStats.totalCommission.toLocaleString()}`, icon: DollarSign, cls: 'text-emerald-600 bg-emerald-100' },
-                { label: 'Overdue', value: billingStats.overdue, icon: AlertCircle, cls: 'text-destructive bg-destructive/10' },
-              ].map(s => (
-                <Card key={s.label} className="border border-border">
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${s.cls}`}><s.icon className="h-4 w-4" /></div>
-                    <div>
-                      <p className="text-lg font-bold text-foreground">{s.value}</p>
-                      <p className="text-xs text-muted-foreground">{s.label}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Search & Filter */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input value={billingSearch} onChange={e => setBillingSearch(e.target.value)}
-                  placeholder="Search client or freelancer..." className="pl-9" />
-              </div>
-              <Select value={billingFilterStatus} onValueChange={setBillingFilterStatus}>
-                <SelectTrigger className="w-44">
-                  <Filter className="h-4 w-4 mr-2" /><SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="partial">Partial</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Billing Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {filteredBilling.map(b => {
-                const fu = followUpBadge(b.followUpStatus);
-                return (
-                  <Card key={b.id} className="border border-border shadow-sm hover:shadow-md transition-shadow bg-card">
-                    <CardContent className="p-5 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-foreground truncate">{b.projectTitle}</p>
-                          <p className="text-sm text-muted-foreground">{b.clientName}</p>
-                        </div>
-                        <Badge className={billingStatusBadge(b.billingStatus)}>{b.billingStatus}</Badge>
-                      </div>
-                      <Separator />
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                         <span className="text-muted-foreground">Professional</span>
-                          <span className="font-medium text-foreground">{b.freelancerName}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Invoice</span>
-                          <span className="font-medium text-foreground">${b.invoiceAmount.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Paid</span>
-                          <span className="font-medium text-emerald-600">${b.paidAmount.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Pending</span>
-                          <span className="font-bold text-amber-600">${b.pendingAmount.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Commission</span>
-                          <span className="font-medium text-primary">${b.commission.toLocaleString()}</span>
-                        </div>
-                        <Separator />
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Follow-up</span>
-                          <Badge className={fu.className}>{fu.label}</Badge>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">Due: {b.dueDate}</span>
-                          {b.lastFollowUp && <span className="text-muted-foreground">Last: {b.lastFollowUp}</span>}
-                        </div>
-                        {b.followUpNotes && (
-                          <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded line-clamp-2">{b.followUpNotes}</p>
-                        )}
-                      </div>
-                      <Separator />
-                      <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs" onClick={() => openBillingUpdate(b)}>
-                        <RotateCcw className="h-3.5 w-3.5" /> Update Billing & Follow-up
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-              {filteredBilling.length === 0 && (
-                <Card className="col-span-full border-0 shadow-md">
-                  <CardContent className="py-16 text-center text-muted-foreground">
-                    <CreditCard className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                    <p className="font-medium">No billing records found</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            {billing.length === 0 ? (
+              <Card className="border border-slate-700/50 shadow-md bg-[#0D1B2E]">
+                <CardContent className="py-16 text-center text-slate-400">
+                  <CreditCard className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                  <p className="font-medium">No billing records yet</p>
+                  <p className="text-sm text-slate-500 mt-1">Billing records will appear when assignments are active.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                    <Input value={billingSearch} onChange={e => setBillingSearch(e.target.value)} placeholder="Search client or freelancer..." className="pl-9 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+                  </div>
+                  <Select value={billingFilterStatus} onValueChange={setBillingFilterStatus}>
+                    <SelectTrigger className="w-44 bg-[#0D1B2E] border-slate-700/50 text-slate-200"><Filter className="h-4 w-4 mr-2" /><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      {BILLING_STATUSES.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredBilling.map(b => {
+                    const fu = followUpBadge(b.followUpStatus);
+                    return (
+                      <Card key={b.id} className="border border-slate-700/50 shadow-sm hover:shadow-md transition-shadow bg-[#0D1B2E]">
+                        <CardContent className="p-5 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-slate-100 truncate">{b.projectTitle}</p>
+                              <p className="text-sm text-slate-400">{b.clientName}</p>
+                            </div>
+                            <Badge className={billingStatusBadge(b.billingStatus)}>{b.billingStatus}</Badge>
+                          </div>
+                          <Separator className="bg-slate-700/50" />
+                          <div className="space-y-1.5 text-sm">
+                            <div className="flex justify-between"><span className="text-slate-400">Professional</span><span className="font-medium text-slate-200">{b.freelancerName}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-400">Invoice</span><span className="font-medium text-slate-200">₹{b.invoiceAmount.toLocaleString()}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-400">Paid</span><span className="font-medium text-emerald-400">₹{b.paidAmount.toLocaleString()}</span></div>
+                            <div className="flex justify-between"><span className="text-slate-400">Pending</span><span className="font-bold text-amber-400">₹{b.pendingAmount.toLocaleString()}</span></div>
+                          </div>
+                          <Separator className="bg-slate-700/50" />
+                          <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs border-slate-700/50 text-slate-300 hover:bg-slate-700/50" onClick={() => openBillingUpdate(b)}>
+                            <RotateCcw className="h-3.5 w-3.5" /> Update Billing
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </main>
 
       {/* ═══════════ SCHEDULE DEMO DIALOG ═══════════ */}
       <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-primary" /> Schedule Demo & Send Link
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <Video className="h-5 w-5 text-cyan-400" /> Schedule Demo & Send Meeting Invitation
             </DialogTitle>
-            <DialogDescription>
-              Schedule a demo for <strong>{selectedDemo?.projectTitle}</strong> with <strong>{selectedDemo?.freelancerName}</strong>. After demo approval, hourly work assignment will be created.
+            <DialogDescription className="text-slate-400">
+              Schedule a demo for <strong className="text-slate-200">{selectedDemo?.projectTitle}</strong> with <strong className="text-slate-200">{selectedDemo?.freelancerName}</strong>. Meeting invitation emails will be sent to both client and freelancer.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" /> Timezone *</Label>
+              <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><Globe className="h-3.5 w-3.5" /> Timezone *</Label>
               <Select value={scheduleForm.timezone} onValueChange={v => setScheduleForm(f => ({ ...f, timezone: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue /></SelectTrigger>
                 <SelectContent>{TIMEZONES.map(tz => <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-medium flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Date *</Label>
-                <Input type="date" className="mt-1" value={scheduleForm.scheduledDate}
+                <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Date *</Label>
+                <Input type="date" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" value={scheduleForm.scheduledDate}
                   min={new Date().toISOString().split('T')[0]}
                   onChange={e => setScheduleForm(f => ({ ...f, scheduledDate: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-sm font-medium flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Time Slot *</Label>
+                <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Time Slot *</Label>
                 <Select value={scheduleForm.scheduledTime} onValueChange={v => setScheduleForm(f => ({ ...f, scheduledTime: v }))}>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Select time" /></SelectTrigger>
+                  <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue placeholder="Select time" /></SelectTrigger>
                   <SelectContent>{TIME_SLOTS.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Demo Meeting Link *</Label>
-              <Input className="mt-1" placeholder="https://meet.google.com/... or https://zoom.us/..."
+              <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><ExternalLink className="h-3.5 w-3.5" /> Meeting Link (Zoom/Google Meet) *</Label>
+              <Input className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" placeholder="https://zoom.us/j/... or https://meet.google.com/..."
                 value={scheduleForm.demoLink} onChange={e => setScheduleForm(f => ({ ...f, demoLink: e.target.value }))} />
             </div>
             <div>
-              <Label className="text-sm font-medium">Status</Label>
+              <Label className="text-sm font-medium text-slate-300">Status</Label>
               <Select value={scheduleForm.status} onValueChange={v => setScheduleForm(f => ({ ...f, status: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue /></SelectTrigger>
                 <SelectContent>{DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-medium flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> Admin Description / Comments</Label>
-              <Textarea className="mt-1" rows={3} placeholder="Add notes about this demo..."
+              <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> Admin Notes</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={3} placeholder="Add notes about this demo..."
                 value={scheduleForm.adminComments} onChange={e => setScheduleForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-xs text-blue-700">📧 The demo link, date and time will be sent to both the <strong>client</strong> and <strong>professional</strong>.</p>
+            <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
+              <p className="text-xs text-cyan-400">📧 Meeting invitation with link, date and time will be sent to both the <strong>client</strong> and <strong>freelancer</strong> via email.</p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setScheduleOpen(false)}>Cancel</Button>
-            <Button onClick={handleScheduleDemo} disabled={scheduleSending} className="gap-2">
+            <Button variant="outline" onClick={() => setScheduleOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+            <Button onClick={handleScheduleDemo} disabled={scheduleSending} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
               {scheduleSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              {scheduleSending ? 'Sending...' : 'Schedule & Send Link'}
+              {scheduleSending ? 'Sending...' : 'Schedule & Send Invitation'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* ═══════════ UPDATE STATUS DIALOG ═══════════ */}
+      {/* ═══════════ UPDATE STATUS DIALOG (Enhanced) ═══════════ */}
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Edit className="h-5 w-5 text-primary" /> Update Demo Status</DialogTitle>
-            <DialogDescription>Update status for <strong>{updateDemo?.projectTitle}</strong> (Demo #{updateDemo?.demoId})</DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <Edit className="h-5 w-5 text-cyan-400" /> Update Demo Status
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Update status for <strong className="text-slate-200">{updateDemo?.projectTitle}</strong> (Demo #{updateDemo?.demoId})
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-sm font-medium">Status *</Label>
+              <Label className="text-sm font-medium text-slate-300">Status *</Label>
               <Select value={updateForm.status} onValueChange={v => setUpdateForm(f => ({ ...f, status: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue /></SelectTrigger>
                 <SelectContent>{DEMO_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+
+            {/* Demo Notes - shown for In Progress & Completed */}
+            {(updateForm.status === 'Demo In Progress' || updateForm.status === 'Demo Completed') && (
+              <div>
+                <Label className="text-sm font-medium text-slate-300">Demo Notes / Timings</Label>
+                <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={3} placeholder="e.g. Demo started at 10:30 AM, discussed project scope..."
+                  value={updateForm.demoNotes} onChange={e => setUpdateForm(f => ({ ...f, demoNotes: e.target.value }))} />
+              </div>
+            )}
+
+            {/* Feedback - shown when completing or approving */}
+            {(updateForm.status === 'Demo Completed' || updateForm.status === 'Approved') && (
+              <>
+                <div>
+                  <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><ThumbsUp className="h-3.5 w-3.5 text-emerald-400" /> Client Feedback</Label>
+                  <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={2} placeholder="How did the client respond? Interested / Needs changes / OK..."
+                    value={updateForm.clientFeedback} onChange={e => setUpdateForm(f => ({ ...f, clientFeedback: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5"><ThumbsUp className="h-3.5 w-3.5 text-blue-400" /> Freelancer Feedback</Label>
+                  <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={2} placeholder="How did the freelancer perform? Technically sound / Needs improvement..."
+                    value={updateForm.freelancerFeedback} onChange={e => setUpdateForm(f => ({ ...f, freelancerFeedback: e.target.value }))} />
+                </div>
+              </>
+            )}
+
+            {/* Decline reason */}
+            {updateForm.status === 'Declined' && (
+              <div>
+                <Label className="text-sm font-medium text-red-400">Decline Reason *</Label>
+                <Textarea className="mt-1 bg-[#0A1628] border-red-500/30 text-slate-200" rows={3} placeholder="Explain why this demo request is being declined..."
+                  value={updateForm.declineReason} onChange={e => setUpdateForm(f => ({ ...f, declineReason: e.target.value }))} />
+              </div>
+            )}
+
             <div>
-              <Label className="text-sm font-medium">Admin Description / Comments</Label>
-              <Textarea className="mt-1" rows={4} placeholder="Add post-demo notes, feedback..."
+              <Label className="text-sm font-medium text-slate-300">Admin Comments</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={3} placeholder="General notes..."
                 value={updateForm.adminComments} onChange={e => setUpdateForm(f => ({ ...f, adminComments: e.target.value }))} />
+            </div>
+
+            {/* Approve info */}
+            {updateForm.status === 'Approved' && (
+              <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3">
+                <p className="text-xs text-emerald-400">✅ After approval, you can create an assignment for this client and assign a freelancer.</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUpdateOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+            <Button onClick={handleUpdateStatus} disabled={updateSending || (updateForm.status === 'Declined' && !updateForm.declineReason)}
+              className={`gap-2 ${updateForm.status === 'Declined' ? 'bg-red-600 hover:bg-red-700' : updateForm.status === 'Approved' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-cyan-600 hover:bg-cyan-700'}`}>
+              {updateSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              {updateSending ? 'Updating...' : `Update to ${updateForm.status}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════ DEMO DETAIL DIALOG ═══════════ */}
+      <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100 max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <Eye className="h-5 w-5 text-cyan-400" /> Demo Details
+            </DialogTitle>
+          </DialogHeader>
+          {detailDemo && (
+            <div className="space-y-4 py-2">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-100">{detailDemo.projectTitle || 'Untitled'}</h3>
+                  <p className="text-sm text-slate-400">Demo #{detailDemo.demoId}</p>
+                </div>
+                <Badge className={demoStatusBadge(detailDemo.status)}>{detailDemo.status}</Badge>
+              </div>
+              <Separator className="bg-slate-700/50" />
+
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Freelancer</p>
+                  <p className="font-medium text-slate-200">{detailDemo.freelancerName || 'N/A'}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Client</p>
+                  <p className="font-medium text-slate-200">{detailDemo.clientName || 'N/A'}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Budget</p>
+                  <p className="font-medium text-slate-200">{detailDemo.budget ? `₹${detailDemo.budget.toLocaleString()}` : 'N/A'}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Requested On</p>
+                  <p className="font-medium text-slate-200">{detailDemo.requestedOn ? new Date(detailDemo.requestedOn).toLocaleDateString() : 'N/A'}</p>
+                </div>
+              </div>
+
+              {detailDemo.contactEmail && (
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Contact</p>
+                  <p className="text-sm text-slate-200">{detailDemo.contactEmail} {detailDemo.contactPhone && `• ${detailDemo.contactPhone}`}</p>
+                </div>
+              )}
+
+              {detailDemo.scheduledDate && (
+                <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                  <p className="text-[10px] text-blue-400 uppercase tracking-wider mb-1">Scheduled</p>
+                  <p className="text-sm text-blue-300">📅 {new Date(detailDemo.scheduledDate).toLocaleDateString()} at {detailDemo.scheduledTime} ({detailDemo.timezone})</p>
+                </div>
+              )}
+
+              {detailDemo.demoMeetingLink && (
+                <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
+                  <p className="text-[10px] text-cyan-400 uppercase tracking-wider mb-1">Meeting Link</p>
+                  <a href={detailDemo.demoMeetingLink} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 underline break-all">{detailDemo.demoMeetingLink}</a>
+                </div>
+              )}
+
+              {(detailDemo.status === 'Declined' || detailDemo.status === 'Rejected') && detailDemo.adminComments && (
+                <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20">
+                  <p className="text-[10px] text-red-400 uppercase tracking-wider mb-1">Decline Reason</p>
+                  <p className="text-sm text-red-300 whitespace-pre-line">{detailDemo.adminComments}</p>
+                </div>
+              )}
+
+              {detailDemo.adminComments && detailDemo.status !== 'Declined' && detailDemo.status !== 'Rejected' && (
+                <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Admin Notes & Feedback</p>
+                  <p className="text-sm text-slate-300 whitespace-pre-line">{detailDemo.adminComments}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════ CREATE ASSIGNMENT DIALOG ═══════════ */}
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <UserPlus className="h-5 w-5 text-cyan-400" /> Create Assignment
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Create a work assignment for <strong className="text-slate-200">{assignDemo?.projectTitle}</strong>. You can change the freelancer if needed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* Project info */}
+            <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div><span className="text-slate-500">Project:</span> <span className="text-slate-200 font-medium">{assignDemo?.projectTitle}</span></div>
+                <div><span className="text-slate-500">Client:</span> <span className="text-slate-200">{assignDemo?.clientName || 'N/A'}</span></div>
+                <div><span className="text-slate-500">Budget:</span> <span className="text-slate-200">{assignDemo?.budget ? `₹${assignDemo.budget.toLocaleString()}` : 'N/A'}</span></div>
+                <div><span className="text-slate-500">Demo #:</span> <span className="text-slate-200">{assignDemo?.demoId}</span></div>
+              </div>
+            </div>
+
+            {/* Select Freelancer (can swap) */}
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Assign Freelancer *</Label>
+              {freelancerListLoading ? (
+                <div className="flex items-center gap-2 mt-2 text-xs text-slate-400"><Loader2 className="h-4 w-4 animate-spin" /> Loading freelancers...</div>
+              ) : (
+                <Select value={String(assignForm.selectedFreelancerId)} onValueChange={v => setAssignForm(f => ({ ...f, selectedFreelancerId: Number(v) }))}>
+                  <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue placeholder="Select freelancer" /></SelectTrigger>
+                  <SelectContent>
+                    {freelancerList.map(f => (
+                      <SelectItem key={f.freelancerId || f.id} value={String(f.freelancerId || f.id)}>
+                        {f.fullName} — {f.primarySkills?.split(',').slice(0, 2).join(', ')} ({f.country})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <p className="text-[10px] text-slate-500 mt-1">Default: {assignDemo?.freelancerName}. You can change the freelancer for this assignment.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-sm font-medium text-slate-300">Hourly Rate (₹) *</Label>
+                <Input type="number" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" placeholder="e.g. 500"
+                  value={assignForm.hourlyRate} onChange={e => setAssignForm(f => ({ ...f, hourlyRate: e.target.value }))} />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-slate-300">Total Hours (estimated)</Label>
+                <Input type="number" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" placeholder="e.g. 160"
+                  value={assignForm.totalHours} onChange={e => setAssignForm(f => ({ ...f, totalHours: e.target.value }))} />
+              </div>
+            </div>
+
+            {assignForm.hourlyRate && assignForm.totalHours && (
+              <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                <p className="text-xs text-emerald-400">Estimated Project Amount: <strong>₹{(Number(assignForm.hourlyRate) * Number(assignForm.totalHours)).toLocaleString()}</strong></p>
+              </div>
+            )}
+
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Admin Notes</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={2} placeholder="Any notes about this assignment..."
+                value={assignForm.adminComments} onChange={e => setAssignForm(f => ({ ...f, adminComments: e.target.value }))} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setUpdateOpen(false)}>Cancel</Button>
-            <Button onClick={handleUpdateStatus} disabled={updateSending} className="gap-2">
-              {updateSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-              {updateSending ? 'Updating...' : 'Update Status'}
+            <Button variant="outline" onClick={() => setAssignOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+            <Button onClick={handleCreateAssignment} disabled={assignSending} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
+              {assignSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              {assignSending ? 'Creating...' : 'Create Assignment'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -788,52 +1107,33 @@ const AdminDashboard = () => {
 
       {/* ═══════════ BILLING UPDATE DIALOG ═══════════ */}
       <Dialog open={billingUpdateOpen} onOpenChange={setBillingUpdateOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5 text-primary" /> Update Billing & Follow-up</DialogTitle>
-            <DialogDescription>
-              {selectedBilling?.projectTitle} — {selectedBilling?.clientName}
-            </DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-slate-100"><CreditCard className="h-5 w-5 text-cyan-400" /> Update Billing</DialogTitle>
+            <DialogDescription className="text-slate-400">{selectedBilling?.projectTitle} — {selectedBilling?.clientName}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-sm font-medium">Billing Status *</Label>
+              <Label className="text-sm font-medium text-slate-300">Billing Status *</Label>
               <Select value={billingForm.billingStatus} onValueChange={v => setBillingForm(f => ({ ...f, billingStatus: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {BILLING_STATUSES.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
-                </SelectContent>
+                <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue /></SelectTrigger>
+                <SelectContent>{BILLING_STATUSES.map(s => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-medium">Paid Amount ($)</Label>
-              <Input type="number" className="mt-1" value={billingForm.paidAmount}
+              <Label className="text-sm font-medium text-slate-300">Paid Amount (₹)</Label>
+              <Input type="number" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" value={billingForm.paidAmount}
                 onChange={e => setBillingForm(f => ({ ...f, paidAmount: Number(e.target.value) }))} />
-              {selectedBilling && (
-                <p className="text-xs text-muted-foreground mt-1">Invoice total: ${selectedBilling.invoiceAmount.toLocaleString()}</p>
-              )}
             </div>
             <div>
-              <Label className="text-sm font-medium">Follow-up Status</Label>
-              <Select value={billingForm.followUpStatus} onValueChange={v => setBillingForm(f => ({ ...f, followUpStatus: v }))}>
-                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No Follow-up</SelectItem>
-                  <SelectItem value="reminder_sent">Reminder Sent</SelectItem>
-                  <SelectItem value="escalated">Escalated</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Follow-up Notes</Label>
-              <Textarea className="mt-1" rows={3} placeholder="Add follow-up details, next steps..."
+              <Label className="text-sm font-medium text-slate-300">Follow-up Notes</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={3} placeholder="Follow-up details..."
                 value={billingForm.followUpNotes} onChange={e => setBillingForm(f => ({ ...f, followUpNotes: e.target.value }))} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setBillingUpdateOpen(false)}>Cancel</Button>
-            <Button onClick={handleBillingUpdate} disabled={billingUpdating} className="gap-2">
+            <Button variant="outline" onClick={() => setBillingUpdateOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+            <Button onClick={handleBillingUpdate} disabled={billingUpdating} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
               {billingUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
               {billingUpdating ? 'Updating...' : 'Update Billing'}
             </Button>
