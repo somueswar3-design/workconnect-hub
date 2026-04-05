@@ -314,6 +314,53 @@ const AdminDashboard = () => {
     }
   };
 
+  // ─── Assign Project to Freelancer ───
+  const openAssignProject = async (assignment: Assignment) => {
+    setAssignProjectTarget(assignment);
+    setAssignProjectForm({
+      selectedFreelancerId: Number(assignment.professionalId) || 0,
+      projectStartDate: assignment.projectStartDate || '',
+      projectEndDate: assignment.projectEndDate || '',
+      status: assignment.status,
+    });
+    setAssignProjectOpen(true);
+    setFreelancerListLoading(true);
+    try {
+      const profiles = await getFreelancerProfiles();
+      setFreelancerList(profiles);
+    } catch {
+      setFreelancerList([]);
+    } finally {
+      setFreelancerListLoading(false);
+    }
+  };
+
+  const handleAssignProject = async () => {
+    if (!assignProjectTarget) return;
+    if (!assignProjectForm.selectedFreelancerId) {
+      toast({ title: 'Missing', description: 'Please select a freelancer.', variant: 'destructive' });
+      return;
+    }
+    setAssignProjectSending(true);
+    try {
+      const selectedFreelancer = freelancerList.find(f => (f.freelancerId || f.id) === assignProjectForm.selectedFreelancerId);
+      setAssignments(prev => prev.map(a => a.id === assignProjectTarget.id ? {
+        ...a,
+        professionalId: String(assignProjectForm.selectedFreelancerId),
+        professionalName: selectedFreelancer?.fullName || a.professionalName,
+        projectStartDate: assignProjectForm.projectStartDate || a.projectStartDate,
+        projectEndDate: assignProjectForm.projectEndDate || a.projectEndDate,
+        status: assignProjectForm.status as Assignment['status'],
+      } : a));
+      toast({ title: '✅ Project Assigned!', description: `"${assignProjectTarget.projectTitle}" assigned to ${selectedFreelancer?.fullName || 'freelancer'}.` });
+      setAssignProjectOpen(false);
+    } catch {
+      toast({ title: 'Error', description: 'Failed to assign project.', variant: 'destructive' });
+    } finally {
+      setAssignProjectSending(false);
+    }
+  };
+
   const openSchedule = (demo: DemoRequestResponse) => {
     setSelectedDemo(demo);
     setScheduleForm({ timezone: 'Asia/Kolkata', scheduledDate: '', scheduledTime: '', demoLink: '', adminComments: demo.adminComments || '', status: 'Scheduled' });
