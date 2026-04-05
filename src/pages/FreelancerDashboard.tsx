@@ -42,6 +42,7 @@ const FreelancerOverview = () => {
   const [interestsLoading, setInterestsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifyPopup, setShowNotifyPopup] = useState(false);
+  const [selectedInterest, setSelectedInterest] = useState<FreelancerInterestResponseDto | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -279,8 +280,8 @@ const FreelancerOverview = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {interests.map((interest, idx) => (
-              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E]">
+              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} onClick={() => setSelectedInterest(interest)} className="cursor-pointer">
+                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E] hover:shadow-indigo-500/10 hover:shadow-lg">
                   <CardContent className="p-5 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -341,6 +342,102 @@ const FreelancerOverview = () => {
           </div>
         )}
       </div>
+      {/* Interest Detail Dialog */}
+      <Dialog open={!!selectedInterest} onOpenChange={(open) => !open && setSelectedInterest(null)}>
+        <DialogContent className="sm:max-w-lg border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">Interest Details</DialogTitle>
+          <div className="h-1.5 bg-gradient-to-r from-indigo-500 via-cyan-500 to-indigo-500" />
+          {selectedInterest && (
+            <div className="p-6 space-y-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg font-bold text-slate-100">{selectedInterest.requirement?.title || `Requirement #${selectedInterest.requirementId}`}</h2>
+                  {selectedInterest.requirement?.description && (
+                    <p className="text-sm text-slate-400 mt-2 leading-relaxed">{selectedInterest.requirement.description}</p>
+                  )}
+                </div>
+                <Badge className={`shrink-0 text-xs ${
+                  selectedInterest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
+                  selectedInterest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                  selectedInterest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                  'bg-slate-700 text-slate-400'
+                }`}>{selectedInterest.status}</Badge>
+              </div>
+
+              {selectedInterest.requirement?.skillsRequired && (
+                <div>
+                  <p className="text-xs font-medium text-slate-400 mb-2">Skills Required</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedInterest.requirement.skillsRequired.split(',').map((skill, si) => (
+                      <Badge key={si} className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 text-xs px-2.5 py-1 font-normal">{skill.trim()}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                {selectedInterest.requirement?.budget !== undefined && (
+                  <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Budget</p>
+                    <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                      <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
+                      {selectedInterest.requirement.budget.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+                {selectedInterest.requirement?.minExperience !== undefined && (
+                  <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Experience</p>
+                    <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                      <Briefcase className="h-3.5 w-3.5 text-orange-400" />
+                      {selectedInterest.requirement.minExperience}+ years
+                    </p>
+                  </div>
+                )}
+                {selectedInterest.requirement?.country && (
+                  <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Country</p>
+                    <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-indigo-400" />
+                      {selectedInterest.requirement.country}
+                    </p>
+                  </div>
+                )}
+                {selectedInterest.requirement?.language && (
+                  <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Language</p>
+                    <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                      <Languages className="h-3.5 w-3.5 text-green-400" />
+                      {selectedInterest.requirement.language}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-700/50 text-xs text-slate-400">
+                <span className="flex items-center gap-1">
+                  <Send className="h-3.5 w-3.5 text-indigo-400" />
+                  Applied: {new Date(selectedInterest.createdOn).toLocaleDateString()} {new Date(selectedInterest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+                {selectedInterest.requirement?.createdOn && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    Posted: {new Date(selectedInterest.requirement.createdOn).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+
+              {selectedInterest.requirement?.status && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">Requirement Status:</span>
+                  <Badge className={`text-xs ${selectedInterest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{selectedInterest.requirement.status}</Badge>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
         <DialogContent className="sm:max-w-md border-slate-700/50 shadow-2xl overflow-hidden p-0 bg-[#0D1B2E]" aria-describedby={undefined}>
           <DialogTitle className="sr-only">Profile Under Review</DialogTitle>
