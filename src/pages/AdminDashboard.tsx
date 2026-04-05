@@ -128,6 +128,14 @@ const AdminDashboard = () => {
   const [freelancerList, setFreelancerList] = useState<FreelancerProfileDto[]>([]);
   const [freelancerListLoading, setFreelancerListLoading] = useState(false);
 
+  // Assign project to freelancer dialog
+  const [assignProjectOpen, setAssignProjectOpen] = useState(false);
+  const [assignProjectTarget, setAssignProjectTarget] = useState<Assignment | null>(null);
+  const [assignProjectForm, setAssignProjectForm] = useState({
+    selectedFreelancerId: 0, projectStartDate: '', projectEndDate: '', status: 'active' as string,
+  });
+  const [assignProjectSending, setAssignProjectSending] = useState(false);
+
   // ─── Fetch demo requests ───
   const loadDemoRequests = async () => {
     setDemoLoading(true);
