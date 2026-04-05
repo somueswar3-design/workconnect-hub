@@ -365,7 +365,7 @@ const FreelancerOverview = () => {
                           Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}
                         </span>
                       )}
-                      <Eye className="h-3.5 w-3.5 text-cyan-400 ml-2" title="Click for full details" />
+                      <Eye className="h-3.5 w-3.5 text-cyan-400 ml-2" />
                     </div>
                   </CardContent>
                 </Card>
