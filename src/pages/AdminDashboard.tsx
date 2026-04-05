@@ -821,6 +821,9 @@ const AdminDashboard = () => {
                                   <DollarSign className="h-3.5 w-3.5" /> Start
                                 </Button>
                               )}
+                              <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/10" onClick={() => openAssignProject(a)}>
+                                <UserPlus className="h-3.5 w-3.5" /> Assign
+                              </Button>
                               {a.projectNotes && (
                                 <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 text-slate-400" title={a.projectNotes}>
                                   <FileText className="h-3.5 w-3.5" />
@@ -1304,6 +1307,92 @@ const AdminDashboard = () => {
             <Button onClick={handleBillingUpdate} disabled={billingUpdating} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
               {billingUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
               {billingUpdating ? 'Updating...' : 'Update Billing'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══════════ ASSIGN PROJECT TO FREELANCER DIALOG ═══════════ */}
+      <Dialog open={assignProjectOpen} onOpenChange={setAssignProjectOpen}>
+        <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-slate-100">
+              <UserPlus className="h-5 w-5 text-cyan-400" /> Assign Project to Freelancer
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Assign <strong className="text-slate-200">{assignProjectTarget?.projectTitle}</strong> to a freelancer with start/end dates and status.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* Current info */}
+            <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40 text-sm">
+              <div className="grid grid-cols-2 gap-2">
+                <div><span className="text-slate-500">Project:</span> <span className="text-slate-200 font-medium">{assignProjectTarget?.projectTitle}</span></div>
+                <div><span className="text-slate-500">Client:</span> <span className="text-slate-200">{assignProjectTarget?.clientName}</span></div>
+                <div><span className="text-slate-500">Current:</span> <span className="text-slate-200">{assignProjectTarget?.professionalName}</span></div>
+                <div><span className="text-slate-500">Rate:</span> <span className="text-slate-200">{assignProjectTarget?.hourlyRate}/hr</span></div>
+              </div>
+            </div>
+
+            {/* Select Freelancer */}
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Select Freelancer *</Label>
+              {freelancerListLoading ? (
+                <div className="flex items-center gap-2 mt-2 text-xs text-slate-400"><Loader2 className="h-4 w-4 animate-spin" /> Loading...</div>
+              ) : (
+                <Select value={String(assignProjectForm.selectedFreelancerId)} onValueChange={v => setAssignProjectForm(f => ({ ...f, selectedFreelancerId: Number(v) }))}>
+                  <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue placeholder="Select freelancer" /></SelectTrigger>
+                  <SelectContent>
+                    {freelancerList.map(f => (
+                      <SelectItem key={f.freelancerId || f.id} value={String(f.freelancerId || f.id)}>
+                        {f.fullName} — {f.primarySkills?.split(',').slice(0, 2).join(', ')} ({f.country})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-sm font-medium text-slate-300">Start Date *</Label>
+                <Input type="date" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"
+                  value={assignProjectForm.projectStartDate} onChange={e => setAssignProjectForm(f => ({ ...f, projectStartDate: e.target.value }))} />
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-slate-300">End Date</Label>
+                <Input type="date" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"
+                  value={assignProjectForm.projectEndDate} onChange={e => setAssignProjectForm(f => ({ ...f, projectEndDate: e.target.value }))}
+                  min={assignProjectForm.projectStartDate || undefined} />
+              </div>
+            </div>
+
+            {/* Status */}
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Project Status</Label>
+              <Select value={assignProjectForm.status} onValueChange={v => setAssignProjectForm(f => ({ ...f, status: v }))}>
+                <SelectTrigger className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="pending_approval">Pending Approval</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {assignProjectForm.projectStartDate && assignProjectForm.projectEndDate && (
+              <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-xs text-blue-400">
+                📅 Duration: {Math.ceil((new Date(assignProjectForm.projectEndDate).getTime() - new Date(assignProjectForm.projectStartDate).getTime()) / (1000 * 60 * 60 * 24))} days
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignProjectOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
+            <Button onClick={handleAssignProject} disabled={assignProjectSending} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
+              {assignProjectSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              {assignProjectSending ? 'Assigning...' : 'Assign & Update'}
             </Button>
           </DialogFooter>
         </DialogContent>
