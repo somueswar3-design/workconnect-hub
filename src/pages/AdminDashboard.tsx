@@ -297,7 +297,7 @@ const AdminDashboard = () => {
 
   const openCreateAssignment = async (demo: DemoRequestResponse) => {
     setAssignDemo(demo);
-    setAssignForm({ hourlyRate: '', totalHours: '', adminComments: '', selectedFreelancerId: demo.freelancerId });
+    setAssignForm({ hourlyRate: '', totalHours: '', adminComments: '', selectedFreelancerId: demo.freelancerId, monthlyCommitment: '', advanceAmount: '', projectStartDate: '', projectEndDate: '', projectNotes: '' });
     setAssignOpen(true);
     // Load freelancer list for swapping
     setFreelancerListLoading(true);
