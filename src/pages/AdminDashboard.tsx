@@ -119,6 +119,7 @@ const AdminDashboard = () => {
   const [assignDemo, setAssignDemo] = useState<DemoRequestResponse | null>(null);
   const [assignForm, setAssignForm] = useState({
     hourlyRate: '', totalHours: '', adminComments: '', selectedFreelancerId: 0,
+    monthlyCommitment: '', advanceAmount: '', projectStartDate: '', projectEndDate: '', projectNotes: '',
   });
   const [assignSending, setAssignSending] = useState(false);
   const [freelancerList, setFreelancerList] = useState<FreelancerProfileDto[]>([]);
