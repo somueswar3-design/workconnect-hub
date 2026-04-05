@@ -161,3 +161,28 @@ export const getMaskedProfile = (profile: WorkerProfile): WorkerProfile => {
     mobile: `XXXXXXXX${lastTwo}`,
   };
 };
+
+// Demo request response DTO for freelancer view
+export interface FreelancerDemoRequestDto {
+  demoId: number;
+  clientUserId: number;
+  clientName: string;
+  projectTitle: string;
+  budget: number;
+  status: string;
+  adminComments: string | null;
+  scheduledDate: string | null;
+  scheduledTime: string | null;
+  timezone: string | null;
+  demoMeetingLink: string | null;
+  requestedOn: string;
+}
+
+// GET demo requests assigned to a freelancer
+export const getFreelancerDemoRequests = async (userId: string): Promise<FreelancerDemoRequestDto[]> => {
+  const res = await fetch(`${API_BASE}/api/client/demo-requests?freelancerUserId=${userId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch demo requests');
+  return res.json();
+};
