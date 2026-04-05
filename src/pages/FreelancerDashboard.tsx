@@ -254,10 +254,10 @@ const FreelancerOverview = () => {
           </div>
       </div>
 
-      {/* My Interests */}
+      {/* My Works - Interest Details */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Send className="h-5 w-5 text-indigo-400" /> My Interests
+          <Target className="h-5 w-5 text-indigo-400" /> My Works
           <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-xs">{interests.length}</Badge>
         </h2>
 
@@ -272,38 +272,39 @@ const FreelancerOverview = () => {
         ) : interests.length === 0 ? (
           <Card className="border border-slate-700/50 bg-[#0D1B2E]">
             <CardContent className="py-10 text-center">
-              <Send className="h-10 w-10 mx-auto text-slate-600 mb-3" />
+              <Target className="h-10 w-10 mx-auto text-slate-600 mb-3" />
               <h3 className="text-base font-medium text-slate-300 mb-1">No interests submitted yet</h3>
               <p className="text-sm text-slate-500">Express interest in job openings above to see them here.</p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-4">
             {interests.map((interest, idx) => (
               <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} onClick={() => setSelectedInterest(interest)} className="cursor-pointer">
                 <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E] hover:shadow-indigo-500/10 hover:shadow-lg">
-                  <CardContent className="p-5 space-y-3">
+                  <CardContent className="p-5 space-y-4">
+                    {/* Header: Title + Status */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-slate-100 text-base truncate">{interest.requirement?.title || `Requirement #${interest.requirementId}`}</h3>
+                        <h3 className="font-semibold text-slate-100 text-base">{interest.requirement?.title || `Requirement #${interest.requirementId}`}</h3>
                         {interest.requirement?.description && (
-                          <p className="text-sm text-slate-400 mt-1 line-clamp-2">{interest.requirement.description}</p>
+                          <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">{interest.requirement.description}</p>
                         )}
                       </div>
-                      <div className="flex flex-col items-end gap-1 shrink-0">
-                        <Badge className={`text-[10px] ${
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <Badge className={`text-[11px] ${
                           interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
                           interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
                           interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
                           'bg-slate-700 text-slate-400'
                         }`}>{interest.status}</Badge>
-                        <span className="text-[10px] text-slate-500 flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                        {interest.requirement?.status && (
+                          <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
+                        )}
                       </div>
                     </div>
 
+                    {/* Skills */}
                     {interest.requirement?.skillsRequired && (
                       <div className="flex flex-wrap gap-1.5">
                         {interest.requirement.skillsRequired.split(',').map((skill, si) => (
@@ -312,28 +313,59 @@ const FreelancerOverview = () => {
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       {interest.requirement?.budget !== undefined && (
-                        <span className="flex items-center gap-1 font-medium text-slate-200">
-                          <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
-                          {interest.requirement.budget.toLocaleString()}
-                        </span>
+                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Budget</p>
+                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                            <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
+                            {interest.requirement.budget.toLocaleString()}
+                          </p>
+                        </div>
                       )}
                       {interest.requirement?.minExperience !== undefined && (
-                        <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" /> {interest.requirement.minExperience}+ yrs exp</span>
+                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Experience</p>
+                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                            <Briefcase className="h-3.5 w-3.5 text-orange-400" />
+                            {interest.requirement.minExperience}+ yrs
+                          </p>
+                        </div>
                       )}
                       {interest.requirement?.country && (
-                        <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {interest.requirement.country}</span>
+                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Country</p>
+                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5 text-indigo-400" />
+                            {interest.requirement.country}
+                          </p>
+                        </div>
                       )}
                       {interest.requirement?.language && (
-                        <span className="flex items-center gap-1"><Languages className="h-3.5 w-3.5" /> {interest.requirement.language}</span>
+                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Language</p>
+                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                            <Languages className="h-3.5 w-3.5 text-green-400" />
+                            {interest.requirement.language}
+                          </p>
+                        </div>
                       )}
-                      {interest.requirement?.status && (
-                        <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
-                      )}
+                    </div>
+
+                    {/* Timestamps */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <Send className="h-3.5 w-3.5 text-indigo-400" />
+                        Applied: {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                       {interest.requirement?.createdOn && (
-                        <span className="ml-auto flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}</span>
+                        <span className="flex items-center gap-1 ml-auto">
+                          <Clock className="h-3.5 w-3.5" />
+                          Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}
+                        </span>
                       )}
+                      <Eye className="h-3.5 w-3.5 text-cyan-400 ml-2" title="Click for full details" />
                     </div>
                   </CardContent>
                 </Card>
