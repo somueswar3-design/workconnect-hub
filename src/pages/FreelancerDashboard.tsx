@@ -265,125 +265,242 @@ const FreelancerOverview = () => {
           </div>
       </div>
 
-      {/* My Works - Interest Details */}
+      {/* My Requests - Tabbed Section */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Target className="h-5 w-5 text-indigo-400" /> My Works
-          <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-xs">{interests.length}</Badge>
+          <Target className="h-5 w-5 text-indigo-400" /> My Requests
         </h2>
 
-        {interestsLoading ? (
-          <div className="space-y-3">
-            {[1, 2].map(i => (
-              <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
-                <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full" /></CardContent>
+        <Tabs value={requestsTab} onValueChange={setRequestsTab} className="w-full">
+          <TabsList className="bg-slate-800/50 border border-slate-700/50">
+            <TabsTrigger value="interests" className="data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-300 text-slate-400">
+              My Interests <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-[10px] px-1.5">{interests.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="demos" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300 text-slate-400">
+              Scheduled Demos <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-[10px] px-1.5">{demoRequests.length}</Badge>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* My Interests Tab */}
+          <TabsContent value="interests" className="mt-4">
+            {interestsLoading ? (
+              <div className="space-y-3">
+                {[1, 2].map(i => (
+                  <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
+                    <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full" /></CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : interests.length === 0 ? (
+              <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+                <CardContent className="py-10 text-center">
+                  <Target className="h-10 w-10 mx-auto text-slate-600 mb-3" />
+                  <h3 className="text-base font-medium text-slate-300 mb-1">No interests submitted yet</h3>
+                  <p className="text-sm text-slate-500">Express interest in job openings above to see them here.</p>
+                </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : interests.length === 0 ? (
-          <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-            <CardContent className="py-10 text-center">
-              <Target className="h-10 w-10 mx-auto text-slate-600 mb-3" />
-              <h3 className="text-base font-medium text-slate-300 mb-1">No interests submitted yet</h3>
-              <p className="text-sm text-slate-500">Express interest in job openings above to see them here.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {interests.map((interest, idx) => (
-              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} onClick={() => setSelectedInterest(interest)} className="cursor-pointer">
-                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E] hover:shadow-indigo-500/10 hover:shadow-lg">
-                  <CardContent className="p-5 space-y-4">
-                    {/* Header: Title + Status */}
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-slate-100 text-base">{interest.requirement?.title || `Requirement #${interest.requirementId}`}</h3>
-                        {interest.requirement?.description && (
-                          <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">{interest.requirement.description}</p>
+            ) : (
+              <div className="space-y-4">
+                {interests.map((interest, idx) => (
+                  <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} onClick={() => setSelectedInterest(interest)} className="cursor-pointer">
+                    <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E] hover:shadow-indigo-500/10 hover:shadow-lg">
+                      <CardContent className="p-5 space-y-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-slate-100 text-base">{interest.requirement?.title || `Requirement #${interest.requirementId}`}</h3>
+                            {interest.requirement?.description && (
+                              <p className="text-sm text-slate-400 mt-1.5 leading-relaxed line-clamp-2">{interest.requirement.description}</p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-1.5 shrink-0">
+                            <Badge className={`text-[11px] ${
+                              interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
+                              interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                              interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                              'bg-slate-700 text-slate-400'
+                            }`}>{interest.status}</Badge>
+                            {interest.requirement?.status && (
+                              <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        {interest.requirement?.skillsRequired && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {interest.requirement.skillsRequired.split(',').map((skill, si) => (
+                              <Badge key={si} className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 text-[11px] px-2 py-0.5 font-normal">{skill.trim()}</Badge>
+                            ))}
+                          </div>
                         )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <Badge className={`text-[11px] ${
-                          interest.status?.toLowerCase() === 'interested' ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20' :
-                          interest.status?.toLowerCase() === 'accepted' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
-                          interest.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
-                          'bg-slate-700 text-slate-400'
-                        }`}>{interest.status}</Badge>
-                        {interest.requirement?.status && (
-                          <Badge className={`text-[10px] ${interest.requirement.status.toLowerCase() === 'open' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700 text-slate-400'}`}>{interest.requirement.status}</Badge>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {interest.requirement?.budget !== undefined && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Budget</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
+                                {interest.requirement.budget.toLocaleString()}
+                              </p>
+                            </div>
+                          )}
+                          {interest.requirement?.minExperience !== undefined && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Experience</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <Briefcase className="h-3.5 w-3.5 text-orange-400" />
+                                {interest.requirement.minExperience}+ yrs
+                              </p>
+                            </div>
+                          )}
+                          {interest.requirement?.country && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Country</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <MapPin className="h-3.5 w-3.5 text-indigo-400" />
+                                {interest.requirement.country}
+                              </p>
+                            </div>
+                          )}
+                          {interest.requirement?.language && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Language</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <Languages className="h-3.5 w-3.5 text-green-400" />
+                                {interest.requirement.language}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <Send className="h-3.5 w-3.5 text-indigo-400" />
+                            Applied: {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          {interest.requirement?.createdOn && (
+                            <span className="flex items-center gap-1 ml-auto">
+                              <Clock className="h-3.5 w-3.5" />
+                              Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}
+                            </span>
+                          )}
+                          <Eye className="h-3.5 w-3.5 text-cyan-400 ml-2" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Scheduled Demos Tab */}
+          <TabsContent value="demos" className="mt-4">
+            {demosLoading ? (
+              <div className="space-y-3">
+                {[1, 2].map(i => (
+                  <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
+                    <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full" /></CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : demoRequests.length === 0 ? (
+              <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+                <CardContent className="py-10 text-center">
+                  <Users className="h-10 w-10 mx-auto text-slate-600 mb-3" />
+                  <h3 className="text-base font-medium text-slate-300 mb-1">No demo requests yet</h3>
+                  <p className="text-sm text-slate-500">When a client requests a demo with you, it will appear here with meeting details.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {demoRequests.map((demo, idx) => (
+                  <motion.div key={demo.demoId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
+                    <Card className="border border-slate-700/50 shadow-sm hover:border-cyan-500/30 transition-all bg-[#0D1B2E] hover:shadow-cyan-500/10 hover:shadow-lg">
+                      <CardContent className="p-5 space-y-4">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-slate-100 text-base">{demo.projectTitle || 'Demo Request'}</h3>
+                            {demo.clientName && (
+                              <p className="text-sm text-slate-400 mt-1 flex items-center gap-1">
+                                <Building2 className="h-3.5 w-3.5" /> Client: {demo.clientName}
+                              </p>
+                            )}
+                          </div>
+                          <Badge className={`text-[11px] shrink-0 ${
+                            demo.status?.toLowerCase() === 'approved' || demo.status?.toLowerCase() === 'scheduled' ? 'bg-green-500/15 text-green-300 border-green-500/20' :
+                            demo.status?.toLowerCase() === 'pending' || demo.status?.toLowerCase() === 'pending_approval' ? 'bg-yellow-500/15 text-yellow-300 border-yellow-500/20' :
+                            demo.status?.toLowerCase() === 'completed' || demo.status?.toLowerCase() === 'demo completed' ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/20' :
+                            demo.status?.toLowerCase() === 'rejected' ? 'bg-red-500/15 text-red-300 border-red-500/20' :
+                            'bg-slate-700 text-slate-400'
+                          }`}>{demo.status}</Badge>
+                        </div>
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                          {demo.budget !== undefined && demo.budget > 0 && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Budget</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
+                                {demo.budget.toLocaleString()}
+                              </p>
+                            </div>
+                          )}
+                          {demo.scheduledDate && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Demo Date</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <Calendar className="h-3.5 w-3.5 text-green-400" />
+                                {new Date(demo.scheduledDate).toLocaleDateString()}
+                              </p>
+                            </div>
+                          )}
+                          {demo.scheduledTime && (
+                            <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                              <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Time {demo.timezone ? `(${demo.timezone})` : ''}</p>
+                              <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5 text-orange-400" />
+                                {demo.scheduledTime}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Meeting Link */}
+                        {demo.demoMeetingLink && (
+                          <div className="p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
+                            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">Meeting Link</p>
+                            <a href={demo.demoMeetingLink} target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2 break-all flex items-center gap-1.5">
+                              <Zap className="h-3.5 w-3.5 shrink-0" />
+                              {demo.demoMeetingLink}
+                            </a>
+                          </div>
                         )}
-                      </div>
-                    </div>
 
-                    {/* Skills */}
-                    {interest.requirement?.skillsRequired && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {interest.requirement.skillsRequired.split(',').map((skill, si) => (
-                          <Badge key={si} className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20 text-[11px] px-2 py-0.5 font-normal">{skill.trim()}</Badge>
-                        ))}
-                      </div>
-                    )}
+                        {/* Admin Comments */}
+                        {demo.adminComments && (
+                          <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Admin Notes</p>
+                            <p className="text-sm text-slate-300 leading-relaxed">{demo.adminComments}</p>
+                          </div>
+                        )}
 
-                    {/* Details Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      {interest.requirement?.budget !== undefined && (
-                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
-                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Budget</p>
-                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                            <IndianRupee className="h-3.5 w-3.5 text-cyan-400" />
-                            {interest.requirement.budget.toLocaleString()}
-                          </p>
+                        {/* Timestamp */}
+                        <div className="flex items-center gap-x-4 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                            Requested: {new Date(demo.requestedOn).toLocaleDateString()} {new Date(demo.requestedOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
-                      )}
-                      {interest.requirement?.minExperience !== undefined && (
-                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
-                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Experience</p>
-                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                            <Briefcase className="h-3.5 w-3.5 text-orange-400" />
-                            {interest.requirement.minExperience}+ yrs
-                          </p>
-                        </div>
-                      )}
-                      {interest.requirement?.country && (
-                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
-                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Country</p>
-                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5 text-indigo-400" />
-                            {interest.requirement.country}
-                          </p>
-                        </div>
-                      )}
-                      {interest.requirement?.language && (
-                        <div className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
-                          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Language</p>
-                          <p className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                            <Languages className="h-3.5 w-3.5 text-green-400" />
-                            {interest.requirement.language}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Timestamps */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-2 border-t border-slate-700/50 text-xs text-slate-400">
-                      <span className="flex items-center gap-1">
-                        <Send className="h-3.5 w-3.5 text-indigo-400" />
-                        Applied: {new Date(interest.createdOn).toLocaleDateString()} {new Date(interest.createdOn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {interest.requirement?.createdOn && (
-                        <span className="flex items-center gap-1 ml-auto">
-                          <Clock className="h-3.5 w-3.5" />
-                          Posted: {new Date(interest.requirement.createdOn).toLocaleDateString()}
-                        </span>
-                      )}
-                      <Eye className="h-3.5 w-3.5 text-cyan-400 ml-2" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
       {/* Interest Detail Dialog */}
       <Dialog open={!!selectedInterest} onOpenChange={(open) => !open && setSelectedInterest(null)}>
