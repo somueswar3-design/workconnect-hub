@@ -1062,13 +1062,13 @@ const AdminDashboard = () => {
         <DialogContent className="sm:max-w-lg bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-slate-100">
-              <UserPlus className="h-5 w-5 text-cyan-400" /> Create Assignment
+              <UserPlus className="h-5 w-5 text-cyan-400" /> Create Project
             </DialogTitle>
             <DialogDescription className="text-slate-400">
-              Create a work assignment for <strong className="text-slate-200">{assignDemo?.projectTitle}</strong>. You can change the freelancer if needed.
+              Create a project for <strong className="text-slate-200">{assignDemo?.projectTitle}</strong>. Set financials, dates and assign a freelancer.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
+          <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
             {/* Project info */}
             <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/40">
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -1096,7 +1096,7 @@ const AdminDashboard = () => {
                   </SelectContent>
                 </Select>
               )}
-              <p className="text-[10px] text-slate-500 mt-1">Default: {assignDemo?.freelancerName}. You can change the freelancer for this assignment.</p>
+              <p className="text-[10px] text-slate-500 mt-1">Default: {assignDemo?.freelancerName}. You can change the freelancer for this project.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -1112,23 +1112,99 @@ const AdminDashboard = () => {
               </div>
             </div>
 
+            <Separator className="bg-slate-700/50" />
+
+            {/* Financial Details */}
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">💰 Financial Details</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm font-medium text-slate-300">Monthly Commitment (₹)</Label>
+                  <Input type="number" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" placeholder="e.g. 50000"
+                    value={assignForm.monthlyCommitment} onChange={e => setAssignForm(f => ({ ...f, monthlyCommitment: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-slate-300">Advance Amount (₹)</Label>
+                  <Input type="number" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" placeholder="e.g. 20000"
+                    value={assignForm.advanceAmount} onChange={e => setAssignForm(f => ({ ...f, advanceAmount: e.target.value }))} />
+                </div>
+              </div>
+            </div>
+
+            {/* Auto-calculated pending & next payment */}
+            {assignForm.monthlyCommitment && (
+              <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-amber-400">Monthly Commitment</span>
+                  <span className="font-semibold text-amber-300">₹{Number(assignForm.monthlyCommitment).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-emerald-400">Advance Paid</span>
+                  <span className="font-semibold text-emerald-300">₹{(Number(assignForm.advanceAmount) || 0).toLocaleString()}</span>
+                </div>
+                <Separator className="bg-amber-500/20" />
+                <div className="flex justify-between text-sm">
+                  <span className="text-red-400">Pending Amount</span>
+                  <span className="font-bold text-red-300">₹{(Number(assignForm.monthlyCommitment) - (Number(assignForm.advanceAmount) || 0)).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-blue-400">Next Payment Date</span>
+                  <span className="font-medium text-blue-300">
+                    {(() => {
+                      const start = assignForm.projectStartDate || new Date().toISOString().split('T')[0];
+                      const next = new Date(start);
+                      next.setDate(next.getDate() + 30);
+                      return next.toLocaleDateString();
+                    })()}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <Separator className="bg-slate-700/50" />
+
+            {/* Project Dates */}
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">📅 Project Dates</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm font-medium text-slate-300">Start Date</Label>
+                  <Input type="date" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"
+                    value={assignForm.projectStartDate} onChange={e => setAssignForm(f => ({ ...f, projectStartDate: e.target.value }))} />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-slate-300">End Date</Label>
+                  <Input type="date" className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"
+                    value={assignForm.projectEndDate} onChange={e => setAssignForm(f => ({ ...f, projectEndDate: e.target.value }))}
+                    min={assignForm.projectStartDate || undefined} />
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Project Notes</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={3} placeholder="Add project notes, scope details, special instructions..."
+                value={assignForm.projectNotes} onChange={e => setAssignForm(f => ({ ...f, projectNotes: e.target.value }))} />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-slate-300">Admin Comments</Label>
+              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={2} placeholder="Internal notes..."
+                value={assignForm.adminComments} onChange={e => setAssignForm(f => ({ ...f, adminComments: e.target.value }))} />
+            </div>
+
             {assignForm.hourlyRate && assignForm.totalHours && (
               <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
                 <p className="text-xs text-emerald-400">Estimated Project Amount: <strong>₹{(Number(assignForm.hourlyRate) * Number(assignForm.totalHours)).toLocaleString()}</strong></p>
               </div>
             )}
-
-            <div>
-              <Label className="text-sm font-medium text-slate-300">Admin Notes</Label>
-              <Textarea className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200" rows={2} placeholder="Any notes about this assignment..."
-                value={assignForm.adminComments} onChange={e => setAssignForm(f => ({ ...f, adminComments: e.target.value }))} />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAssignOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Cancel</Button>
             <Button onClick={handleCreateAssignment} disabled={assignSending} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
               {assignSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
-              {assignSending ? 'Creating...' : 'Create Assignment'}
+              {assignSending ? 'Creating...' : 'Create Project'}
             </Button>
           </DialogFooter>
         </DialogContent>
