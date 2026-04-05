@@ -280,8 +280,8 @@ const FreelancerOverview = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {interests.map((interest, idx) => (
-              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E]">
+              <motion.div key={interest.interestId} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} onClick={() => setSelectedInterest(interest)} className="cursor-pointer">
+                <Card className="border border-slate-700/50 shadow-sm hover:border-indigo-500/30 transition-all bg-[#0D1B2E] hover:shadow-indigo-500/10 hover:shadow-lg">
                   <CardContent className="p-5 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
