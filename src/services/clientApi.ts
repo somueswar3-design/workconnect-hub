@@ -171,6 +171,13 @@ export interface CreateAssignmentDto {
   totalHours?: number;
   status: string;
   adminComments?: string;
+  monthlyCommitment?: number;
+  advanceAmount?: number;
+  pendingAmount?: number;
+  nextPaymentDate?: string;
+  projectStartDate?: string;
+  projectEndDate?: string;
+  projectNotes?: string;
 }
 
 // POST create assignment from demo
