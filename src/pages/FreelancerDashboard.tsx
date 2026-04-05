@@ -82,6 +82,14 @@ const FreelancerOverview = () => {
           setInterests([]);
         })
         .finally(() => setInterestsLoading(false));
+
+      getFreelancerDemoRequests(userId)
+        .then(d => setDemoRequests(Array.isArray(d) ? d : []))
+        .catch(err => {
+          console.error('Failed to load demo requests:', err);
+          setDemoRequests([]);
+        })
+        .finally(() => setDemosLoading(false));
     };
     load();
   }, [user?.userId]);
