@@ -241,6 +241,16 @@ const AdminDashboard = () => {
     setAssignSending(true);
     try {
       const freelancerUserId = assignForm.selectedFreelancerId || assignDemo.freelancerId;
+      const monthlyCommitment = Number(assignForm.monthlyCommitment) || 0;
+      const advanceAmount = Number(assignForm.advanceAmount) || 0;
+      const pendingAmount = monthlyCommitment > 0 ? monthlyCommitment - advanceAmount : 0;
+
+      // Calculate next payment date (30 days from start or today)
+      const startDate = assignForm.projectStartDate || new Date().toISOString().split('T')[0];
+      const nextPayment = new Date(startDate);
+      nextPayment.setDate(nextPayment.getDate() + 30);
+      const nextPaymentDate = nextPayment.toISOString().split('T')[0];
+
       await createAssignment({
         demoId: assignDemo.demoId,
         clientUserId: assignDemo.clientUserId || 0,
@@ -250,6 +260,13 @@ const AdminDashboard = () => {
         totalHours: assignForm.totalHours ? Number(assignForm.totalHours) : undefined,
         status: 'active',
         adminComments: assignForm.adminComments,
+        monthlyCommitment,
+        advanceAmount,
+        pendingAmount,
+        nextPaymentDate,
+        projectStartDate: assignForm.projectStartDate || undefined,
+        projectEndDate: assignForm.projectEndDate || undefined,
+        projectNotes: assignForm.projectNotes || undefined,
       });
 
       // Also add to local assignments list
@@ -263,12 +280,20 @@ const AdminDashboard = () => {
         hourlyRate: `₹${assignForm.hourlyRate}`,
         totalHours: assignForm.totalHours ? Number(assignForm.totalHours) : 0,
         status: 'active',
-        assignedDate: new Date().toISOString().split('T')[0],
+        assignedDate: assignForm.projectStartDate || new Date().toISOString().split('T')[0],
         demoId: assignDemo.demoId,
+        totalAmount: monthlyCommitment,
+        monthlyCommitment,
+        advanceAmount,
+        pendingAmount,
+        nextPaymentDate,
+        projectStartDate: assignForm.projectStartDate || new Date().toISOString().split('T')[0],
+        projectEndDate: assignForm.projectEndDate,
+        projectNotes: assignForm.projectNotes,
       };
       setAssignments(prev => [...prev, newAssignment]);
 
-      toast({ title: '✅ Assignment Created!', description: `Project "${assignDemo.projectTitle}" has been assigned.` });
+      toast({ title: '✅ Project Created!', description: `Project "${assignDemo.projectTitle}" has been created with ₹${monthlyCommitment.toLocaleString()}/month commitment.` });
       setAssignOpen(false);
       loadDemoRequests();
     } catch {
