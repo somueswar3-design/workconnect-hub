@@ -1,35 +1,35 @@
 import { useState } from 'react';
 import {
-  Clock, CheckCircle2, XCircle, Loader2, FileText, MessageSquare, Calendar, ChevronDown
+  Clock, CheckCircle2, XCircle, Loader2, FileText, MessageSquare, Calendar, Lock, AlertCircle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Timesheet } from '@/types/timesheet';
 import { format, parseISO, isWeekend } from 'date-fns';
 
-// This component receives timesheets from parent or uses shared state
-// For now using local mock — will be replaced with API
-
 const ClientTimesheets = () => {
-  const { toast } = useToast();
-  
-  // Mock submitted timesheets for demo
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [selectedTimesheet, setSelectedTimesheet] = useState<Timesheet | null>(null);
   const [clientComments, setClientComments] = useState('');
+  // Per-entry (date-wise) comments
+  const [entryComments, setEntryComments] = useState<Record<string, string>>({});
   const [processing, setProcessing] = useState(false);
 
   const openReview = (ts: Timesheet) => {
     setSelectedTimesheet(ts);
     setClientComments(ts.clientComments || '');
+    // Initialize per-entry comments
+    const comments: Record<string, string> = {};
+    ts.entries.forEach(e => { comments[e.date] = ''; });
+    setEntryComments(comments);
     setReviewOpen(true);
   };
 
@@ -40,7 +40,10 @@ const ClientTimesheets = () => {
       setTimesheets(prev => prev.map(t => t.id === selectedTimesheet.id ? {
         ...t, status: 'approved' as const, clientComments, reviewedOn: new Date().toISOString()
       } : t));
-      toast({ title: '✅ Timesheet Approved', description: `${selectedTimesheet.freelancerName}'s timesheet for ${format(new Date(selectedTimesheet.year, selectedTimesheet.month - 1), 'MMM yyyy')} approved.` });
+      toast.success(`Timesheet Approved!`, {
+        description: `${selectedTimesheet.freelancerName}'s timesheet for ${format(new Date(selectedTimesheet.year, selectedTimesheet.month - 1), 'MMM yyyy')} has been approved. Billing cycle will begin.`,
+        duration: 5000,
+      });
       setReviewOpen(false);
       setProcessing(false);
     }, 600);
@@ -49,15 +52,25 @@ const ClientTimesheets = () => {
   const handleReject = () => {
     if (!selectedTimesheet) return;
     if (!clientComments.trim()) {
-      toast({ title: 'Comments required', description: 'Please add comments explaining the rejection.', variant: 'destructive' });
+      toast.error('Please add comments explaining the rejection so the freelancer can fix and resubmit.');
       return;
     }
     setProcessing(true);
     setTimeout(() => {
+      // Collect date-wise comments into overall comments
+      const dateComments = Object.entries(entryComments)
+        .filter(([_, c]) => c.trim())
+        .map(([date, c]) => `${format(parseISO(date), 'dd MMM')}: ${c}`)
+        .join('\n');
+      const fullComments = dateComments ? `${clientComments}\n\n--- Date-wise issues ---\n${dateComments}` : clientComments;
+
       setTimesheets(prev => prev.map(t => t.id === selectedTimesheet.id ? {
-        ...t, status: 'rejected' as const, clientComments, reviewedOn: new Date().toISOString()
+        ...t, status: 'rejected' as const, clientComments: fullComments, reviewedOn: new Date().toISOString()
       } : t));
-      toast({ title: '❌ Timesheet Rejected', description: 'Freelancer will be notified with your comments.' });
+      toast.info('Timesheet Rejected', {
+        description: 'Freelancer has been notified with your comments and can resubmit.',
+        duration: 5000,
+      });
       setReviewOpen(false);
       setProcessing(false);
     }, 600);
@@ -74,6 +87,7 @@ const ClientTimesheets = () => {
 
   const pending = timesheets.filter(t => t.status === 'submitted');
   const reviewed = timesheets.filter(t => t.status === 'approved' || t.status === 'rejected');
+  const isReviewable = selectedTimesheet?.status === 'submitted';
 
   return (
     <div className="p-6 space-y-6">
@@ -84,7 +98,7 @@ const ClientTimesheets = () => {
         <p className="text-sm text-slate-400 mt-1">Review and approve timesheets submitted by your assigned freelancers</p>
       </div>
 
-      {/* Pending timesheets */}
+      {/* Pending */}
       {pending.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider">⏳ Pending Approval ({pending.length})</h3>
@@ -111,7 +125,7 @@ const ClientTimesheets = () => {
         </div>
       )}
 
-      {/* Reviewed timesheets */}
+      {/* Reviewed */}
       {reviewed.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">📋 Reviewed ({reviewed.length})</h3>
@@ -124,7 +138,10 @@ const ClientTimesheets = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-slate-300">{ts.totalHours}h</span>
-                  <Badge className={statusBadge(ts.status)}>{ts.status}</Badge>
+                  <Badge className={statusBadge(ts.status)}>
+                    {ts.status === 'approved' && <Lock className="h-3 w-3 mr-1 inline" />}
+                    {ts.status}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -151,10 +168,19 @@ const ClientTimesheets = () => {
             </DialogTitle>
             <DialogDescription className="text-slate-400">
               {selectedTimesheet?.freelancerName} — {selectedTimesheet?.projectTitle} — {selectedTimesheet ? format(new Date(selectedTimesheet.year, selectedTimesheet.month - 1), 'MMMM yyyy') : ''}
+              {selectedTimesheet?.status === 'approved' && (
+                <Badge className="ml-2 bg-emerald-500/10 text-emerald-400"><Lock className="h-3 w-3 mr-1 inline" />Approved — Locked</Badge>
+              )}
             </DialogDescription>
           </DialogHeader>
 
-          {/* Summary */}
+          {selectedTimesheet?.status === 'approved' && (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-sm">
+              <Lock className="h-4 w-4 shrink-0" />
+              This timesheet is approved. The freelancer cannot modify it anymore.
+            </div>
+          )}
+
           {selectedTimesheet && (
             <>
               <div className="flex items-center gap-4 py-2">
@@ -169,15 +195,15 @@ const ClientTimesheets = () => {
                 <Badge className={`text-xs ${statusBadge(selectedTimesheet.status)}`}>{selectedTimesheet.status}</Badge>
               </div>
 
-              {/* Date-wise breakdown */}
+              {/* Date-wise breakdown with per-entry comments */}
               <div className="flex-1 overflow-y-auto border border-slate-700/50 rounded-lg">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-slate-700/50 hover:bg-transparent">
                       <TableHead className="text-slate-400">Date</TableHead>
                       <TableHead className="text-slate-400">Day</TableHead>
-                      <TableHead className="text-slate-400">Hours</TableHead>
-                      <TableHead className="text-slate-400">Notes</TableHead>
+                      <TableHead className="text-slate-400 w-20">Hours</TableHead>
+                      {isReviewable && <TableHead className="text-slate-400">Remarks / Issues</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -189,7 +215,16 @@ const ClientTimesheets = () => {
                           <TableCell className="text-slate-200 text-xs font-medium">{format(d, 'dd MMM yyyy')}</TableCell>
                           <TableCell className={`text-xs ${weekend ? 'text-amber-400' : 'text-slate-400'}`}>{format(d, 'EEEE')}</TableCell>
                           <TableCell className="text-slate-100 font-semibold">{entry.hours}h</TableCell>
-                          <TableCell className="text-slate-400 text-xs">{entry.notes || '-'}</TableCell>
+                          {isReviewable && (
+                            <TableCell>
+                              <Input
+                                placeholder="Add remark for this date..."
+                                value={entryComments[entry.date] || ''}
+                                onChange={e => setEntryComments(prev => ({ ...prev, [entry.date]: e.target.value }))}
+                                className="h-7 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 placeholder:text-slate-600"
+                              />
+                            </TableCell>
+                          )}
                         </TableRow>
                       );
                     })}
@@ -205,15 +240,15 @@ const ClientTimesheets = () => {
                 </div>
               )}
 
-              {/* Client comments */}
+              {/* Overall client comments */}
               <div>
                 <Label className="text-sm font-medium text-slate-300 flex items-center gap-1.5">
-                  <MessageSquare className="h-3.5 w-3.5" /> Your Comments
+                  <MessageSquare className="h-3.5 w-3.5" /> Overall Comments
                 </Label>
                 <Textarea
                   className="mt-1 bg-[#0A1628] border-slate-700/50 text-slate-200"
                   rows={3}
-                  placeholder="Add comments, feedback, or rejection reason..."
+                  placeholder="Add overall comments, feedback, or issues..."
                   value={clientComments}
                   onChange={e => setClientComments(e.target.value)}
                   disabled={selectedTimesheet.status === 'approved'}
@@ -224,15 +259,15 @@ const ClientTimesheets = () => {
 
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setReviewOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Close</Button>
-            {selectedTimesheet?.status === 'submitted' && (
+            {isReviewable && (
               <>
                 <Button variant="outline" onClick={handleReject} disabled={processing} className="gap-1.5 text-red-400 border-red-500/20 hover:bg-red-500/10">
                   {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-                  Reject
+                  Reject & Send Back
                 </Button>
                 <Button onClick={handleApprove} disabled={processing} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700">
                   {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                  Approve
+                  Approve & Start Billing
                 </Button>
               </>
             )}
