@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Clock, Calendar, Send, Save, ChevronLeft, ChevronRight, 
-  Loader2, CheckCircle2, XCircle, FileText, Briefcase, Filter, Lock, AlertCircle
+  Loader2, CheckCircle2, XCircle, FileText, Briefcase, Filter, Lock, AlertCircle, Plus
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,24 +15,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarWidget } from '@/components/ui/calendar';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { getAssignments, AssignmentDto } from '@/services/freelancerApi';
 import { Timesheet, TimesheetEntry } from '@/types/timesheet';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend, parseISO, isBefore, isAfter, isEqual } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const FreelancerTimesheets = () => {
   const { user } = useAuth();
-  const [assignments, setAssignments] = useState<AssignmentDto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedAssignment, setSelectedAssignment] = useState<AssignmentDto | null>(null);
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
 
-  // Timesheet editor state
-  const [editorOpen, setEditorOpen] = useState(false);
+  // Current month/year for the editor
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [entries, setEntries] = useState<TimesheetEntry[]>([]);
   const [freelancerNotes, setFreelancerNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingTimesheetId, setEditingTimesheetId] = useState<string | null>(null);
 
   // Bulk fill state
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -41,23 +39,9 @@ const FreelancerTimesheets = () => {
   const [bulkHours, setBulkHours] = useState('8');
   const [bulkSkipWeekends, setBulkSkipWeekends] = useState(true);
 
-  // From/To date filter for view
+  // From/To date filter
   const [filterFromDate, setFilterFromDate] = useState<Date | undefined>();
   const [filterToDate, setFilterToDate] = useState<Date | undefined>();
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const a = await getAssignments(user?.userId || '');
-        setAssignments(Array.isArray(a) ? a.filter(x => x.projectId !== 0) : []);
-      } catch {
-        setAssignments([]);
-      }
-      setLoading(false);
-    };
-    load();
-  }, [user?.userId]);
 
   const daysInMonth = useMemo(() => {
     const start = startOfMonth(new Date(currentYear, currentMonth - 1));
@@ -65,7 +49,6 @@ const FreelancerTimesheets = () => {
     return eachDayOfInterval({ start, end });
   }, [currentMonth, currentYear]);
 
-  // Filtered days based on from/to date
   const filteredDays = useMemo(() => {
     return daysInMonth.filter(day => {
       if (filterFromDate && isBefore(day, filterFromDate)) return false;
@@ -74,33 +57,40 @@ const FreelancerTimesheets = () => {
     });
   }, [daysInMonth, filterFromDate, filterToDate]);
 
-  const openTimesheetEditor = (assignment: AssignmentDto) => {
-    setSelectedAssignment(assignment);
+  const openNewTimesheet = () => {
+    setEditingTimesheetId(null);
     setFreelancerNotes('');
     setFilterFromDate(undefined);
     setFilterToDate(undefined);
-    
-    const existing = timesheets.find(
-      t => t.assignmentId === assignment.projectId && t.month === currentMonth && t.year === currentYear
-    );
-    
-    if (existing) {
-      setEntries([...existing.entries]);
-      setFreelancerNotes(existing.freelancerNotes || '');
-    } else {
-      setEntries(daysInMonth.map(d => ({
-        date: format(d, 'yyyy-MM-dd'),
-        hours: 0,
-        notes: '',
-      })));
-    }
+    setEntries(daysInMonth.map(d => ({
+      date: format(d, 'yyyy-MM-dd'),
+      hours: 0,
+      notes: '',
+    })));
+    setEditorOpen(true);
+  };
+
+  const openExistingTimesheet = (ts: Timesheet) => {
+    setEditingTimesheetId(ts.id);
+    setCurrentMonth(ts.month);
+    setCurrentYear(ts.year);
+    setFreelancerNotes(ts.freelancerNotes || '');
+    setFilterFromDate(undefined);
+    setFilterToDate(undefined);
+
+    const start = startOfMonth(new Date(ts.year, ts.month - 1));
+    const end = endOfMonth(start);
+    const allDays = eachDayOfInterval({ start, end });
+    setEntries(allDays.map(d => {
+      const dateStr = format(d, 'yyyy-MM-dd');
+      const existing = ts.entries.find(e => e.date === dateStr);
+      return existing || { date: dateStr, hours: 0, notes: '' };
+    }));
     setEditorOpen(true);
   };
 
   const updateEntry = (date: string, value: string) => {
-    // Only allow numbers (integers and decimals)
     const cleaned = value.replace(/[^0-9.]/g, '');
-    // Prevent multiple dots
     const parts = cleaned.split('.');
     const sanitized = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : cleaned;
     const num = sanitized === '' ? 0 : Math.min(24, Math.max(0, parseFloat(sanitized) || 0));
@@ -117,7 +107,6 @@ const FreelancerTimesheets = () => {
       return;
     }
     const hours = Math.min(24, Math.max(0, Number(bulkHours) || 8));
-
     setEntries(prev => prev.map(e => {
       const d = parseISO(e.date);
       if ((isAfter(d, bulkFromDate) || isEqual(d, bulkFromDate)) && (isBefore(d, bulkToDate) || isEqual(d, bulkToDate))) {
@@ -132,63 +121,47 @@ const FreelancerTimesheets = () => {
 
   const totalHours = entries.reduce((sum, e) => sum + (e.hours || 0), 0);
 
-  const existingTimesheet = selectedAssignment ? timesheets.find(
-    t => t.assignmentId === selectedAssignment.projectId && t.month === currentMonth && t.year === currentYear
-  ) : null;
-
+  const existingTimesheet = editingTimesheetId ? timesheets.find(t => t.id === editingTimesheetId) : null;
   const isLocked = existingTimesheet?.status === 'approved';
   const isSubmitted = existingTimesheet?.status === 'submitted';
   const isEditable = !isLocked && !isSubmitted;
   const isRejected = existingTimesheet?.status === 'rejected';
 
+  const buildTimesheet = (status: 'draft' | 'submitted'): Timesheet => ({
+    id: editingTimesheetId || `ts-${Date.now()}`,
+    assignmentId: 0,
+    freelancerUserId: parseInt(user?.userId || '0'),
+    freelancerName: user?.fullName || 'Freelancer',
+    clientUserId: 0,
+    clientName: '',
+    projectTitle: `Timesheet - ${format(new Date(currentYear, currentMonth - 1), 'MMMM yyyy')}`,
+    month: currentMonth,
+    year: currentYear,
+    entries: entries.filter(e => e.hours > 0),
+    totalHours,
+    status,
+    submittedOn: status === 'submitted' ? new Date().toISOString() : undefined,
+    freelancerNotes,
+  });
+
   const handleSaveDraft = () => {
-    if (!selectedAssignment) return;
-    const ts: Timesheet = {
-      id: existingTimesheet?.id || `ts-${Date.now()}`,
-      assignmentId: selectedAssignment.projectId,
-      freelancerUserId: parseInt(user?.userId || '0'),
-      freelancerName: user?.fullName || 'Freelancer',
-      clientUserId: selectedAssignment.clientId,
-      clientName: selectedAssignment.clientName,
-      projectTitle: selectedAssignment.projectName,
-      month: currentMonth,
-      year: currentYear,
-      entries: entries.filter(e => e.hours > 0),
-      totalHours,
-      status: 'draft',
-      freelancerNotes,
-    };
+    const ts = buildTimesheet('draft');
     setTimesheets(prev => {
       const filtered = prev.filter(t => t.id !== ts.id);
       return [...filtered, ts];
     });
+    setEditingTimesheetId(ts.id);
     toast.success('Draft saved successfully');
   };
 
   const handleSubmitTimesheet = () => {
-    if (!selectedAssignment) return;
     if (totalHours === 0) {
       toast.error('Please fill in hours before submitting');
       return;
     }
     setSubmitting(true);
     setTimeout(() => {
-      const ts: Timesheet = {
-        id: existingTimesheet?.id || `ts-${Date.now()}`,
-        assignmentId: selectedAssignment.projectId,
-        freelancerUserId: parseInt(user?.userId || '0'),
-        freelancerName: user?.fullName || 'Freelancer',
-        clientUserId: selectedAssignment.clientId,
-        clientName: selectedAssignment.clientName,
-        projectTitle: selectedAssignment.projectName,
-        month: currentMonth,
-        year: currentYear,
-        entries: entries.filter(e => e.hours > 0),
-        totalHours,
-        status: 'submitted',
-        submittedOn: new Date().toISOString(),
-        freelancerNotes,
-      };
+      const ts = buildTimesheet('submitted');
       setTimesheets(prev => {
         const filtered = prev.filter(t => t.id !== ts.id);
         return [...filtered, ts];
@@ -209,10 +182,11 @@ const FreelancerTimesheets = () => {
     if (m < 1) { m = 12; y--; }
     setCurrentMonth(m);
     setCurrentYear(y);
-  };
-
-  const getTimesheetForAssignment = (assignmentId: number) => {
-    return timesheets.filter(t => t.assignmentId === assignmentId);
+    // Regenerate entries for new month
+    const start = startOfMonth(new Date(y, m - 1));
+    const end = endOfMonth(start);
+    const allDays = eachDayOfInterval({ start, end });
+    setEntries(allDays.map(d => ({ date: format(d, 'yyyy-MM-dd'), hours: 0, notes: '' })));
   };
 
   const statusBadge = (status: string) => {
@@ -225,92 +199,70 @@ const FreelancerTimesheets = () => {
     return map[status] || '';
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-          <Clock className="h-5 w-5 text-cyan-400" /> My Timesheets
-        </h2>
-        <p className="text-sm text-slate-400 mt-1">Submit monthly timesheets for your assignments</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <Clock className="h-5 w-5 text-cyan-400" /> My Timesheets
+          </h2>
+          <p className="text-sm text-slate-400 mt-1">Fill hours by date and submit for client approval</p>
+        </div>
+        <Button onClick={openNewTimesheet} className="gap-1.5 bg-cyan-600 hover:bg-cyan-700">
+          <Plus className="h-4 w-4" /> New Timesheet
+        </Button>
       </div>
 
-      {assignments.length === 0 ? (
-        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
-          <CardContent className="py-16 text-center text-slate-400">
-            <Briefcase className="h-10 w-10 mx-auto mb-3 opacity-40" />
-            <p className="font-medium">No assignments yet</p>
-            <p className="text-sm text-slate-500 mt-1">Once you're assigned to a project, you can submit timesheets here.</p>
-          </CardContent>
-        </Card>
-      ) : (
+      {timesheets.length > 0 && (
         <div className="space-y-3">
-          {assignments.map(a => {
-            const sheets = getTimesheetForAssignment(a.projectId);
-            return (
-              <Card key={a.projectId} className="border border-slate-700/50 bg-[#0D1B2E] hover:border-slate-600/50 transition-all">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-100">{a.projectName}</h3>
-                      <p className="text-sm text-slate-400 mt-0.5">Client: {a.clientName}</p>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
-                        {a.startDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(a.startDate).toLocaleDateString()}</span>}
-                        {a.endDate && <span>→ {new Date(a.endDate).toLocaleDateString()}</span>}
-                        <Badge className={a.status?.toLowerCase() === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400'}>{a.status}</Badge>
-                      </div>
-                    </div>
-                    <Button size="sm" className="gap-1.5 bg-cyan-600 hover:bg-cyan-700 shrink-0" onClick={() => openTimesheetEditor(a)}>
-                      <FileText className="h-3.5 w-3.5" /> Submit Timesheet
-                    </Button>
+          <p className="text-xs text-slate-500 uppercase tracking-wider">Your Timesheets</p>
+          {timesheets.map(ts => (
+            <Card key={ts.id} className="border border-slate-700/50 bg-[#0D1B2E] hover:border-slate-600/50 transition-all cursor-pointer" onClick={() => openExistingTimesheet(ts)}>
+              <CardContent className="p-4 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-cyan-400" />
                   </div>
-
-                  {sheets.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-slate-700/40">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Submitted Timesheets</p>
-                      <div className="flex flex-wrap gap-2">
-                        {sheets.map(ts => (
-                          <div key={ts.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/30 text-xs">
-                            <span className="text-slate-300">{format(new Date(ts.year, ts.month - 1), 'MMM yyyy')}</span>
-                            <span className="text-slate-400">{ts.totalHours}h</span>
-                            <Badge className={`text-[10px] px-1.5 ${statusBadge(ts.status)}`}>{ts.status}</Badge>
-                            {ts.status === 'approved' && <Lock className="h-3 w-3 text-emerald-400" />}
-                            {ts.clientComments && <span className="text-amber-400" title={ts.clientComments}>💬</span>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
+                  <div>
+                    <p className="font-medium text-slate-200">{format(new Date(ts.year, ts.month - 1), 'MMMM yyyy')}</p>
+                    <p className="text-xs text-slate-400">{ts.totalHours}h total • {ts.entries.length} days logged</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge className={`text-xs ${statusBadge(ts.status)}`}>{ts.status}</Badge>
+                  {ts.status === 'approved' && <Lock className="h-4 w-4 text-emerald-400" />}
+                  {ts.clientComments && <span className="text-amber-400" title={ts.clientComments}>💬</span>}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
 
-      {/* ═══ TIMESHEET EDITOR DIALOG ═══ */}
+      {timesheets.length === 0 && (
+        <Card className="border border-slate-700/50 bg-[#0D1B2E]">
+          <CardContent className="py-16 text-center text-slate-400">
+            <Calendar className="h-10 w-10 mx-auto mb-3 opacity-40" />
+            <p className="font-medium">No timesheets yet</p>
+            <p className="text-sm text-slate-500 mt-1">Click "New Timesheet" to start filling hours for the current month.</p>
+          </CardContent>
+        </Card>
+      )}
+
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent className="sm:max-w-4xl bg-[#0D1B2E] border-slate-700/50 text-slate-100 max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-slate-100">
-              <FileText className="h-5 w-5 text-cyan-400" /> Timesheet — {selectedAssignment?.projectName}
+              <FileText className="h-5 w-5 text-cyan-400" /> Timesheet — {format(new Date(currentYear, currentMonth - 1), 'MMMM yyyy')}
             </DialogTitle>
             <DialogDescription className="text-slate-400">
-              Client: {selectedAssignment?.clientName}
+              Fill hours for each date. Only numbers allowed (max 24h per day).
               {isSubmitted && <Badge className="ml-2 bg-amber-500/10 text-amber-400">Pending Approval</Badge>}
               {isLocked && <Badge className="ml-2 bg-emerald-500/10 text-emerald-400"><Lock className="h-3 w-3 mr-1 inline" />Approved — Locked</Badge>}
               {isRejected && <Badge className="ml-2 bg-red-500/10 text-red-400">Rejected — Please Resubmit</Badge>}
             </DialogDescription>
           </DialogHeader>
 
-          {/* Locked notice */}
           {isLocked && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-sm">
               <Lock className="h-4 w-4 shrink-0" />
@@ -325,21 +277,19 @@ const FreelancerTimesheets = () => {
             </div>
           )}
 
-          {/* Month navigation + From/To filter + Bulk fill */}
           <div className="flex flex-wrap items-center justify-between gap-3 py-2">
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(-1)}>
+              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(-1)} disabled={!isEditable}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm font-semibold text-slate-200 w-32 text-center">
                 {format(new Date(currentYear, currentMonth - 1), 'MMMM yyyy')}
               </span>
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(1)}>
+              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(1)} disabled={!isEditable}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* From/To date filter with calendar pickers */}
             <div className="flex items-center gap-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -354,7 +304,7 @@ const FreelancerTimesheets = () => {
                     selected={filterFromDate}
                     onSelect={setFilterFromDate}
                     defaultMonth={new Date(currentYear, currentMonth - 1)}
-                    className="text-slate-100"
+                    className={cn("text-slate-100 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
@@ -371,7 +321,7 @@ const FreelancerTimesheets = () => {
                     selected={filterToDate}
                     onSelect={setFilterToDate}
                     defaultMonth={new Date(currentYear, currentMonth - 1)}
-                    className="text-slate-100"
+                    className={cn("text-slate-100 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
@@ -396,7 +346,6 @@ const FreelancerTimesheets = () => {
             </div>
           </div>
 
-          {/* Timesheet Grid */}
           <div className="flex-1 overflow-y-auto border border-slate-700/50 rounded-lg">
             <Table>
               <TableHeader>
@@ -432,7 +381,10 @@ const FreelancerTimesheets = () => {
                             className="h-7 w-20 text-xs bg-[#0A1628] border-slate-700/50 text-slate-200 text-center"
                           />
                         ) : (
-                          <span className="text-sm text-slate-200 font-medium">{entry.hours || 0}h</span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm text-slate-200 font-medium">{entry.hours || 0}h</span>
+                            {isLocked && <Lock className="h-3 w-3 text-emerald-400" />}
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -442,7 +394,6 @@ const FreelancerTimesheets = () => {
             </Table>
           </div>
 
-          {/* Client comments if rejected */}
           {isRejected && existingTimesheet?.clientComments && (
             <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20">
               <p className="text-[10px] text-red-400 uppercase tracking-wider mb-1">Client Feedback — Please fix and resubmit</p>
@@ -450,7 +401,6 @@ const FreelancerTimesheets = () => {
             </div>
           )}
 
-          {/* Freelancer notes */}
           <div>
             <Label className="text-sm font-medium text-slate-300">Notes</Label>
             <Textarea
@@ -480,12 +430,11 @@ const FreelancerTimesheets = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ═══ BULK FILL DIALOG ═══ */}
       <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
         <DialogContent className="sm:max-w-sm bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
             <DialogTitle className="text-slate-100">Bulk Fill Hours</DialogTitle>
-            <DialogDescription className="text-slate-400">Select from/to dates using calendar and apply hours.</DialogDescription>
+            <DialogDescription className="text-slate-400">Select date range and apply hours.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-3">
@@ -499,7 +448,7 @@ const FreelancerTimesheets = () => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-[#0D1B2E] border-slate-700/50">
-                    <CalendarWidget mode="single" selected={bulkFromDate} onSelect={setBulkFromDate} defaultMonth={new Date(currentYear, currentMonth - 1)} />
+                    <CalendarWidget mode="single" selected={bulkFromDate} onSelect={setBulkFromDate} defaultMonth={new Date(currentYear, currentMonth - 1)} className="pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -513,7 +462,7 @@ const FreelancerTimesheets = () => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-[#0D1B2E] border-slate-700/50">
-                    <CalendarWidget mode="single" selected={bulkToDate} onSelect={setBulkToDate} defaultMonth={new Date(currentYear, currentMonth - 1)} />
+                    <CalendarWidget mode="single" selected={bulkToDate} onSelect={setBulkToDate} defaultMonth={new Date(currentYear, currentMonth - 1)} className="pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
               </div>
