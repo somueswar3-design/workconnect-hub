@@ -256,7 +256,7 @@ const Home = () => {
       {/* ══════════════════ WHO IS IT FOR ══════════════════ */}
       <section className="py-24 bg-[#0B1120]">
         <div className="container mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} className="text-center mb-14">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4">WHO IS IT FOR?</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white italic">One platform, every role</h2>
           </motion.div>
@@ -266,7 +266,7 @@ const Home = () => {
               { title: 'Client', desc: 'Businesses and individuals needing verified IT professionals for projects', icon: Building2, color: 'bg-cyan-800/60' },
               { title: 'HR / Recruiter', desc: 'HR teams and recruiting agencies sourcing IT talent with full workflow management', icon: Users, color: 'bg-violet-800/60' },
             ].map((item, i) => (
-              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ delay: i * 0.1 }}>
                 <div className="bg-[#111827] border border-slate-800 rounded-2xl p-8 text-center hover:border-slate-700 transition-all h-full">
                   <div className={`h-14 w-14 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-5`}>
                     <item.icon className="h-7 w-7 text-white/80" />
@@ -283,7 +283,7 @@ const Home = () => {
       {/* ══════════════════ HOW IT WORKS ══════════════════ */}
       <section className="py-24 bg-[#0B1120]">
         <div className="container mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} className="text-center mb-14">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4">HOW IT WORKS</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white italic">Simple. Transparent. Fast.</h2>
           </motion.div>
@@ -293,7 +293,7 @@ const Home = () => {
               { num: '02', title: 'Interview & agree', desc: 'Book time slots, conduct interviews, agree on rate — all managed through the platform.' },
               { num: '03', title: 'Work & get paid', desc: 'Weekly timesheets, approval workflows, auto-invoicing with 10% platform fee. Transparent payments.' },
             ].map((step, i) => (
-              <motion.div key={step.num} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+              <motion.div key={step.num} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ delay: i * 0.1 }}>
                 <div className="bg-[#111827] border border-slate-800 rounded-2xl p-8 hover:border-slate-700 transition-all h-full">
                   <p className="text-5xl font-black text-orange-500/30 mb-4">{step.num}</p>
                   <h3 className="text-lg font-bold text-white mb-3">{step.title}</h3>
@@ -336,7 +336,7 @@ const Home = () => {
       {!isFreelancer && (
         <section ref={freelancerSectionRef} className="py-24 bg-[#0B1120]">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} className="mb-10">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-3">BROWSE TALENT</p>
@@ -426,7 +426,7 @@ const Home = () => {
                       const initials = f.fullName ? f.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??';
                       const isAvailable = idx % 4 !== 3;
                       return (
-                        <motion.div key={f.freelancerId || f.id || idx} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(idx * 0.05, 0.3) }}>
+                        <motion.div key={f.freelancerId || f.id || idx} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ delay: Math.min(idx * 0.05, 0.3) }}>
                           <div className="bg-[#111827] border border-slate-800 rounded-2xl p-5 hover:border-slate-600 transition-all h-full group cursor-pointer" onClick={() => handleDemoClick(f)}>
                             <div className="flex items-center gap-3 mb-3">
                               <div className={`h-11 w-11 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
@@ -489,7 +489,7 @@ const Home = () => {
       {!isClient && (
         <section ref={worksSectionRef} className="py-24 bg-[#0B1120]">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} className="mb-10">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-3">OPEN WORK</p>
@@ -516,7 +516,7 @@ const Home = () => {
                   const IconComp = icons[idx % icons.length];
                   const iconBgs = ['bg-slate-700', 'bg-emerald-700', 'bg-blue-700', 'bg-violet-700', 'bg-cyan-700', 'bg-rose-700'];
                   return (
-                    <motion.div key={req.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
+                    <motion.div key={req.id} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ delay: idx * 0.05 }}>
                       <div className="bg-[#111827] border border-slate-800 rounded-2xl p-5 flex items-center gap-5 hover:border-slate-600 transition-all group">
                         <div className={`h-12 w-12 rounded-xl ${iconBgs[idx % iconBgs.length]} flex items-center justify-center shrink-0`}>
                           <IconComp className="h-6 w-6 text-white/70" />
@@ -593,7 +593,7 @@ const Home = () => {
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 50%)' }} />
           <div className="relative container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
-              <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.1 }}>
                 <p className="text-white/70 font-bold text-sm tracking-widest uppercase mb-4">EARN MONEY</p>
                 <h2 className="text-4xl sm:text-5xl font-black text-white mb-5 leading-tight">Become a Work Support Professional</h2>
                 <p className="text-white/80 text-lg mb-8 leading-relaxed">
@@ -619,7 +619,7 @@ const Home = () => {
                   </Button>
                 </div>
               </motion.div>
-              <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="hidden md:grid grid-cols-2 gap-5">
+              <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.1 }} className="hidden md:grid grid-cols-2 gap-5">
                 {[
                   { label: 'Avg. Earnings', value: '₹50K+/mo', icon: DollarSign },
                   { label: 'Active Projects', value: '1,200+', icon: Briefcase },
@@ -641,7 +641,7 @@ const Home = () => {
       {/* ══════════════════ TESTIMONIALS ══════════════════ */}
       <section className="py-24 bg-[#0B1120]">
         <div className="container mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} className="text-center mb-12">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-3">TESTIMONIALS</p>
             <h2 className="text-3xl sm:text-4xl font-black text-white italic">What professionals say</h2>
           </motion.div>
@@ -652,7 +652,7 @@ const Home = () => {
               { name: 'Suresh R.', role: 'Data Scientist', location: 'Chennai', text: 'The matching system is incredible. I only get projects that match my skills perfectly.', avatar: 'S' },
               { name: 'Lakshmi S.', role: 'React Developer', location: 'Vizag', text: 'Great platform for IT professionals. Tracking engagements is seamless and intuitive.', avatar: 'L' },
             ].map((t, i) => (
-              <motion.div key={t.name} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+              <motion.div key={t.name} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ delay: i * 0.08 }}>
                 <div className="bg-[#111827] border border-slate-800 rounded-2xl p-6 h-full hover:border-slate-700 transition-all">
                   <div className="flex gap-0.5 mb-4">
                     {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
@@ -676,7 +676,7 @@ const Home = () => {
       {!isAuthenticated && (
         <section className="py-20 bg-[#111827] border-t border-slate-800">
           <div className="container mx-auto px-4 text-center">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }}>
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">Ready to Get Started?</h2>
               <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">Join WorkSupport360 today and connect with the right opportunities.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
