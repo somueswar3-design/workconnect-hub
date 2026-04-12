@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, UserCheck, Clock, DollarSign, CheckCircle2, XCircle, ChevronDown,
   LogOut, Briefcase, Search, Filter, ArrowRight, Video, Send, Loader2,
   Calendar, Globe, MessageSquare, ExternalLink, Edit, CreditCard, AlertCircle,
-  RotateCcw, FileText, PlayCircle, ThumbsUp, ThumbsDown, UserPlus, Eye
+  RotateCcw, FileText, PlayCircle, ThumbsUp, ThumbsDown, UserPlus, Eye, ClipboardList
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,7 @@ import {
   DemoRequestResponse, UpdateDemoRequestDto, CreateAssignmentDto,
   getFreelancerProfiles, FreelancerProfileDto
 } from '@/services/clientApi';
+import AuditLogsInline from '@/pages/AuditLogs';
 
 // ─── Types ───
 interface Assignment {
@@ -607,6 +608,9 @@ const AdminDashboard = () => {
               <CreditCard className="h-4 w-4" /> Billing & Follow-up
               <Badge variant="outline" className="ml-1 h-5 text-xs border-slate-700/50 text-slate-400">{billing.length}</Badge>
             </TabsTrigger>
+            <TabsTrigger value="audit-logs" className="gap-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-300 text-slate-400">
+              <ClipboardList className="h-4 w-4" /> Audit Logs
+            </TabsTrigger>
           </TabsList>
 
           {/* ═══════════ DEMO REQUESTS TAB ═══════════ */}
@@ -899,6 +903,11 @@ const AdminDashboard = () => {
                 </div>
               </>
             )}
+          </TabsContent>
+
+          {/* ═══════════ AUDIT LOGS TAB ═══════════ */}
+          <TabsContent value="audit-logs">
+            <AuditLogsInline />
           </TabsContent>
         </Tabs>
       </main>

@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard, Home, PlusCircle, Clock
+  User, Settings, Power, PowerOff, Languages, Camera, Lock, Briefcase, Users, LogOut, ChevronRight, LayoutDashboard, Home, PlusCircle, Clock, Receipt, Building2, DollarSign, ClipboardList, CreditCard
 } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { cn } from '@/lib/utils';
@@ -61,6 +61,9 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
     { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer' },
     { icon: Briefcase, label: 'My Requests', path: '/freelancer/my-requests' },
     { icon: Clock, label: 'Timesheets', path: '/freelancer/timesheets' },
+    { icon: DollarSign, label: 'Quotations', path: '/freelancer/payments' },
+    { icon: Receipt, label: 'Invoices', path: '/freelancer/invoices' },
+    { icon: Building2, label: 'Bank Details', path: '/freelancer/bank-details' },
     { icon: User, label: 'My Profile', path: '/freelancer-profile' },
     { icon: Users, label: 'Engaged Clients', path: '/freelancer/clients' },
   ];
@@ -70,6 +73,7 @@ const DashboardSidebar = ({ userType, isActive = true, onStatusChange }: Dashboa
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
     { icon: PlusCircle, label: 'Post Requirement', path: '/client/post-requirement' },
     { icon: Clock, label: 'Timesheets', path: '/client/timesheets' },
+    { icon: Receipt, label: 'Invoices', path: '/client/invoices' },
   ];
 
   const menuItems = userType === 'freelancer' ? freelancerMenuItems : clientMenuItems;
