@@ -184,7 +184,7 @@ const Home = () => {
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-16 min-h-[70vh] flex items-center justify-center">
-          <div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <div>
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 mb-8">
               <CheckCircle className="h-4 w-4 text-orange-400" />
               <span className="text-sm text-orange-300 font-medium">Verified IT professionals only</span>
@@ -368,7 +368,7 @@ const Home = () => {
 
               <AnimatePresence>
                 {showFilters && (
-                  <div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <div className="overflow-hidden">
                     <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 mb-6">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
@@ -720,7 +720,7 @@ const Home = () => {
         <DialogContent className="sm:max-w-md bg-[#111827] border-slate-700 text-white">
           {interestSuccess ? (
             <div className="text-center py-6">
-              <div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} className="h-20 w-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+              <div className="h-20 w-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-10 w-10 text-emerald-400" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Interest Submitted! 🎉</h3>
