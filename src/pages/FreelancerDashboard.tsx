@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, Navigate } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import FreelancerMyRequests from './FreelancerMyRequests';
 import FreelancerTimesheets from './FreelancerTimesheets';
