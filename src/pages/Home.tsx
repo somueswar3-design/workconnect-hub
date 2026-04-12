@@ -366,8 +366,7 @@ const Home = () => {
                 <span className="text-sm text-slate-500">{filtered.length} professionals found</span>
               </div>
 
-              <AnimatePresence>
-                {showFilters && (
+              {showFilters && (
                   <div className="overflow-hidden">
                     <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 mb-6">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -396,8 +395,7 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                )}
-              </AnimatePresence>
+              )}
             </div>
 
             {isLoading && <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>}
