@@ -903,6 +903,11 @@ const AdminDashboard = () => {
               </>
             )}
           </TabsContent>
+
+          {/* ═══════════ AUDIT LOGS TAB ═══════════ */}
+          <TabsContent value="audit-logs">
+            <AuditLogsInline />
+          </TabsContent>
         </Tabs>
       </main>
 
