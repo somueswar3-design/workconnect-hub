@@ -24,6 +24,7 @@ import {
   DemoRequestResponse, UpdateDemoRequestDto, CreateAssignmentDto,
   getFreelancerProfiles, FreelancerProfileDto
 } from '@/services/clientApi';
+import AuditLogsInline from '@/pages/AuditLogs';
 
 // ─── Types ───
 interface Assignment {
