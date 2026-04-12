@@ -710,7 +710,7 @@ const Home = () => {
               </Button>
               <Link to="/register?role=Client" className="inline-flex items-center justify-center gap-2 px-8 h-12 bg-slate-700/50 hover:bg-slate-600/50 text-white font-bold rounded-full border border-slate-600 transition-colors">
                 <Building2 className="h-5 w-5" /> Hire Talent
-              </Button>
+              </Link>
             </div>
           </div>
         </section>
