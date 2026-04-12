@@ -169,26 +169,17 @@ const Home = () => {
 
       {/* ══════════════════ HERO ══════════════════ */}
       <section className="relative overflow-hidden min-h-[85vh] flex items-center justify-center">
-        {/* Globe / Grid Background */}
+        {/* Globe Video Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[#0B1120]" />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.07]" style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px'
-          }} />
-          {/* Globe glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(234,88,12,0.08) 0%, rgba(59,130,246,0.05) 40%, transparent 70%)' }} />
-          {/* Subtle globe arc lines */}
-          <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] opacity-[0.06]" viewBox="0 0 700 700">
-            <circle cx="350" cy="350" r="300" fill="none" stroke="white" strokeWidth="0.5" />
-            <circle cx="350" cy="350" r="250" fill="none" stroke="white" strokeWidth="0.5" />
-            <circle cx="350" cy="350" r="200" fill="none" stroke="white" strokeWidth="0.5" />
-            <ellipse cx="350" cy="350" rx="300" ry="120" fill="none" stroke="white" strokeWidth="0.5" />
-            <ellipse cx="350" cy="350" rx="300" ry="200" fill="none" stroke="white" strokeWidth="0.5" />
-            <ellipse cx="350" cy="350" rx="120" ry="300" fill="none" stroke="white" strokeWidth="0.5" />
-          </svg>
+          <video
+            autoPlay muted loop playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            poster=""
+          >
+            <source src="https://cdn.pixabay.com/video/2020/05/31/40205-426958995_large.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120]/60 via-[#0B1120]/40 to-[#0B1120]" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
