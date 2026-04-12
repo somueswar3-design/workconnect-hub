@@ -21,6 +21,7 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import BrowseWorkers from "./pages/BrowseWorkers";
 import NotFound from "./pages/NotFound";
+import TalentSearch from "./pages/TalentSearch";
 import GISComplaints from "./pages/GISComplaints";
 import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerProfileForm from "./pages/FreelancerProfileForm";
@@ -65,6 +66,7 @@ const App = () => (
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
                     <Route path="/browse" element={<ProtectedRoute><BrowseWorkers /></ProtectedRoute>} />
+                    <Route path="/talent-search" element={<TalentSearch />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />
