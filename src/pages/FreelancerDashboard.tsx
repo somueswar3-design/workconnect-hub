@@ -673,6 +673,7 @@ const FreelancerDashboard = () => {
         <Route path="/invoices" element={<InvoiceGeneration />} />
         <Route path="/bank-details" element={<BankDetailsManagement />} />
         <Route path="/payments" element={<PaymentFlow />} />
+        <Route path="/profile" element={<Navigate to="/freelancer-profile" replace />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="*" element={<FreelancerOverview />} />
       </Routes>
