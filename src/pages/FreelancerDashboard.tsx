@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route, Navigate } from 'react-router-dom';
 import ChangePassword from './ChangePassword';
 import FreelancerMyRequests from './FreelancerMyRequests';
 import FreelancerTimesheets from './FreelancerTimesheets';
@@ -673,6 +673,7 @@ const FreelancerDashboard = () => {
         <Route path="/invoices" element={<InvoiceGeneration />} />
         <Route path="/bank-details" element={<BankDetailsManagement />} />
         <Route path="/payments" element={<PaymentFlow />} />
+        <Route path="/profile" element={<Navigate to="/freelancer-profile" replace />} />
         <Route path="/settings/password" element={<ChangePassword />} />
         <Route path="*" element={<FreelancerOverview />} />
       </Routes>
