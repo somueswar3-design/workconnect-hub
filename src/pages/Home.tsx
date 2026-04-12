@@ -168,7 +168,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen bg-[#0B1120]">
 
       {/* ══════════════════ HERO ══════════════════ */}
-      <section className="relative overflow-hidden min-h-[85vh] flex items-center justify-center">
+      <section className="relative overflow-hidden flex flex-col">
         {/* Globe Video Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[#0B1120]" />
@@ -182,7 +182,8 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120]/60 via-[#0B1120]/40 to-[#0B1120]" />
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 text-center">
+        {/* Hero Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-16 min-h-[70vh] flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 mb-8">
               <CheckCircle className="h-4 w-4 text-orange-400" />
@@ -207,13 +208,11 @@ const Home = () => {
                 <Search className="h-5 w-5" /> Find talent
               </Button>
               {isAuthenticated ? (
-                <>
-                  <Button size="lg" variant="outline"
-                    className="gap-3 text-base px-8 h-13 bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold rounded-full"
-                    onClick={() => { freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}>
-                    <Calendar className="h-5 w-5" /> Request Demo / Interview
-                  </Button>
-                </>
+                <Button size="lg" variant="outline"
+                  className="gap-3 text-base px-8 h-13 bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold rounded-full"
+                  onClick={() => { freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}>
+                  <Calendar className="h-5 w-5" /> Request Demo / Interview
+                </Button>
               ) : (
                 <>
                   <Button size="lg" variant="outline" asChild
@@ -234,8 +233,8 @@ const Home = () => {
           </motion.div>
         </div>
 
-        {/* Stats Bar */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-800/50 bg-[#0B1120]/80 backdrop-blur-sm">
+        {/* Stats Bar - in normal flow, not overlapping */}
+        <div className="relative z-10 border-t border-slate-800/50 bg-[#0B1120]/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
               {[
