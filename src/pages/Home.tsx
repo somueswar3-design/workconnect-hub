@@ -206,7 +206,15 @@ const Home = () => {
                 className="gap-3 text-base px-8 h-13 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full shadow-2xl shadow-orange-500/25 border-0">
                 <Search className="h-5 w-5" /> Find talent
               </Button>
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <>
+                  <Button size="lg" variant="outline"
+                    className="gap-3 text-base px-8 h-13 bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold rounded-full"
+                    onClick={() => { freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}>
+                    <Calendar className="h-5 w-5" /> Request Demo / Interview
+                  </Button>
+                </>
+              ) : (
                 <>
                   <Button size="lg" variant="outline" asChild
                     className="gap-3 text-base px-8 h-13 bg-transparent border-slate-600 text-white hover:bg-slate-800 font-bold rounded-full">
