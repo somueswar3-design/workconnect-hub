@@ -223,7 +223,7 @@ const Home = () => {
         <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-24 pb-12">
           {/* Heading */}
           <div className="text-center max-w-3xl mx-auto mb-10">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black leading-[1.1] mb-5 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] mb-5 tracking-tight">
               <span className="text-white">Find & Hire</span>
               <br />
               <span className="text-orange-500">Expert IT Professionals</span>
@@ -708,7 +708,7 @@ const Home = () => {
               <Button asChild size="lg" className="gap-2 px-8 h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full">
                 <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> I'm a Freelancer</Link>
               </Button>
-              <Button asChild size="lg" className="gap-2 px-8 h-12 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-slate-600">
+              <Button asChild variant="ghost" size="lg" className="gap-2 px-8 h-12 !bg-slate-700/50 hover:!bg-slate-600/50 text-white font-bold rounded-full border border-slate-600">
                 <Link to="/register?role=Client"><Building2 className="h-5 w-5" /> Hire Talent</Link>
               </Button>
             </div>
