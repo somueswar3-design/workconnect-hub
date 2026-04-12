@@ -184,7 +184,7 @@ const Home = () => {
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-16 min-h-[70vh] flex items-center justify-center">
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 mb-8">
               <CheckCircle className="h-4 w-4 text-orange-400" />
               <span className="text-sm text-orange-300 font-medium">Verified IT professionals only</span>
@@ -230,7 +230,7 @@ const Home = () => {
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Stats Bar - in normal flow, not overlapping */}
@@ -259,7 +259,7 @@ const Home = () => {
           <div className="text-center mb-14">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4">WHO IS IT FOR?</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white italic">One platform, every role</h2>
-          </motion.div>
+          </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
               { title: 'Freelancer', desc: 'IT professionals seeking hourly, part-time, or full-time work support contracts', icon: Briefcase, color: 'bg-amber-800/60' },
@@ -274,7 +274,7 @@ const Home = () => {
                   <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -286,7 +286,7 @@ const Home = () => {
           <div className="text-center mb-14">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4">HOW IT WORKS</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white italic">Simple. Transparent. Fast.</h2>
-          </motion.div>
+          </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
               { num: '01', title: 'Search & discover', desc: 'Browse verified IT professionals or post your project. Filter by skills, rate, availability.' },
@@ -299,7 +299,7 @@ const Home = () => {
                   <h3 className="text-lg font-bold text-white mb-3">{step.title}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -368,7 +368,7 @@ const Home = () => {
 
               <AnimatePresence>
                 {showFilters && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                     <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 mb-6">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
@@ -395,10 +395,10 @@ const Home = () => {
                         <Button size="sm" variant="outline" onClick={handleFilterClear} className="gap-1.5 border-slate-700 text-slate-300 hover:bg-slate-800"><X className="h-3 w-3" /> Clear</Button>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </div>
 
             {isLoading && <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>}
 
@@ -456,7 +456,7 @@ const Home = () => {
                               </div>
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
@@ -502,7 +502,7 @@ const Home = () => {
                   Post a project
                 </Button>
               </div>
-            </motion.div>
+            </div>
 
             {reqLoading ? (
               <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
@@ -534,7 +534,7 @@ const Home = () => {
                           Apply <ArrowRight className="h-4 w-4" />
                         </Button>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
@@ -593,7 +593,7 @@ const Home = () => {
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 50%)' }} />
           <div className="relative container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
-              <motion.div >
+              <div >
                 <p className="text-white/70 font-bold text-sm tracking-widest uppercase mb-4">EARN MONEY</p>
                 <h2 className="text-4xl sm:text-5xl font-black text-white mb-5 leading-tight">Become a Work Support Professional</h2>
                 <p className="text-white/80 text-lg mb-8 leading-relaxed">
@@ -618,7 +618,7 @@ const Home = () => {
                     <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> Join as Professional</Link>
                   </Button>
                 </div>
-              </motion.div>
+              </div>
               <div className="hidden md:grid grid-cols-2 gap-5">
                 {[
                   { label: 'Avg. Earnings', value: '₹50K+/mo', icon: DollarSign },
@@ -632,7 +632,7 @@ const Home = () => {
                     <p className="text-xs text-white/60 font-medium mt-1">{stat.label}</p>
                   </div>
                 ))}
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
@@ -644,7 +644,7 @@ const Home = () => {
           <div className="text-center mb-12">
             <p className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-3">TESTIMONIALS</p>
             <h2 className="text-3xl sm:text-4xl font-black text-white italic">What professionals say</h2>
-          </motion.div>
+          </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
             {[
               { name: 'Rajesh K.', role: 'Full Stack Developer', location: 'Hyderabad', text: 'WorkSupport360 connected me with amazing clients. The privacy features give me peace of mind.', avatar: 'R' },
@@ -666,7 +666,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -676,7 +676,7 @@ const Home = () => {
       {!isAuthenticated && (
         <section className="py-20 bg-[#111827] border-t border-slate-800">
           <div className="container mx-auto px-4 text-center">
-            <motion.div >
+            <div >
               <h2 className="text-3xl sm:text-4xl font-black text-white mb-4">Ready to Get Started?</h2>
               <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">Join WorkSupport360 today and connect with the right opportunities.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -687,7 +687,7 @@ const Home = () => {
                   <Link to="/register?role=Client"><Building2 className="h-5 w-5" /> Hire Talent</Link>
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       )}
@@ -720,9 +720,9 @@ const Home = () => {
         <DialogContent className="sm:max-w-md bg-[#111827] border-slate-700 text-white">
           {interestSuccess ? (
             <div className="text-center py-6">
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} className="h-20 w-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+              <div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} className="h-20 w-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-10 w-10 text-emerald-400" />
-              </motion.div>
+              </div>
               <h3 className="text-xl font-bold text-white mb-2">Interest Submitted! 🎉</h3>
               <p className="text-slate-400 mb-1">Your interest in <span className="font-semibold text-white">{selectedRequirement?.title}</span> has been sent.</p>
               <p className="text-sm text-slate-500 mb-6">The client will review and get back to you soon.</p>
