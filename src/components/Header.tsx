@@ -129,7 +129,7 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white border border-slate-700 hover:bg-slate-800 transition-all duration-200"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white border border-slate-700 hover:bg-slate-800 bg-transparent transition-all duration-200"
                 >
                   Log in
                 </Link>
