@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getFreelancerProfile } from '@/services/freelancerApi';
+import { getFreelancerProfile, saveFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
 import {
   Loader2, X, Plus, ChevronLeft, CheckCircle2,
 } from 'lucide-react';
