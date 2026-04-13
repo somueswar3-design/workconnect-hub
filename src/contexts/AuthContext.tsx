@@ -6,6 +6,7 @@ interface AuthUser {
   fullName?: string;
   avatarUrl?: string;
   userId?: string;
+  profilePercentage?: number;
 }
 
 interface AuthContextType {
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       fullName: userOverrides?.fullName,
       avatarUrl: userOverrides?.avatarUrl,
       userId,
+      profilePercentage: userOverrides?.profilePercentage,
     };
 
     setToken(newToken);
