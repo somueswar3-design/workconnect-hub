@@ -144,7 +144,7 @@ const FreelancerProfileForm = () => {
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token, user, updateUser } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
 
   const form = useForm<ProfileFormData>({
