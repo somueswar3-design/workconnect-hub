@@ -191,6 +191,9 @@ const FreelancerProfileForm = () => {
             linkedInProfile: data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
+          // Update profile percentage in context
+          const pct = calculateProfilePercentage(data);
+          updateUser({ profilePercentage: pct, fullName: data.fullName || user.fullName });
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
