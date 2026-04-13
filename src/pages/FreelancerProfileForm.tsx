@@ -278,10 +278,8 @@ const FreelancerProfileForm = () => {
     <div className="h-screen flex flex-col bg-[#0B1120] text-slate-200" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
       {/* Top Bar */}
       <header className="h-[52px] flex items-center justify-between px-8 border-b border-slate-700/40 bg-[#0D1B2E] shrink-0 sticky top-0 z-50">
-        <div className="text-lg tracking-tight">
-          <span className="font-bold">Work</span>
-          <span className="text-orange-500 font-bold">Support</span>
-          <span className="font-bold">360</span>
+        <div className="text-lg tracking-tight font-bold text-slate-100">
+          Update Profile
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
@@ -342,7 +340,7 @@ const FreelancerProfileForm = () => {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-10 py-9">
+        <main className="flex-1 overflow-y-auto px-10 py-9" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
 
