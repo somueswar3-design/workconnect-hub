@@ -30,6 +30,35 @@ export const getFreelancerProfile = async (userId: string): Promise<any | null> 
   return res.json();
 };
 
+// Save/update freelancer profile
+export const saveFreelancerProfile = async (payload: any): Promise<any> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/profile`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error('Failed to save profile');
+  return res.json();
+};
+
+// Calculate profile completion percentage from profile data
+export const calculateProfilePercentage = (data: any): number => {
+  if (!data) return 0;
+  const fields = [
+    'fullName', 'gender', 'country', 'phoneNumber',
+    'primarySkills', 'skillSetDesc', 'experienceYears',
+    'anyFreelancingExperience', 'languagesKnown', 'speakingLanguage',
+    'hoursAvailablePerDay', 'hourRate', 'bioDescription',
+    'linkedInProfile', 'portfolioURL',
+  ];
+  const filled = fields.filter(f => {
+    const val = data[f];
+    if (typeof val === 'number') return true;
+    return val && String(val).trim().length > 0;
+  });
+  return Math.round((filled.length / fields.length) * 100);
+};
+
 // Check if freelancer profile is updated
 export const getProfileStatus = async (userId: string): Promise<{ profileUpdated: boolean }> => {
   const res = await fetch(`${API_BASE}/api/freelancer/profile-status?userId=${userId}`, {
