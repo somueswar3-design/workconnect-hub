@@ -843,7 +843,7 @@ const FreelancerProfileForm = () => {
         </main>
 
         {/* Right Preview Pane */}
-        <aside className="w-[300px] border-l border-slate-700/40 py-7 px-5 overflow-y-auto bg-slate-800/40 shrink-0 hidden xl:block">
+        <aside className="w-[300px] border-l border-slate-700/40 py-7 px-5 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden xl:block">
           <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-4 flex items-center gap-2">
             Live preview
             <span className="flex-1 h-px bg-slate-700" />
