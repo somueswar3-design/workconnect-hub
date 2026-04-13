@@ -240,8 +240,7 @@ const FreelancerProfileForm = () => {
       });
 
       if (!res.ok) throw new Error('Failed to save profile');
-      toast.success('Profile saved successfully!');
-      navigate('/freelancer');
+      setShowSuccessModal(true);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
     } finally {
