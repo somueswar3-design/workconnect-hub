@@ -100,9 +100,9 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {tags.map(tag => (
-          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-50 border border-orange-200 text-orange-700">
+          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/15 border border-orange-500/30 text-orange-400">
             {tag}
-            <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-900">
+            <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-300">
               <X className="h-3 w-3" />
             </button>
           </span>
@@ -114,7 +114,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
           placeholder={placeholder}
-          className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-900 outline-none focus:border-orange-500 focus:bg-white transition-colors"
+          className="flex-1 bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-orange-500 transition-colors placeholder:text-slate-500"
         />
         <button type="button" onClick={() => addTag()} className="bg-orange-500 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
           + Add
@@ -122,11 +122,11 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
       </div>
       {suggestionsAvailable.length > 0 && (
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Suggested — click to add</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Suggested — click to add</p>
           <div className="flex flex-wrap gap-1.5">
             {suggestionsAvailable.slice(0, 8).map(s => (
               <button key={s} type="button" onClick={() => addTag(s)}
-                className="px-3 py-1 rounded-full text-xs border border-stone-200 bg-stone-50 text-stone-500 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors">
+                className="px-3 py-1 rounded-full text-xs border border-slate-600/50 bg-slate-800/30 text-slate-400 hover:border-orange-500/50 hover:text-orange-400 hover:bg-orange-500/10 transition-colors">
                 {s}
               </button>
             ))}
@@ -262,13 +262,13 @@ const FreelancerProfileForm = () => {
   const primarySkillsList = watchedValues.primarySkills ? watchedValues.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
 
   // Shared field classes
-  const fieldInput = "w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-900 outline-none focus:border-orange-500 focus:bg-white transition-colors font-sans";
-  const fieldLabel = "block text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1.5";
+  const fieldInput = "w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-orange-500 transition-colors font-sans placeholder:text-slate-500";
+  const fieldLabel = "block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5";
 
   return (
-    <div className="h-screen flex flex-col bg-stone-50 text-stone-900" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
+    <div className="h-screen flex flex-col bg-[#0B1120] text-slate-200" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
       {/* Top Bar */}
-      <header className="h-[52px] flex items-center justify-between px-8 border-b border-stone-200 bg-white shrink-0 sticky top-0 z-50">
+      <header className="h-[52px] flex items-center justify-between px-8 border-b border-slate-700/40 bg-[#0D1B2E] shrink-0 sticky top-0 z-50">
         <div className="text-lg tracking-tight">
           <span className="font-bold">Work</span>
           <span className="text-orange-500 font-bold">Support</span>
@@ -276,17 +276,17 @@ const FreelancerProfileForm = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
-            completionPct >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
-            completionPct >= 40 ? 'bg-amber-50 text-amber-700 border-amber-200' :
-            'bg-blue-50 text-blue-700 border-blue-200'
+            completionPct >= 80 ? 'bg-green-500/15 text-green-400 border-green-500/30' :
+            completionPct >= 40 ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
+            'bg-blue-500/15 text-blue-400 border-blue-500/30'
           }`}>
             Profile {completionPct}% complete
           </span>
-          <div className="flex items-center gap-2 px-3 py-1 border border-stone-200 rounded-full cursor-pointer hover:border-orange-400 transition-colors">
-            <div className="w-[26px] h-[26px] rounded-full bg-orange-50 border border-orange-200 text-orange-500 text-[11px] font-semibold flex items-center justify-center">
+          <div className="flex items-center gap-2 px-3 py-1 border border-slate-600/50 rounded-full cursor-pointer hover:border-orange-500/50 transition-colors">
+            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
               {initials}
             </div>
-            <span className="text-xs text-stone-500">{watchedValues.fullName || user?.fullName || 'User'}</span>
+            <span className="text-xs text-slate-400">{watchedValues.fullName || user?.fullName || 'User'}</span>
           </div>
           <button
             type="button"
@@ -302,10 +302,10 @@ const FreelancerProfileForm = () => {
       {/* 3-column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Nav */}
-        <nav className="w-[260px] border-r border-stone-200 py-7 overflow-y-auto bg-white shrink-0 hidden lg:block">
+        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block">
           {NAV_SECTIONS.map(section => (
             <div key={section.title} className="mb-7">
-              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-stone-400 px-5 mb-1.5">
+              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500/80 px-5 mb-1.5">
                 {section.title}
               </div>
               {section.items.map(item => {
@@ -318,13 +318,13 @@ const FreelancerProfileForm = () => {
                     onClick={() => setActivePage(item.id)}
                     className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
                       isActive
-                        ? 'text-orange-500 bg-orange-50/60 border-l-orange-500 font-medium'
-                        : 'text-stone-500 border-l-transparent hover:text-stone-800 hover:bg-stone-50'
+                        ? 'text-orange-400 bg-orange-500/15 border-l-orange-500 font-medium'
+                        : 'text-slate-400 border-l-transparent hover:text-slate-200 hover:bg-slate-700/30'
                     }`}
                   >
                     <span className="text-sm w-[18px] text-center">{item.icon}</span>
                     <span className="flex-1">{item.label}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-stone-200'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-slate-600'}`} />
                   </button>
                 );
               })}
