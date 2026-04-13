@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { getFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
 import logo from '@/assets/worksupport360-logo.png';
 import {
   DropdownMenu,
