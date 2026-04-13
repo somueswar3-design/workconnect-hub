@@ -939,6 +939,37 @@ const FreelancerProfileForm = () => {
           </div>
         </aside>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="bg-[#0D1B2E] border-slate-700/40 text-slate-200 max-w-md">
+          <DialogHeader className="text-center items-center">
+            <div className="w-16 h-16 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center mx-auto mb-3">
+              <CheckCircle2 className="h-8 w-8 text-green-400" />
+            </div>
+            <DialogTitle className="text-xl text-slate-100">Profile Updated Successfully!</DialogTitle>
+            <DialogDescription className="text-slate-400 mt-2">
+              Your profile has been saved and will be visible to clients and HR teams. You can update it anytime from your dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => { setShowSuccessModal(false); navigate('/freelancer'); }}
+              className="flex-1 bg-orange-500 text-white rounded-lg px-4 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors"
+            >
+              Go to Dashboard
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="flex-1 bg-transparent border border-slate-600/50 text-slate-300 rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-slate-700/30 transition-colors"
+            >
+              Continue Editing
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
