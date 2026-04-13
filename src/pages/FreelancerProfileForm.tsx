@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion, AnimatePresence } from 'framer-motion';
 import { getFreelancerProfile } from '@/services/freelancerApi';
 import {
-  Loader2, User, Briefcase, Clock, Languages, X, Plus,
-  Monitor, ChevronRight, ChevronLeft, CheckCircle2, Sparkles,
+  Loader2, X, Plus, ChevronLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import wsLogo from '@/assets/worksupport360-logo.png';
 import { countries, getCurrencySymbol } from '@/data/countries';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -48,52 +45,92 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 const languageOptions = ['English', 'Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Bengali', 'Gujarati', 'Urdu'];
 
-const STEPS = [
-  { id: 'personal', label: 'Personal', icon: User },
-  { id: 'skills', label: 'Skills & Experience', icon: Briefcase },
-  { id: 'availability', label: 'Availability', icon: Clock },
-  { id: 'about', label: 'About & Links', icon: Monitor },
-];
-
 const genderMap: Record<string, number> = { male: 0, female: 1, other: 2, 'prefer-not': 3 };
 const reverseGenderMap: Record<number, string> = { 0: 'male', 1: 'female', 2: 'other', 3: 'prefer-not' };
 const freelancingExpMap: Record<string, number> = { new: 0, '0-1': 1, '1-3': 2, '3-5': 3, '5+': 4 };
 const reverseFreelancingExpMap: Record<number, string> = { 0: 'new', 1: '0-1', 2: '1-3', 3: '3-5', 4: '5+' };
 
+const NAV_SECTIONS = [
+  {
+    title: 'Profile',
+    items: [
+      { id: 'identity', icon: '◉', label: 'Identity & details' },
+      { id: 'about', icon: '✦', label: 'About & bio' },
+    ],
+  },
+  {
+    title: 'Skills & Experience',
+    items: [
+      { id: 'skills', icon: '❋', label: 'Skills & tools' },
+      { id: 'experience', icon: '◈', label: 'Work experience' },
+    ],
+  },
+  {
+    title: 'Rates & Availability',
+    items: [
+      { id: 'rates', icon: '◐', label: 'Rates & hours' },
+      { id: 'availability', icon: '◑', label: 'Availability' },
+    ],
+  },
+  {
+    title: 'Preferences',
+    items: [
+      { id: 'languages', icon: '◁', label: 'Languages' },
+      { id: 'links', icon: '▷', label: 'Links & portfolio' },
+    ],
+  },
+];
+
+const SUGGESTED_SKILLS = ['React', 'Node.js', 'TypeScript', 'Python', 'AWS', 'Docker', 'MongoDB', 'PostgreSQL', 'GraphQL', 'Next.js', 'Vue.js', 'Java', 'Spring Boot', 'Flutter', 'Kubernetes'];
+
 const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => {
   const [input, setInput] = useState('');
   const tags = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
-  const addTag = () => {
-    const trimmed = input.trim();
+  const addTag = (tag?: string) => {
+    const trimmed = (tag || input).trim();
     if (trimmed && !tags.includes(trimmed)) {
       onChange([...tags, trimmed].join(', '));
-      setInput('');
+      if (!tag) setInput('');
     }
   };
   const removeTag = (tag: string) => onChange(tags.filter(t => t !== tag).join(', '));
+  const suggestionsAvailable = SUGGESTED_SKILLS.filter(s => !tags.includes(s));
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {tags.map(tag => (
+          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-50 border border-orange-200 text-orange-700">
+            {tag}
+            <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-900">
+              <X className="h-3 w-3" />
+            </button>
+          </span>
+        ))}
+      </div>
       <div className="flex gap-2">
-        <Input value={input} onChange={e => setInput(e.target.value)}
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
           placeholder={placeholder}
-          className="border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500 h-9 text-sm"
+          className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-900 outline-none focus:border-orange-500 focus:bg-white transition-colors"
         />
-        <Button type="button" size="sm" onClick={addTag} className="bg-orange-500 hover:bg-orange-600 shrink-0 h-9 px-3">
-          <Plus className="h-3.5 w-3.5" />
-        </Button>
+        <button type="button" onClick={() => addTag()} className="bg-orange-500 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
+          + Add
+        </button>
       </div>
-      {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {tags.map(tag => (
-            <Badge key={tag} className="bg-orange-100 text-orange-700 border-orange-200 gap-1 pr-1 text-xs">
-              {tag}
-              <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-900 ml-0.5">
-                <X className="h-3 w-3" />
+      {suggestionsAvailable.length > 0 && (
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Suggested — click to add</p>
+          <div className="flex flex-wrap gap-1.5">
+            {suggestionsAvailable.slice(0, 8).map(s => (
+              <button key={s} type="button" onClick={() => addTag(s)}
+                className="px-3 py-1 rounded-full text-xs border border-stone-200 bg-stone-50 text-stone-500 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors">
+                {s}
               </button>
-            </Badge>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -102,10 +139,10 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
 
 const FreelancerProfileForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(0);
+  const [activePage, setActivePage] = useState('identity');
+  const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
   const { token, user } = useAuth();
-
   const [profileId, setProfileId] = useState<number>(0);
 
   const form = useForm<ProfileFormData>({
@@ -120,6 +157,8 @@ const FreelancerProfileForm = () => {
       bioDescription: '', linkedInProfile: '', portfolioURL: '',
     },
   });
+
+  const watchedValues = form.watch();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -200,7 +239,7 @@ const FreelancerProfileForm = () => {
 
       if (!res.ok) throw new Error('Failed to save profile');
       toast.success('Profile saved successfully!');
-      navigate('/');
+      navigate('/freelancer');
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
     } finally {
@@ -208,297 +247,696 @@ const FreelancerProfileForm = () => {
     }
   };
 
-  const stepFields: Record<number, (keyof ProfileFormData)[]> = {
-    0: ['fullName', 'gender', 'country', 'phoneNumber'],
-    1: ['primarySkills', 'skillSetDesc', 'experienceYears', 'anyFreelancingExperience'],
-    2: ['languagesKnown', 'speakingLanguage', 'hoursAvailablePerDay', 'hourRate'],
-    3: ['bioDescription'],
+  const markDoneAndContinue = (currentSection: string, nextSection: string) => {
+    setCompletedSections(prev => new Set(prev).add(currentSection));
+    setActivePage(nextSection);
   };
 
-  const goNext = async () => {
-    const fields = stepFields[step];
-    const valid = await form.trigger(fields);
-    if (valid) setStep(s => Math.min(s + 1, STEPS.length - 1));
-  };
+  const completionPct = Math.round((completedSections.size / 8) * 100);
 
-  const goBack = () => setStep(s => Math.max(s - 1, 0));
+  const initials = watchedValues.fullName
+    ? watchedValues.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
-  const ic = "border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500 h-9 text-sm";
-  const lc = "text-gray-700 text-sm";
+  const currencySymbol = getCurrencySymbol(watchedValues.country);
+  const primarySkillsList = watchedValues.primarySkills ? watchedValues.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+  // Shared field classes
+  const fieldInput = "w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 text-sm text-stone-900 outline-none focus:border-orange-500 focus:bg-white transition-colors font-sans";
+  const fieldLabel = "block text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1.5";
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50 via-white to-blue-50">
-      {/* Scrollable content area */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-3">
-            <h1 className="text-xl font-bold text-gray-900">Build Your Freelancer Profile</h1>
-            <p className="text-gray-500 text-xs">Complete your profile to get matched with clients</p>
-          </div>
-
-          {/* Step Indicators */}
-          <div className="flex items-center justify-center gap-1 mb-3">
-            {STEPS.map((s, i) => {
-              const Icon = s.icon;
-              const isActive = i === step;
-              const isDone = i < step;
-              return (
-                <button key={s.id} type="button" onClick={() => i < step && setStep(i)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                    isActive ? 'bg-orange-500 text-white shadow-md' :
-                    isDone ? 'bg-orange-100 text-orange-700 cursor-pointer' :
-                    'bg-gray-100 text-gray-400'
-                  }`}
-                >
-                  {isDone ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
-                  <span className="hidden sm:inline">{s.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Form Card */}
-          <div className="bg-white rounded-2xl shadow-xl shadow-orange-500/10 border border-orange-100 p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
-                <AnimatePresence mode="wait">
-                  <motion.div key={step} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.25 }}>
-
-                    {/* Step 0: Personal */}
-                    {step === 0 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <User className="h-5 w-5 text-orange-500" />
-                          <h3 className="font-semibold text-gray-900">Personal Information</h3>
-                        </div>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <FormField control={form.control} name="fullName" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Full Name *</FormLabel>
-                              <FormControl><Input placeholder="John Doe" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="gender" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Gender *</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                  <SelectItem value="male">Male</SelectItem>
-                                  <SelectItem value="female">Female</SelectItem>
-                                  <SelectItem value="other">Other</SelectItem>
-                                  <SelectItem value="prefer-not">Prefer not to say</SelectItem>
-                                </SelectContent>
-                              </Select><FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="country" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Country *</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select country" /></SelectTrigger></FormControl>
-                                <SelectContent className="max-h-[250px]">
-                                  {countries.map(c => (
-                                    <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol})</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select><FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="phoneNumber" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Phone Number *</FormLabel>
-                              <FormControl><Input placeholder="7306549295" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="companyName" render={({ field }) => (
-                            <FormItem className="sm:col-span-2"><FormLabel className={lc}>Company Name <span className="text-gray-400 text-xs">(Optional)</span></FormLabel>
-                              <FormControl><Input placeholder="Your company" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Step 1: Skills & Experience */}
-                    {step === 1 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Briefcase className="h-5 w-5 text-emerald-500" />
-                          <h3 className="font-semibold text-gray-900">Skills & Experience</h3>
-                        </div>
-                        <FormField control={form.control} name="primarySkills" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Primary Skills *</FormLabel>
-                            <FormControl><SkillTagInput value={field.value} onChange={field.onChange} placeholder="e.g. React, Java, AWS..." /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="secondarySkills" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Secondary Skills</FormLabel>
-                            <FormControl><SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="e.g. Docker, Redis..." /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="skillSetDesc" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Skill Set Description *</FormLabel>
-                            <FormControl><Textarea placeholder="Describe your expertise..." className={`${ic} min-h-[60px]`} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <FormField control={form.control} name="experienceYears" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Total IT Experience (Years) *</FormLabel>
-                              <FormControl><Input type="number" placeholder="e.g. 5" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Freelancing Experience *</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                  <SelectItem value="new">New to Freelancing</SelectItem>
-                                  <SelectItem value="0-1">Less than 1 Year</SelectItem>
-                                  <SelectItem value="1-3">1 - 3 Years</SelectItem>
-                                  <SelectItem value="3-5">3 - 5 Years</SelectItem>
-                                  <SelectItem value="5+">5+ Years</SelectItem>
-                                </SelectContent>
-                              </Select><FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="currentCompany" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Current Company</FormLabel>
-                              <FormControl><Input placeholder="Company name" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="currentCompanyRole" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Current Role</FormLabel>
-                              <FormControl><Input placeholder="Senior Developer" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Step 2: Languages & Availability */}
-                    {step === 2 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Clock className="h-5 w-5 text-blue-500" />
-                          <h3 className="font-semibold text-gray-900">Languages & Availability</h3>
-                        </div>
-                        <FormField control={form.control} name="languagesKnown" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Languages Known *</FormLabel>
-                            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                              {languageOptions.map(lang => {
-                                const selected = field.value ? field.value.split(',').map(s => s.trim()).includes(lang) : false;
-                                return (
-                                  <button key={lang} type="button"
-                                    onClick={() => {
-                                      const current = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
-                                      field.onChange(selected ? current.filter(l => l !== lang).join(', ') : [...current, lang].join(', '));
-                                    }}
-                                    className={`px-2 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                                      selected ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300'
-                                    }`}
-                                  >{lang}</button>
-                                );
-                              })}
-                            </div>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="speakingLanguage" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Preferred Speaking Language *</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                              <SelectContent>
-                                {languageOptions.map(lang => (
-                                  <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select><FormMessage /></FormItem>
-                        )} />
-                        <div className="grid gap-4 sm:grid-cols-3">
-                          <FormField control={form.control} name="hoursAvailablePerDay" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Hours/Day *</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger className={ic}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                  <SelectItem value="1-2">1 - 2 Hours</SelectItem>
-                                  <SelectItem value="2-4">2 - 4 Hours</SelectItem>
-                                  <SelectItem value="4-6">4 - 6 Hours</SelectItem>
-                                  <SelectItem value="6-8">6 - 8 Hours</SelectItem>
-                                  <SelectItem value="8+">8+ Hours</SelectItem>
-                                </SelectContent>
-                              </Select><FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="hourRate" render={({ field }) => {
-                            const selectedCountry = form.watch('country');
-                            const symbol = getCurrencySymbol(selectedCountry);
-                            return (
-                              <FormItem><FormLabel className={lc}>Rate ({symbol}/hr) *</FormLabel>
-                                <FormControl><Input placeholder="e.g. 500" className={ic} {...field} /></FormControl>
-                                <FormMessage /></FormItem>
-                            );
-                          }} />
-                          <FormField control={form.control} name="isAvailableInWeekends" render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 pt-7">
-                              <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange}
-                                  className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500" />
-                              </FormControl>
-                              <FormLabel className="text-gray-700 text-sm !mt-0">Weekends</FormLabel>
-                            </FormItem>
-                          )} />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Step 3: About & Links */}
-                    {step === 3 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Monitor className="h-5 w-5 text-violet-500" />
-                          <h3 className="font-semibold text-gray-900">About You</h3>
-                        </div>
-                        <FormField control={form.control} name="bioDescription" render={({ field }) => (
-                          <FormItem><FormLabel className={lc}>Bio / About *</FormLabel>
-                            <FormControl><Textarea placeholder="Tell us about yourself..." className={`${ic} min-h-[80px]`} {...field} /></FormControl>
-                            <FormMessage /></FormItem>
-                        )} />
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>LinkedIn Profile</FormLabel>
-                              <FormControl><Input placeholder="https://linkedin.com/in/..." className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                          <FormField control={form.control} name="portfolioURL" render={({ field }) => (
-                            <FormItem><FormLabel className={lc}>Portfolio URL</FormLabel>
-                              <FormControl><Input placeholder="https://yoursite.com" className={ic} {...field} /></FormControl>
-                              <FormMessage /></FormItem>
-                          )} />
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Navigation Buttons - always visible at bottom */}
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
-                  <Button type="button" variant="outline" onClick={goBack} disabled={step === 0}
-                    className="gap-1.5 text-sm">
-                    <ChevronLeft className="h-4 w-4" /> Back
-                  </Button>
-
-                  <span className="text-xs text-gray-400">Step {step + 1} of {STEPS.length}</span>
-
-                  {step < STEPS.length - 1 ? (
-                    <Button type="button" onClick={goNext}
-                      className="gap-1.5 bg-orange-500 hover:bg-orange-600 text-sm">
-                      Next <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Button type="submit" disabled={isLoading}
-                      className="gap-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-sm">
-                      {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> :
-                        <>Submit Profile <CheckCircle2 className="h-4 w-4" /></>}
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </Form>
-          </div>
+    <div className="h-screen flex flex-col bg-stone-50 text-stone-900" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
+      {/* Top Bar */}
+      <header className="h-[52px] flex items-center justify-between px-8 border-b border-stone-200 bg-white shrink-0 sticky top-0 z-50">
+        <div className="text-lg tracking-tight">
+          <span className="font-bold">Work</span>
+          <span className="text-orange-500 font-bold">Support</span>
+          <span className="font-bold">360</span>
         </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
+            completionPct >= 80 ? 'bg-green-50 text-green-700 border-green-200' :
+            completionPct >= 40 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+            'bg-blue-50 text-blue-700 border-blue-200'
+          }`}>
+            Profile {completionPct}% complete
+          </span>
+          <div className="flex items-center gap-2 px-3 py-1 border border-stone-200 rounded-full cursor-pointer hover:border-orange-400 transition-colors">
+            <div className="w-[26px] h-[26px] rounded-full bg-orange-50 border border-orange-200 text-orange-500 text-[11px] font-semibold flex items-center justify-center">
+              {initials}
+            </div>
+            <span className="text-xs text-stone-500">{watchedValues.fullName || user?.fullName || 'User'}</span>
+          </div>
+          <button
+            type="button"
+            onClick={form.handleSubmit(handleSubmit)}
+            disabled={isLoading}
+            className="bg-orange-500 text-white border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
+          >
+            {isLoading ? 'Saving...' : 'Save changes'}
+          </button>
+        </div>
+      </header>
+
+      {/* 3-column layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left Nav */}
+        <nav className="w-[260px] border-r border-stone-200 py-7 overflow-y-auto bg-white shrink-0 hidden lg:block">
+          {NAV_SECTIONS.map(section => (
+            <div key={section.title} className="mb-7">
+              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-stone-400 px-5 mb-1.5">
+                {section.title}
+              </div>
+              {section.items.map(item => {
+                const isActive = activePage === item.id;
+                const isDone = completedSections.has(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActivePage(item.id)}
+                    className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
+                      isActive
+                        ? 'text-orange-500 bg-orange-50/60 border-l-orange-500 font-medium'
+                        : 'text-stone-500 border-l-transparent hover:text-stone-800 hover:bg-stone-50'
+                    }`}
+                  >
+                    <span className="text-sm w-[18px] text-center">{item.icon}</span>
+                    <span className="flex-1">{item.label}</span>
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-stone-200'}`} />
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto px-10 py-9">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
+
+              {/* IDENTITY */}
+              {activePage === 'identity' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Identity & details</h1>
+                    <p className="text-sm text-stone-400 mt-1">Set up your personal information and how you appear to clients.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◉</span> Personal information
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="fullName" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Full Name *</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="John Doe" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="gender" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Gender *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="prefer-not">Prefer not to say</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="country" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Country *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select country" /></SelectTrigger></FormControl>
+                            <SelectContent className="max-h-[250px]">
+                              {countries.map(c => (
+                                <SelectItem key={c.code} value={c.name}>{c.name} ({c.currencySymbol})</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="phoneNumber" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Phone Number *</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="+91 98765 43210" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="companyName" render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className={fieldLabel}>Company Name <span className="text-stone-300">(Optional)</span></FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="Your company" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → About & bio
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ABOUT */}
+              {activePage === 'about' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
+                    <p className="text-sm text-stone-400 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">✦</span> Professional summary
+                    </div>
+                    <FormField control={form.control} name="bioDescription" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Bio (shown on profile) *</FormLabel>
+                        <FormControl>
+                          <textarea className={`${fieldInput} min-h-[120px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications..." {...field} />
+                        </FormControl>
+                        <div className="text-[11px] text-stone-300 text-right mt-1">{field.value?.length || 0} / 600</div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◉</span> Years of experience
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="experienceYears" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Total IT Experience (Years) *</FormLabel>
+                          <FormControl><input type="number" className={fieldInput} placeholder="e.g. 5" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Freelancing Experience *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="new">New to Freelancing</SelectItem>
+                              <SelectItem value="0-1">Less than 1 Year</SelectItem>
+                              <SelectItem value="1-3">1 - 3 Years</SelectItem>
+                              <SelectItem value="3-5">3 - 5 Years</SelectItem>
+                              <SelectItem value="5+">5+ Years</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('identity')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('about', 'skills')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Skills
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SKILLS */}
+              {activePage === 'skills' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Skills & tools</h1>
+                    <p className="text-sm text-stone-400 mt-1">Add the skills clients search for. Be specific — "React 18" beats "JavaScript".</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">❋</span> Primary skills (shown on card)
+                    </div>
+                    <FormField control={form.control} name="primarySkills" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <SkillTagInput value={field.value} onChange={field.onChange} placeholder="Type a skill and press Add..." />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◎</span> Secondary skills
+                    </div>
+                    <FormField control={form.control} name="secondarySkills" render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="e.g. Docker, Redis..." />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◉</span> Skill description
+                    </div>
+                    <FormField control={form.control} name="skillSetDesc" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Describe your expertise *</FormLabel>
+                        <FormControl>
+                          <textarea className={`${fieldInput} min-h-[80px] resize-y`} placeholder="Describe your expertise and technical strengths..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('about')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('skills', 'experience')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Experience
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* EXPERIENCE */}
+              {activePage === 'experience' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Work experience</h1>
+                    <p className="text-sm text-stone-400 mt-1">Add your employment and freelance history.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◈</span> Current position
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="currentCompany" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Company / Client</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="Company name" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="currentCompanyRole" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Job Title / Role</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="Senior Developer" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('skills')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('experience', 'rates')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Rates
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* RATES */}
+              {activePage === 'rates' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Rates & hours</h1>
+                    <p className="text-sm text-stone-400 mt-1">Set your hourly rate and daily availability.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◐</span> Hourly rate
+                    </div>
+                    <FormField control={form.control} name="hourRate" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Rate ({currencySymbol}/hr) *</FormLabel>
+                        <FormControl><input type="number" className={fieldInput} placeholder="e.g. 2900" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    {watchedValues.hourRate && (
+                      <div className="flex items-baseline gap-2 mt-3">
+                        <span className="text-4xl font-serif text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>{currencySymbol}{parseInt(watchedValues.hourRate).toLocaleString()}</span>
+                        <span className="text-sm text-stone-400">/hr</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◔</span> Daily availability
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="hoursAvailablePerDay" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Hours / Day *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="1-2">1 - 2 Hours</SelectItem>
+                              <SelectItem value="2-4">2 - 4 Hours</SelectItem>
+                              <SelectItem value="4-6">4 - 6 Hours</SelectItem>
+                              <SelectItem value="6-8">6 - 8 Hours</SelectItem>
+                              <SelectItem value="8+">8+ Hours</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="isAvailableInWeekends" render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end">
+                          <div className="flex items-center justify-between py-2.5">
+                            <div>
+                              <div className="text-[13px] font-medium text-stone-800">Available on weekends</div>
+                              <div className="text-[11px] text-stone-400">Accept weekend project work</div>
+                            </div>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </div>
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('experience')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('rates', 'availability')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Availability
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* AVAILABILITY */}
+              {activePage === 'availability' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Availability</h1>
+                    <p className="text-sm text-stone-400 mt-1">Tell clients exactly when and how much you can work.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◑</span> Engagement type
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { icon: '⏱', label: 'Hourly', desc: 'Pay per hour. Flexible scope.' },
+                        { icon: '🗓', label: 'Part-time', desc: '20–30h/week. Ongoing.' },
+                        { icon: '💼', label: 'Full-time', desc: '40h/week dedicated.' },
+                        { icon: '📋', label: 'Fixed project', desc: 'Milestone-based delivery.' },
+                        { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
+                        { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
+                      ].map(item => (
+                        <div key={item.label} className="border border-stone-200 rounded-xl p-4 cursor-pointer hover:bg-stone-50 hover:border-stone-300 transition-all text-center">
+                          <div className="text-xl mb-1">{item.icon}</div>
+                          <div className="text-[13px] font-semibold text-stone-800 mb-1">{item.label}</div>
+                          <div className="text-[11px] text-stone-400 leading-relaxed">{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('rates')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('availability', 'languages')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Languages
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* LANGUAGES */}
+              {activePage === 'languages' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 7 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Languages</h1>
+                    <p className="text-sm text-stone-400 mt-1">List languages you can work in. Clients filter by this.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◁</span> Your languages
+                    </div>
+                    <FormField control={form.control} name="languagesKnown" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Languages Known *</FormLabel>
+                        <div className="flex flex-wrap gap-2">
+                          {languageOptions.map(lang => {
+                            const selected = field.value ? field.value.split(',').map(s => s.trim()).includes(lang) : false;
+                            return (
+                              <button key={lang} type="button"
+                                onClick={() => {
+                                  const current = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                                  field.onChange(selected ? current.filter(l => l !== lang).join(', ') : [...current, lang].join(', '));
+                                }}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                                  selected ? 'bg-orange-50 text-orange-600 border-orange-300' : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-orange-300'
+                                }`}
+                              >{lang}</button>
+                            );
+                          })}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◉</span> Preferred speaking language
+                    </div>
+                    <FormField control={form.control} name="speakingLanguage" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Speaking Language *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                          <SelectContent>
+                            {languageOptions.map(lang => (
+                              <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('availability')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                    <button type="button" onClick={() => markDoneAndContinue('languages', 'links')}
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → Links
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* LINKS & PORTFOLIO */}
+              {activePage === 'links' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Final step</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Links & portfolio</h1>
+                    <p className="text-sm text-stone-400 mt-1">Add your online presence so clients can learn more about you.</p>
+                  </div>
+
+                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">▷</span> Online profiles
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>LinkedIn Profile</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="https://linkedin.com/in/..." {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="portfolioURL" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Portfolio / Website</FormLabel>
+                          <FormControl><input className={fieldInput} placeholder="https://yoursite.com" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 mb-4">
+                    <div className="flex items-center gap-4">
+                      <span className="text-3xl">🎉</span>
+                      <div>
+                        <div className="text-base font-semibold font-serif mb-1" style={{ fontFamily: "'Georgia', serif" }}>Profile complete!</div>
+                        <div className="text-[13px] text-stone-500">Your profile will be visible to clients and HR once published.</div>
+                      </div>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full mt-4 bg-orange-500 text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
+                    >
+                      {isLoading ? 'Saving...' : 'Publish profile ✓'}
+                    </button>
+                  </div>
+
+                  <div className="flex justify-between mt-4">
+                    <button type="button" onClick={() => setActivePage('languages')}
+                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      ← Back
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </form>
+          </Form>
+        </main>
+
+        {/* Right Preview Pane */}
+        <aside className="w-[300px] border-l border-stone-200 py-7 px-5 overflow-y-auto bg-white shrink-0 hidden xl:block">
+          <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-stone-400 mb-4 flex items-center gap-2">
+            Live preview
+            <span className="flex-1 h-px bg-stone-200" />
+          </div>
+
+          <div className="border border-stone-200 rounded-2xl overflow-hidden">
+            {/* Dark header */}
+            <div className="bg-stone-900 p-5 relative">
+              <div className="w-14 h-14 rounded-full bg-orange-500 text-white text-xl font-bold flex items-center justify-center font-serif border-2 border-white/20 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+                {initials}
+              </div>
+              <div className="text-[17px] font-semibold text-white tracking-tight">
+                {watchedValues.fullName || 'Your Name'}
+              </div>
+              <div className="text-xs text-white/45 mt-0.5">
+                {watchedValues.companyName || 'Freelancer'}
+              </div>
+              <div className="text-xs text-white/65 mt-1.5">
+                {watchedValues.experienceYears ? `${watchedValues.experienceYears} yrs experience` : 'Experience not set'}
+              </div>
+              {watchedValues.country && (
+                <div className="absolute top-4 right-4 bg-white/10 border border-white/20 rounded-full text-[10px] text-white/70 px-2.5 py-0.5">
+                  {watchedValues.country}
+                </div>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="p-4">
+              {/* Rate */}
+              {watchedValues.hourRate && (
+                <div className="flex items-baseline gap-1 mb-3">
+                  <span className="text-2xl font-serif text-orange-500" style={{ fontFamily: "'Georgia', serif" }}>{currencySymbol}{parseInt(watchedValues.hourRate).toLocaleString()}</span>
+                  <span className="text-xs text-stone-400">/hr</span>
+                </div>
+              )}
+
+              {/* Skills */}
+              {primarySkillsList.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {primarySkillsList.slice(0, 5).map(skill => (
+                    <span key={skill} className="px-2.5 py-0.5 rounded-full text-[11px] bg-orange-50 border border-orange-200 text-orange-600 font-medium">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Info rows */}
+              <div className="space-y-2 text-xs text-stone-500">
+                {watchedValues.experienceYears && (
+                  <div className="flex gap-2 items-start">
+                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                    {watchedValues.experienceYears} yrs IT
+                    {watchedValues.anyFreelancingExperience && ` · ${watchedValues.anyFreelancingExperience} yrs freelancing`}
+                  </div>
+                )}
+                {watchedValues.hoursAvailablePerDay && (
+                  <div className="flex gap-2 items-start">
+                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                    {watchedValues.hoursAvailablePerDay} hrs/day
+                    {watchedValues.isAvailableInWeekends && ' · Weekends'}
+                  </div>
+                )}
+              </div>
+
+              {/* Available badge */}
+              <div className="flex items-center gap-1.5 mt-3 px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 font-medium">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                Available now
+              </div>
+            </div>
+          </div>
+
+          {/* Profile strength */}
+          <div className="mt-5">
+            <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-stone-400 mb-3 flex items-center gap-2">
+              Profile strength
+              <span className="flex-1 h-px bg-stone-200" />
+            </div>
+            <div className="space-y-2">
+              {NAV_SECTIONS.flatMap(s => s.items).map(item => (
+                <div key={item.id} className="flex items-center gap-2 text-xs">
+                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500' : 'bg-stone-200'}`} />
+                  <span className={completedSections.has(item.id) ? 'text-green-700' : 'text-stone-400'}>
+                    {item.label}
+                  </span>
+                  {completedSections.has(item.id) && <span className="text-green-500 ml-auto">✓</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
