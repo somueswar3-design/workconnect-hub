@@ -230,16 +230,12 @@ const FreelancerProfileForm = () => {
         updatedOn: new Date().toISOString(),
       };
 
-      const res = await fetch('https://localhost:7167/api/freelancer/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Failed to save profile');
+      await saveFreelancerProfile(payload);
+      
+      // Calculate and store profile percentage
+      const pct = calculateProfilePercentage(data);
+      updateUser({ profilePercentage: pct, fullName: data.fullName });
+      
       setShowSuccessModal(true);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
@@ -253,7 +249,19 @@ const FreelancerProfileForm = () => {
     setActivePage(nextSection);
   };
 
-  const completionPct = Math.round((completedSections.size / 8) * 100);
+  // Calculate profile percentage from actual field values
+  const completionPct = (() => {
+    const fields = [
+      watchedValues.fullName, watchedValues.gender, watchedValues.country,
+      watchedValues.phoneNumber, watchedValues.primarySkills, watchedValues.skillSetDesc,
+      watchedValues.experienceYears, watchedValues.anyFreelancingExperience,
+      watchedValues.languagesKnown, watchedValues.speakingLanguage,
+      watchedValues.hoursAvailablePerDay, watchedValues.hourRate,
+      watchedValues.bioDescription, watchedValues.linkedInProfile, watchedValues.portfolioURL,
+    ];
+    const filled = fields.filter(f => f && String(f).trim().length > 0);
+    return Math.round((filled.length / fields.length) * 100);
+  })();
 
   const initials = watchedValues.fullName
     ? watchedValues.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
