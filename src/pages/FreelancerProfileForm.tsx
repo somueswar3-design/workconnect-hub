@@ -846,7 +846,7 @@ const FreelancerProfileForm = () => {
         <aside className="w-[300px] border-l border-slate-700/40 py-7 px-5 overflow-y-auto bg-slate-800/40 shrink-0 hidden xl:block">
           <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-4 flex items-center gap-2">
             Live preview
-            <span className="flex-1 h-px bg-stone-200" />
+            <span className="flex-1 h-px bg-slate-700" />
           </div>
 
           <div className="border border-slate-700/40 rounded-2xl overflow-hidden">
@@ -922,12 +922,12 @@ const FreelancerProfileForm = () => {
           <div className="mt-5">
             <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-3 flex items-center gap-2">
               Profile strength
-              <span className="flex-1 h-px bg-stone-200" />
+              <span className="flex-1 h-px bg-slate-700" />
             </div>
             <div className="space-y-2">
               {NAV_SECTIONS.flatMap(s => s.items).map(item => (
                 <div key={item.id} className="flex items-center gap-2 text-xs">
-                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500/150' : 'bg-stone-200'}`} />
+                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500/150' : 'bg-slate-700'}`} />
                   <span className={completedSections.has(item.id) ? 'text-green-400' : 'text-slate-500'}>
                     {item.label}
                   </span>
