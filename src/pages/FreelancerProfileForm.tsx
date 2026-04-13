@@ -309,7 +309,7 @@ const FreelancerProfileForm = () => {
       {/* 3-column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Nav */}
-        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block">
+        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
           {NAV_SECTIONS.map(section => (
             <div key={section.title} className="mb-7">
               <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500/80 px-5 mb-1.5">
