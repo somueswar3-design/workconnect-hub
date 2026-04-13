@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getFreelancerProfile } from '@/services/freelancerApi';
+import { getFreelancerProfile, saveFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
 import {
   Loader2, X, Plus, ChevronLeft, CheckCircle2,
 } from 'lucide-react';
@@ -144,7 +144,7 @@ const FreelancerProfileForm = () => {
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token, user, updateUser } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
 
   const form = useForm<ProfileFormData>({
@@ -191,6 +191,9 @@ const FreelancerProfileForm = () => {
             linkedInProfile: data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
+          // Update profile percentage in context
+          const pct = calculateProfilePercentage(data);
+          updateUser({ profilePercentage: pct, fullName: data.fullName || user.fullName });
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
@@ -230,16 +233,12 @@ const FreelancerProfileForm = () => {
         updatedOn: new Date().toISOString(),
       };
 
-      const res = await fetch('https://localhost:7167/api/freelancer/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Failed to save profile');
+      await saveFreelancerProfile(payload);
+      
+      // Calculate and store profile percentage
+      const pct = calculateProfilePercentage(data);
+      updateUser({ profilePercentage: pct, fullName: data.fullName });
+      
       setShowSuccessModal(true);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
@@ -253,7 +252,19 @@ const FreelancerProfileForm = () => {
     setActivePage(nextSection);
   };
 
-  const completionPct = Math.round((completedSections.size / 8) * 100);
+  // Calculate profile percentage from actual field values
+  const completionPct = (() => {
+    const fields = [
+      watchedValues.fullName, watchedValues.gender, watchedValues.country,
+      watchedValues.phoneNumber, watchedValues.primarySkills, watchedValues.skillSetDesc,
+      watchedValues.experienceYears, watchedValues.anyFreelancingExperience,
+      watchedValues.languagesKnown, watchedValues.speakingLanguage,
+      watchedValues.hoursAvailablePerDay, watchedValues.hourRate,
+      watchedValues.bioDescription, watchedValues.linkedInProfile, watchedValues.portfolioURL,
+    ];
+    const filled = fields.filter(f => f && String(f).trim().length > 0);
+    return Math.round((filled.length / fields.length) * 100);
+  })();
 
   const initials = watchedValues.fullName
     ? watchedValues.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -270,10 +281,8 @@ const FreelancerProfileForm = () => {
     <div className="h-screen flex flex-col bg-[#0B1120] text-slate-200" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
       {/* Top Bar */}
       <header className="h-[52px] flex items-center justify-between px-8 border-b border-slate-700/40 bg-[#0D1B2E] shrink-0 sticky top-0 z-50">
-        <div className="text-lg tracking-tight">
-          <span className="font-bold">Work</span>
-          <span className="text-orange-500 font-bold">Support</span>
-          <span className="font-bold">360</span>
+        <div className="text-lg tracking-tight font-bold text-slate-100">
+          Update Profile
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
@@ -303,7 +312,7 @@ const FreelancerProfileForm = () => {
       {/* 3-column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Nav */}
-        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block">
+        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
           {NAV_SECTIONS.map(section => (
             <div key={section.title} className="mb-7">
               <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500/80 px-5 mb-1.5">
@@ -334,7 +343,7 @@ const FreelancerProfileForm = () => {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-10 py-9">
+        <main className="flex-1 overflow-y-auto px-10 py-9" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
 
