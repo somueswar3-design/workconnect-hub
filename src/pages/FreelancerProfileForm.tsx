@@ -100,7 +100,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {tags.map(tag => (
-          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/15 border border-orange-500/30 text-orange-400">
+          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/150/15 border border-orange-500/30 text-orange-400">
             {tag}
             <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-300">
               <X className="h-3 w-3" />
@@ -116,7 +116,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           placeholder={placeholder}
           className="flex-1 bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-orange-500 transition-colors placeholder:text-slate-500"
         />
-        <button type="button" onClick={() => addTag()} className="bg-orange-500 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
+        <button type="button" onClick={() => addTag()} className="bg-orange-500/150 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
           + Add
         </button>
       </div>
@@ -126,7 +126,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           <div className="flex flex-wrap gap-1.5">
             {suggestionsAvailable.slice(0, 8).map(s => (
               <button key={s} type="button" onClick={() => addTag(s)}
-                className="px-3 py-1 rounded-full text-xs border border-slate-600/50 bg-slate-800/30 text-slate-400 hover:border-orange-500/50 hover:text-orange-400 hover:bg-orange-500/10 transition-colors">
+                className="px-3 py-1 rounded-full text-xs border border-slate-600/50 bg-slate-800/30 text-slate-400 hover:border-orange-500/50 hover:text-orange-400 hover:bg-orange-500/150/10 transition-colors">
                 {s}
               </button>
             ))}
@@ -276,14 +276,14 @@ const FreelancerProfileForm = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
-            completionPct >= 80 ? 'bg-green-500/15 text-green-400 border-green-500/30' :
+            completionPct >= 80 ? 'bg-green-500/150/15 text-green-400 border-green-500/30' :
             completionPct >= 40 ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
             'bg-blue-500/15 text-blue-400 border-blue-500/30'
           }`}>
             Profile {completionPct}% complete
           </span>
           <div className="flex items-center gap-2 px-3 py-1 border border-slate-600/50 rounded-full cursor-pointer hover:border-orange-500/50 transition-colors">
-            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
+            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/150/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
               {initials}
             </div>
             <span className="text-xs text-slate-400">{watchedValues.fullName || user?.fullName || 'User'}</span>
@@ -292,7 +292,7 @@ const FreelancerProfileForm = () => {
             type="button"
             onClick={form.handleSubmit(handleSubmit)}
             disabled={isLoading}
-            className="bg-orange-500 text-white border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
+            className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
           >
             {isLoading ? 'Saving...' : 'Save changes'}
           </button>
@@ -318,13 +318,13 @@ const FreelancerProfileForm = () => {
                     onClick={() => setActivePage(item.id)}
                     className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
                       isActive
-                        ? 'text-orange-400 bg-orange-500/15 border-l-orange-500 font-medium'
+                        ? 'text-orange-400 bg-orange-500/150/15 border-l-orange-500 font-medium'
                         : 'text-slate-400 border-l-transparent hover:text-slate-200 hover:bg-slate-700/30'
                     }`}
                   >
                     <span className="text-sm w-[18px] text-center">{item.icon}</span>
                     <span className="flex-1">{item.label}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-slate-600'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500/150' : 'bg-slate-600'}`} />
                   </button>
                 );
               })}
@@ -342,11 +342,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Identity & details</h1>
-                    <p className="text-sm text-stone-400 mt-1">Set up your personal information and how you appear to clients.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Identity & details</h1>
+                    <p className="text-sm text-slate-500 mt-1">Set up your personal information and how you appear to clients.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◉</span> Personal information
                     </div>
@@ -396,7 +396,7 @@ const FreelancerProfileForm = () => {
                       )} />
                       <FormField control={form.control} name="companyName" render={({ field }) => (
                         <FormItem className="col-span-2">
-                          <FormLabel className={fieldLabel}>Company Name <span className="text-stone-300">(Optional)</span></FormLabel>
+                          <FormLabel className={fieldLabel}>Company Name <span className="text-slate-600">(Optional)</span></FormLabel>
                           <FormControl><input className={fieldInput} placeholder="Your company" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -406,7 +406,7 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-end mt-4">
                     <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → About & bio
                     </button>
                   </div>
@@ -418,11 +418,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
-                    <p className="text-sm text-stone-400 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
+                    <p className="text-sm text-slate-500 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">✦</span> Professional summary
                     </div>
@@ -432,13 +432,13 @@ const FreelancerProfileForm = () => {
                         <FormControl>
                           <textarea className={`${fieldInput} min-h-[120px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications..." {...field} />
                         </FormControl>
-                        <div className="text-[11px] text-stone-300 text-right mt-1">{field.value?.length || 0} / 600</div>
+                        <div className="text-[11px] text-slate-600 text-right mt-1">{field.value?.length || 0} / 600</div>
                         <FormMessage />
                       </FormItem>
                     )} />
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◉</span> Years of experience
                     </div>
@@ -471,11 +471,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('identity')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('about', 'skills')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Skills
                     </button>
                   </div>
@@ -487,11 +487,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Skills & tools</h1>
-                    <p className="text-sm text-stone-400 mt-1">Add the skills clients search for. Be specific — "React 18" beats "JavaScript".</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Skills & tools</h1>
+                    <p className="text-sm text-slate-500 mt-1">Add the skills clients search for. Be specific — "React 18" beats "JavaScript".</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">❋</span> Primary skills (shown on card)
                     </div>
@@ -505,7 +505,7 @@ const FreelancerProfileForm = () => {
                     )} />
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◎</span> Secondary skills
                     </div>
@@ -519,7 +519,7 @@ const FreelancerProfileForm = () => {
                     )} />
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◉</span> Skill description
                     </div>
@@ -536,11 +536,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('about')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('skills', 'experience')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Experience
                     </button>
                   </div>
@@ -552,11 +552,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Work experience</h1>
-                    <p className="text-sm text-stone-400 mt-1">Add your employment and freelance history.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Work experience</h1>
+                    <p className="text-sm text-slate-500 mt-1">Add your employment and freelance history.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◈</span> Current position
                     </div>
@@ -580,11 +580,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('skills')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('experience', 'rates')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Rates
                     </button>
                   </div>
@@ -596,11 +596,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Rates & hours</h1>
-                    <p className="text-sm text-stone-400 mt-1">Set your hourly rate and daily availability.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Rates & hours</h1>
+                    <p className="text-sm text-slate-500 mt-1">Set your hourly rate and daily availability.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◐</span> Hourly rate
                     </div>
@@ -613,13 +613,13 @@ const FreelancerProfileForm = () => {
                     )} />
                     {watchedValues.hourRate && (
                       <div className="flex items-baseline gap-2 mt-3">
-                        <span className="text-4xl font-serif text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>{currencySymbol}{parseInt(watchedValues.hourRate).toLocaleString()}</span>
-                        <span className="text-sm text-stone-400">/hr</span>
+                        <span className="text-4xl font-serif text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>{currencySymbol}{parseInt(watchedValues.hourRate).toLocaleString()}</span>
+                        <span className="text-sm text-slate-500">/hr</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◔</span> Daily availability
                     </div>
@@ -644,8 +644,8 @@ const FreelancerProfileForm = () => {
                         <FormItem className="flex flex-col justify-end">
                           <div className="flex items-center justify-between py-2.5">
                             <div>
-                              <div className="text-[13px] font-medium text-stone-800">Available on weekends</div>
-                              <div className="text-[11px] text-stone-400">Accept weekend project work</div>
+                              <div className="text-[13px] font-medium text-slate-200">Available on weekends</div>
+                              <div className="text-[11px] text-slate-500">Accept weekend project work</div>
                             </div>
                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                           </div>
@@ -656,11 +656,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('experience')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('rates', 'availability')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Availability
                     </button>
                   </div>
@@ -672,11 +672,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Availability</h1>
-                    <p className="text-sm text-stone-400 mt-1">Tell clients exactly when and how much you can work.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Availability</h1>
+                    <p className="text-sm text-slate-500 mt-1">Tell clients exactly when and how much you can work.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◑</span> Engagement type
                     </div>
@@ -689,10 +689,10 @@ const FreelancerProfileForm = () => {
                         { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
                         { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
                       ].map(item => (
-                        <div key={item.label} className="border border-stone-200 rounded-xl p-4 cursor-pointer hover:bg-stone-50 hover:border-stone-300 transition-all text-center">
+                        <div key={item.label} className="border border-slate-700/40 rounded-xl p-4 cursor-pointer hover:bg-slate-800/30 hover:border-slate-600/50 transition-all text-center">
                           <div className="text-xl mb-1">{item.icon}</div>
-                          <div className="text-[13px] font-semibold text-stone-800 mb-1">{item.label}</div>
-                          <div className="text-[11px] text-stone-400 leading-relaxed">{item.desc}</div>
+                          <div className="text-[13px] font-semibold text-slate-200 mb-1">{item.label}</div>
+                          <div className="text-[11px] text-slate-500 leading-relaxed">{item.desc}</div>
                         </div>
                       ))}
                     </div>
@@ -700,11 +700,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('rates')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('availability', 'languages')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Languages
                     </button>
                   </div>
@@ -716,11 +716,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 7 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Languages</h1>
-                    <p className="text-sm text-stone-400 mt-1">List languages you can work in. Clients filter by this.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Languages</h1>
+                    <p className="text-sm text-slate-500 mt-1">List languages you can work in. Clients filter by this.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◁</span> Your languages
                     </div>
@@ -737,7 +737,7 @@ const FreelancerProfileForm = () => {
                                   field.onChange(selected ? current.filter(l => l !== lang).join(', ') : [...current, lang].join(', '));
                                 }}
                                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                                  selected ? 'bg-orange-50 text-orange-600 border-orange-300' : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-orange-300'
+                                  selected ? 'bg-orange-500/15 text-orange-400 border-orange-500/40' : 'bg-slate-800/30 text-slate-400 border-slate-700/40 hover:border-orange-500/40'
                                 }`}
                               >{lang}</button>
                             );
@@ -748,7 +748,7 @@ const FreelancerProfileForm = () => {
                     )} />
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◉</span> Preferred speaking language
                     </div>
@@ -770,11 +770,11 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('availability')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('languages', 'links')}
-                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Links
                     </button>
                   </div>
@@ -786,11 +786,11 @@ const FreelancerProfileForm = () => {
                 <div>
                   <div className="mb-8">
                     <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Final step</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-stone-900" style={{ fontFamily: "'Georgia', serif" }}>Links & portfolio</h1>
-                    <p className="text-sm text-stone-400 mt-1">Add your online presence so clients can learn more about you.</p>
+                    <h1 className="text-[30px] font-serif leading-tight text-slate-200" style={{ fontFamily: "'Georgia', serif" }}>Links & portfolio</h1>
+                    <p className="text-sm text-slate-500 mt-1">Add your online presence so clients can learn more about you.</p>
                   </div>
 
-                  <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-4 hover:border-stone-300 transition-colors">
+                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 mb-4 hover:border-slate-600/50 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">▷</span> Online profiles
                     </div>
@@ -812,18 +812,18 @@ const FreelancerProfileForm = () => {
                     </div>
                   </div>
 
-                  <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 mb-4">
+                  <div className="bg-slate-800/50 border border-slate-700/40 rounded-2xl p-6 mb-4">
                     <div className="flex items-center gap-4">
                       <span className="text-3xl">🎉</span>
                       <div>
                         <div className="text-base font-semibold font-serif mb-1" style={{ fontFamily: "'Georgia', serif" }}>Profile complete!</div>
-                        <div className="text-[13px] text-stone-500">Your profile will be visible to clients and HR once published.</div>
+                        <div className="text-[13px] text-slate-400">Your profile will be visible to clients and HR once published.</div>
                       </div>
                     </div>
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full mt-4 bg-orange-500 text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
+                      className="w-full mt-4 bg-orange-500/150 text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
                     >
                       {isLoading ? 'Saving...' : 'Publish profile ✓'}
                     </button>
@@ -831,7 +831,7 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-between mt-4">
                     <button type="button" onClick={() => setActivePage('languages')}
-                      className="bg-transparent border border-stone-200 rounded-lg px-4 py-2 text-[13px] text-stone-500 hover:border-stone-400 transition-colors">
+                      className="bg-transparent border border-slate-700/40 rounded-lg px-4 py-2 text-[13px] text-slate-400 hover:border-slate-500 transition-colors">
                       ← Back
                     </button>
                   </div>
@@ -843,16 +843,16 @@ const FreelancerProfileForm = () => {
         </main>
 
         {/* Right Preview Pane */}
-        <aside className="w-[300px] border-l border-stone-200 py-7 px-5 overflow-y-auto bg-white shrink-0 hidden xl:block">
-          <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-stone-400 mb-4 flex items-center gap-2">
+        <aside className="w-[300px] border-l border-slate-700/40 py-7 px-5 overflow-y-auto bg-slate-800/40 shrink-0 hidden xl:block">
+          <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-4 flex items-center gap-2">
             Live preview
             <span className="flex-1 h-px bg-stone-200" />
           </div>
 
-          <div className="border border-stone-200 rounded-2xl overflow-hidden">
+          <div className="border border-slate-700/40 rounded-2xl overflow-hidden">
             {/* Dark header */}
             <div className="bg-stone-900 p-5 relative">
-              <div className="w-14 h-14 rounded-full bg-orange-500 text-white text-xl font-bold flex items-center justify-center font-serif border-2 border-white/20 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+              <div className="w-14 h-14 rounded-full bg-orange-500/150 text-white text-xl font-bold flex items-center justify-center font-serif border-2 border-white/20 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
                 {initials}
               </div>
               <div className="text-[17px] font-semibold text-white tracking-tight">
@@ -865,7 +865,7 @@ const FreelancerProfileForm = () => {
                 {watchedValues.experienceYears ? `${watchedValues.experienceYears} yrs experience` : 'Experience not set'}
               </div>
               {watchedValues.country && (
-                <div className="absolute top-4 right-4 bg-white/10 border border-white/20 rounded-full text-[10px] text-white/70 px-2.5 py-0.5">
+                <div className="absolute top-4 right-4 bg-slate-800/40/10 border border-white/20 rounded-full text-[10px] text-white/70 px-2.5 py-0.5">
                   {watchedValues.country}
                 </div>
               )}
@@ -877,7 +877,7 @@ const FreelancerProfileForm = () => {
               {watchedValues.hourRate && (
                 <div className="flex items-baseline gap-1 mb-3">
                   <span className="text-2xl font-serif text-orange-500" style={{ fontFamily: "'Georgia', serif" }}>{currencySymbol}{parseInt(watchedValues.hourRate).toLocaleString()}</span>
-                  <span className="text-xs text-stone-400">/hr</span>
+                  <span className="text-xs text-slate-500">/hr</span>
                 </div>
               )}
 
@@ -885,7 +885,7 @@ const FreelancerProfileForm = () => {
               {primarySkillsList.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {primarySkillsList.slice(0, 5).map(skill => (
-                    <span key={skill} className="px-2.5 py-0.5 rounded-full text-[11px] bg-orange-50 border border-orange-200 text-orange-600 font-medium">
+                    <span key={skill} className="px-2.5 py-0.5 rounded-full text-[11px] bg-orange-500/15 border border-orange-500/30 text-orange-400 font-medium">
                       {skill}
                     </span>
                   ))}
@@ -893,17 +893,17 @@ const FreelancerProfileForm = () => {
               )}
 
               {/* Info rows */}
-              <div className="space-y-2 text-xs text-stone-500">
+              <div className="space-y-2 text-xs text-slate-400">
                 {watchedValues.experienceYears && (
                   <div className="flex gap-2 items-start">
-                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                    <span className="w-1 h-1 rounded-full bg-orange-500/150 mt-1.5 shrink-0" />
                     {watchedValues.experienceYears} yrs IT
                     {watchedValues.anyFreelancingExperience && ` · ${watchedValues.anyFreelancingExperience} yrs freelancing`}
                   </div>
                 )}
                 {watchedValues.hoursAvailablePerDay && (
                   <div className="flex gap-2 items-start">
-                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                    <span className="w-1 h-1 rounded-full bg-orange-500/150 mt-1.5 shrink-0" />
                     {watchedValues.hoursAvailablePerDay} hrs/day
                     {watchedValues.isAvailableInWeekends && ' · Weekends'}
                   </div>
@@ -911,8 +911,8 @@ const FreelancerProfileForm = () => {
               </div>
 
               {/* Available badge */}
-              <div className="flex items-center gap-1.5 mt-3 px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 font-medium">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <div className="flex items-center gap-1.5 mt-3 px-3 py-2 bg-green-500/15 border border-green-500/30 rounded-lg text-xs text-green-400 font-medium">
+                <span className="w-2 h-2 rounded-full bg-green-500/150 animate-pulse" />
                 Available now
               </div>
             </div>
@@ -920,15 +920,15 @@ const FreelancerProfileForm = () => {
 
           {/* Profile strength */}
           <div className="mt-5">
-            <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-stone-400 mb-3 flex items-center gap-2">
+            <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500 mb-3 flex items-center gap-2">
               Profile strength
               <span className="flex-1 h-px bg-stone-200" />
             </div>
             <div className="space-y-2">
               {NAV_SECTIONS.flatMap(s => s.items).map(item => (
                 <div key={item.id} className="flex items-center gap-2 text-xs">
-                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500' : 'bg-stone-200'}`} />
-                  <span className={completedSections.has(item.id) ? 'text-green-700' : 'text-stone-400'}>
+                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500/150' : 'bg-stone-200'}`} />
+                  <span className={completedSections.has(item.id) ? 'text-green-400' : 'text-slate-500'}>
                     {item.label}
                   </span>
                   {completedSections.has(item.id) && <span className="text-green-500 ml-auto">✓</span>}
