@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getFreelancerProfile } from '@/services/freelancerApi';
 import {
-  Loader2, X, Plus, ChevronLeft,
+  Loader2, X, Plus, ChevronLeft, CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { countries, getCurrencySymbol } from '@/data/countries';
 import { useAuth } from '@/contexts/AuthContext';
@@ -100,7 +101,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {tags.map(tag => (
-          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/150/15 border border-orange-500/30 text-orange-400">
+          <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-500/15 border border-orange-500/30 text-orange-400">
             {tag}
             <button type="button" onClick={() => removeTag(tag)} className="hover:text-orange-300">
               <X className="h-3 w-3" />
@@ -116,7 +117,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           placeholder={placeholder}
           className="flex-1 bg-slate-800/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none focus:border-orange-500 transition-colors placeholder:text-slate-500"
         />
-        <button type="button" onClick={() => addTag()} className="bg-orange-500/150 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
+        <button type="button" onClick={() => addTag()} className="bg-orange-500 text-white border-none rounded-lg px-4 py-2.5 text-xs font-semibold hover:bg-orange-600 transition-colors">
           + Add
         </button>
       </div>
@@ -126,7 +127,7 @@ const SkillTagInput = ({ value, onChange, placeholder }: { value: string; onChan
           <div className="flex flex-wrap gap-1.5">
             {suggestionsAvailable.slice(0, 8).map(s => (
               <button key={s} type="button" onClick={() => addTag(s)}
-                className="px-3 py-1 rounded-full text-xs border border-slate-600/50 bg-slate-800/30 text-slate-400 hover:border-orange-500/50 hover:text-orange-400 hover:bg-orange-500/150/10 transition-colors">
+                className="px-3 py-1 rounded-full text-xs border border-slate-600/50 bg-slate-800/30 text-slate-400 hover:border-orange-500/50 hover:text-orange-400 hover:bg-orange-500/10 transition-colors">
                 {s}
               </button>
             ))}
@@ -141,6 +142,7 @@ const FreelancerProfileForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activePage, setActivePage] = useState('identity');
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
   const { token, user } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
@@ -238,8 +240,7 @@ const FreelancerProfileForm = () => {
       });
 
       if (!res.ok) throw new Error('Failed to save profile');
-      toast.success('Profile saved successfully!');
-      navigate('/freelancer');
+      setShowSuccessModal(true);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save profile');
     } finally {
@@ -276,14 +277,14 @@ const FreelancerProfileForm = () => {
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
-            completionPct >= 80 ? 'bg-green-500/150/15 text-green-400 border-green-500/30' :
+            completionPct >= 80 ? 'bg-green-500/15 text-green-400 border-green-500/30' :
             completionPct >= 40 ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
             'bg-blue-500/15 text-blue-400 border-blue-500/30'
           }`}>
             Profile {completionPct}% complete
           </span>
           <div className="flex items-center gap-2 px-3 py-1 border border-slate-600/50 rounded-full cursor-pointer hover:border-orange-500/50 transition-colors">
-            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/150/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
+            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
               {initials}
             </div>
             <span className="text-xs text-slate-400">{watchedValues.fullName || user?.fullName || 'User'}</span>
@@ -292,7 +293,7 @@ const FreelancerProfileForm = () => {
             type="button"
             onClick={form.handleSubmit(handleSubmit)}
             disabled={isLoading}
-            className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
+            className="bg-orange-500 text-white border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
           >
             {isLoading ? 'Saving...' : 'Save changes'}
           </button>
@@ -318,13 +319,13 @@ const FreelancerProfileForm = () => {
                     onClick={() => setActivePage(item.id)}
                     className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
                       isActive
-                        ? 'text-orange-400 bg-orange-500/150/15 border-l-orange-500 font-medium'
+                        ? 'text-orange-400 bg-orange-500/15 border-l-orange-500 font-medium'
                         : 'text-slate-400 border-l-transparent hover:text-slate-200 hover:bg-slate-700/30'
                     }`}
                   >
                     <span className="text-sm w-[18px] text-center">{item.icon}</span>
                     <span className="flex-1">{item.label}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500/150' : 'bg-slate-600'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-slate-600'}`} />
                   </button>
                 );
               })}
@@ -406,7 +407,7 @@ const FreelancerProfileForm = () => {
 
                   <div className="flex justify-end mt-4">
                     <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → About & bio
                     </button>
                   </div>
@@ -475,7 +476,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('about', 'skills')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Skills
                     </button>
                   </div>
@@ -540,7 +541,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('skills', 'experience')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Experience
                     </button>
                   </div>
@@ -584,7 +585,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('experience', 'rates')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Rates
                     </button>
                   </div>
@@ -660,7 +661,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('rates', 'availability')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Availability
                     </button>
                   </div>
@@ -704,7 +705,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('availability', 'languages')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Languages
                     </button>
                   </div>
@@ -774,7 +775,7 @@ const FreelancerProfileForm = () => {
                       ← Back
                     </button>
                     <button type="button" onClick={() => markDoneAndContinue('languages', 'links')}
-                      className="bg-orange-500/150 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      className="bg-orange-500 text-white border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Links
                     </button>
                   </div>
@@ -823,7 +824,7 @@ const FreelancerProfileForm = () => {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full mt-4 bg-orange-500/150 text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
+                      className="w-full mt-4 bg-orange-500 text-white border-none rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
                     >
                       {isLoading ? 'Saving...' : 'Publish profile ✓'}
                     </button>
@@ -851,8 +852,8 @@ const FreelancerProfileForm = () => {
 
           <div className="border border-slate-700/40 rounded-2xl overflow-hidden">
             {/* Dark header */}
-            <div className="bg-stone-900 p-5 relative">
-              <div className="w-14 h-14 rounded-full bg-orange-500/150 text-white text-xl font-bold flex items-center justify-center font-serif border-2 border-white/20 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
+            <div className="bg-slate-900 p-5 relative">
+              <div className="w-14 h-14 rounded-full bg-orange-500 text-white text-xl font-bold flex items-center justify-center font-serif border-2 border-white/20 mb-3" style={{ fontFamily: "'Georgia', serif" }}>
                 {initials}
               </div>
               <div className="text-[17px] font-semibold text-white tracking-tight">
@@ -865,7 +866,7 @@ const FreelancerProfileForm = () => {
                 {watchedValues.experienceYears ? `${watchedValues.experienceYears} yrs experience` : 'Experience not set'}
               </div>
               {watchedValues.country && (
-                <div className="absolute top-4 right-4 bg-slate-800/40/10 border border-white/20 rounded-full text-[10px] text-white/70 px-2.5 py-0.5">
+                <div className="absolute top-4 right-4 bg-white/10 border border-white/20 rounded-full text-[10px] text-white/70 px-2.5 py-0.5">
                   {watchedValues.country}
                 </div>
               )}
@@ -896,14 +897,14 @@ const FreelancerProfileForm = () => {
               <div className="space-y-2 text-xs text-slate-400">
                 {watchedValues.experienceYears && (
                   <div className="flex gap-2 items-start">
-                    <span className="w-1 h-1 rounded-full bg-orange-500/150 mt-1.5 shrink-0" />
+                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
                     {watchedValues.experienceYears} yrs IT
                     {watchedValues.anyFreelancingExperience && ` · ${watchedValues.anyFreelancingExperience} yrs freelancing`}
                   </div>
                 )}
                 {watchedValues.hoursAvailablePerDay && (
                   <div className="flex gap-2 items-start">
-                    <span className="w-1 h-1 rounded-full bg-orange-500/150 mt-1.5 shrink-0" />
+                    <span className="w-1 h-1 rounded-full bg-orange-500 mt-1.5 shrink-0" />
                     {watchedValues.hoursAvailablePerDay} hrs/day
                     {watchedValues.isAvailableInWeekends && ' · Weekends'}
                   </div>
@@ -912,7 +913,7 @@ const FreelancerProfileForm = () => {
 
               {/* Available badge */}
               <div className="flex items-center gap-1.5 mt-3 px-3 py-2 bg-green-500/15 border border-green-500/30 rounded-lg text-xs text-green-400 font-medium">
-                <span className="w-2 h-2 rounded-full bg-green-500/150 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 Available now
               </div>
             </div>
@@ -927,7 +928,7 @@ const FreelancerProfileForm = () => {
             <div className="space-y-2">
               {NAV_SECTIONS.flatMap(s => s.items).map(item => (
                 <div key={item.id} className="flex items-center gap-2 text-xs">
-                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500/150' : 'bg-slate-700'}`} />
+                  <span className={`w-2 h-2 rounded-full ${completedSections.has(item.id) ? 'bg-green-500' : 'bg-slate-700'}`} />
                   <span className={completedSections.has(item.id) ? 'text-green-400' : 'text-slate-500'}>
                     {item.label}
                   </span>
@@ -938,6 +939,37 @@ const FreelancerProfileForm = () => {
           </div>
         </aside>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="bg-[#0D1B2E] border-slate-700/40 text-slate-200 max-w-md">
+          <DialogHeader className="text-center items-center">
+            <div className="w-16 h-16 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center mx-auto mb-3">
+              <CheckCircle2 className="h-8 w-8 text-green-400" />
+            </div>
+            <DialogTitle className="text-xl text-slate-100">Profile Updated Successfully!</DialogTitle>
+            <DialogDescription className="text-slate-400 mt-2">
+              Your profile has been saved and will be visible to clients and HR teams. You can update it anytime from your dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 mt-4">
+            <button
+              type="button"
+              onClick={() => { setShowSuccessModal(false); navigate('/freelancer'); }}
+              className="flex-1 bg-orange-500 text-white rounded-lg px-4 py-2.5 text-sm font-semibold hover:bg-orange-600 transition-colors"
+            >
+              Go to Dashboard
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="flex-1 bg-transparent border border-slate-600/50 text-slate-300 rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-slate-700/30 transition-colors"
+            >
+              Continue Editing
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
