@@ -19,9 +19,25 @@ import {
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, updateUser } = useAuth();
   const [showDemo, setShowDemo] = useState(false);
   const [showJoinChoice, setShowJoinChoice] = useState(false);
+
+  // Fetch profile percentage for freelancers on login
+  useEffect(() => {
+    const fetchPct = async () => {
+      if (!isAuthenticated || user?.role?.toLowerCase() !== 'freelancer' || !user?.userId) return;
+      if (user.profilePercentage !== undefined) return; // already loaded
+      try {
+        const data = await getFreelancerProfile(user.userId);
+        if (data) {
+          const pct = calculateProfilePercentage(data);
+          updateUser({ profilePercentage: pct, fullName: data.fullName || user.fullName });
+        }
+      } catch { /* silent */ }
+    };
+    fetchPct();
+  }, [isAuthenticated, user?.userId]);
 
   const handleLogout = () => {
     logout();
