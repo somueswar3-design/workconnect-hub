@@ -142,6 +142,7 @@ const FreelancerProfileForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activePage, setActivePage] = useState('identity');
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
   const { token, user } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
