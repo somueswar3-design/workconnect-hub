@@ -125,9 +125,30 @@ const Header = () => {
                       </span>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-[#111827] border-slate-700">
+                  <DropdownMenuContent align="end" className="w-56 bg-[#111827] border-slate-700">
                     {user?.role?.toLowerCase() === 'freelancer' && (
                       <>
+                        {user.profilePercentage !== undefined && (
+                          <div className="px-3 py-2">
+                            <div className="flex items-center justify-between text-xs mb-1.5">
+                              <span className="text-slate-400">Profile completion</span>
+                              <span className={`font-semibold ${
+                                user.profilePercentage >= 80 ? 'text-green-400' :
+                                user.profilePercentage >= 40 ? 'text-amber-400' : 'text-blue-400'
+                              }`}>{user.profilePercentage}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  user.profilePercentage >= 80 ? 'bg-green-500' :
+                                  user.profilePercentage >= 40 ? 'bg-amber-500' : 'bg-blue-500'
+                                }`}
+                                style={{ width: `${user.profilePercentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        <DropdownMenuSeparator className="bg-slate-700" />
                         <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer text-slate-200 focus:bg-slate-800 focus:text-white">
                           <User className="h-4 w-4 mr-2" />
                           Update Profile
