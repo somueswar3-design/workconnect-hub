@@ -209,17 +209,16 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0B1120]">
+    <div className="flex flex-col min-h-screen bg-white">
 
       {/* ══════════════════ HERO ══════════════════ */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Video Background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[#0B1120]" />
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-20">
+          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-15">
             <source src="https://cdn.pixabay.com/video/2020/05/31/40205-426958995_large.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0B1120]/50 via-[#0B1120]/60 to-[#0B1120]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 via-gray-900/60 to-gray-900" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-24 pb-12">
@@ -230,14 +229,14 @@ const Home = () => {
               <br />
               <span className="text-orange-500">Expert IT Professionals</span>
             </h1>
-            <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto">
               Browse verified IT support pros — hourly, part-time, or full-time. Ready for your timeline.
             </p>
           </div>
 
           {/* Tab Navigation */}
           <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center bg-[#1a2332] rounded-full p-1 border border-slate-700/50">
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
               {HERO_TABS.map(tab => (
                 <button
                   key={tab}
@@ -245,7 +244,7 @@ const Home = () => {
                   className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                     heroTab === tab
                       ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25'
-                      : 'text-slate-400 hover:text-white'
+                      : 'text-gray-300 hover:text-white'
                   }`}
                 >
                   {tab}
@@ -256,17 +255,17 @@ const Home = () => {
 
           {/* Search Bar */}
           <div className="max-w-3xl mx-auto mb-6">
-            <div className="flex items-center bg-[#1a2332] border border-slate-700/50 rounded-2xl overflow-hidden">
-              <div className="flex items-center px-4 border-r border-slate-700/50">
-                <Search className="h-5 w-5 text-slate-500" />
+            <div className="flex items-center bg-white rounded-2xl overflow-hidden shadow-xl">
+              <div className="flex items-center px-4 border-r border-gray-200">
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
               <select
-                className="bg-transparent text-slate-300 text-sm px-4 py-4 border-r border-slate-700/50 outline-none min-w-[140px] appearance-none cursor-pointer"
+                className="bg-transparent text-gray-700 text-sm px-4 py-4 border-r border-gray-200 outline-none min-w-[140px] appearance-none cursor-pointer"
                 value={filterSkill || ''}
                 onChange={e => { setFilterSkill(e.target.value); setCurrentPage(1); }}
               >
-                <option value="" className="bg-[#1a2332]">All categories</option>
-                {uniqueSkills.slice(0, 20).map(s => <option key={s} value={s} className="bg-[#1a2332]">{s}</option>)}
+                <option value="">All categories</option>
+                {uniqueSkills.slice(0, 20).map(s => <option key={s} value={s}>{s}</option>)}
               </select>
               <input
                 type="text"
@@ -274,7 +273,7 @@ const Home = () => {
                 value={heroSearchInput}
                 onChange={e => setHeroSearchInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleHeroSearch()}
-                className="flex-1 bg-transparent text-white px-4 py-4 outline-none placeholder:text-slate-500 text-sm"
+                className="flex-1 bg-transparent text-gray-900 px-4 py-4 outline-none placeholder:text-gray-400 text-sm"
               />
               <Button
                 onClick={handleHeroSearch}
@@ -291,7 +290,7 @@ const Home = () => {
               <button
                 key={skill}
                 onClick={() => handleSkillTagClick(skill)}
-                className="px-4 py-2 rounded-full border border-slate-700/60 text-sm text-slate-400 hover:text-white hover:border-slate-500 transition-all bg-[#1a2332]/50 hover:bg-[#1a2332]"
+                className="px-4 py-2 rounded-full border border-white/20 text-sm text-gray-300 hover:text-white hover:border-white/40 transition-all bg-white/10 hover:bg-white/15"
               >
                 {skill}
               </button>
