@@ -58,9 +58,9 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
             <span className="text-xl font-black tracking-tight italic">
-              <span className="text-orange-500">Work</span>
+              <span className="text-orange-500">Work </span>
               <span className="text-orange-400">Support</span>
-              <span className="text-white">360</span>
+              <span className="text-white"> 360</span>
             </span>
           </Link>
 

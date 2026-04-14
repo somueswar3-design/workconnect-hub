@@ -14,22 +14,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#080E1A] text-white py-12 border-t border-slate-800">
+    <footer className="bg-[#080E1A] text-white py-2 border-t border-slate-800">
       <div className="container">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="WorkSupport360" className="h-10 w-10 rounded-lg" />
-              <span className="text-xl font-black tracking-tight italic">
-                <span className="text-orange-500">Work</span>
-                <span className="text-orange-400">Support</span>
-                <span className="text-white">360</span>
-              </span>
-            </Link>
-            <p className="text-slate-400 text-sm">
-              360° IT solutions — connecting professionals with quality projects. Privacy-first freelancing platform.
-            </p>
-          </div>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
 
           <div>
             <h3 className="font-semibold mb-4 text-white">Quick Links</h3>
@@ -77,7 +65,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-8 pt-8 text-center">
+        <div className="border-t border-slate-500 mt-2 pt-2 text-center">
           <p className="text-slate-500 text-sm">
             © {new Date().getFullYear()} WorkSupport360. All rights reserved.
           </p>
