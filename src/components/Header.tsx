@@ -23,11 +23,10 @@ const Header = () => {
   const [showDemo, setShowDemo] = useState(false);
   const [showJoinChoice, setShowJoinChoice] = useState(false);
 
-  // Fetch profile percentage for freelancers on login
   useEffect(() => {
     const fetchPct = async () => {
       if (!isAuthenticated || user?.role?.toLowerCase() !== 'freelancer' || !user?.userId) return;
-      if (user.profilePercentage !== undefined) return; // already loaded
+      if (user.profilePercentage !== undefined) return;
       try {
         const data = await getFreelancerProfile(user.userId);
         if (data) {
@@ -53,21 +52,21 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0B1120]/80 backdrop-blur-xl border-b border-slate-800/50">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
             <span className="text-xl font-black tracking-tight italic">
               <span className="text-orange-500">Work</span>
               <span className="text-orange-400">Support</span>
-              <span className="text-white">360</span>
+              <span className="text-gray-900">360</span>
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-2">
             <button
               onClick={() => setShowDemo(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-slate-800/50"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors rounded-full hover:bg-gray-100"
             >
               <Play className="h-4 w-4 fill-emerald-500 text-emerald-500" />
               How It Works
@@ -82,7 +81,7 @@ const Header = () => {
                     navigate('/', { state: { scrollToFreelancers: true } });
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-orange-400 transition-colors rounded-full hover:bg-slate-800/50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors rounded-full hover:bg-gray-100"
               >
                 <Users className="h-4 w-4" />
                 Hire Talent
@@ -98,7 +97,7 @@ const Header = () => {
                     navigate('/', { state: { scrollToWorks: true } });
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors rounded-full hover:bg-slate-800/50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors rounded-full hover:bg-gray-100"
               >
                 <Search className="h-4 w-4" />
                 Find Work
@@ -109,35 +108,35 @@ const Header = () => {
               <>
                 <Link
                   to={getDashboardPath()}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-300 hover:text-blue-400 transition-colors rounded-full hover:bg-slate-800/50"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors rounded-full hover:bg-gray-100"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   My Works
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 transition-all duration-200 border border-slate-700">
+                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 border border-gray-200">
                       <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-sm font-bold">
                         {user?.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                       </div>
-                      <span className="text-sm font-medium text-slate-200 max-w-[120px] truncate">
+                      <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
                         {user?.fullName || user?.email || 'User'}
                       </span>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-[#111827] border-slate-700">
+                  <DropdownMenuContent align="end" className="w-56">
                     {user?.role?.toLowerCase() === 'freelancer' && (
                       <>
                         {user.profilePercentage !== undefined && (
                           <div className="px-3 py-2">
                             <div className="flex items-center justify-between text-xs mb-1.5">
-                              <span className="text-slate-400">Profile completion</span>
+                              <span className="text-gray-500">Profile completion</span>
                               <span className={`font-semibold ${
-                                user.profilePercentage >= 80 ? 'text-green-400' :
-                                user.profilePercentage >= 40 ? 'text-amber-400' : 'text-blue-400'
+                                user.profilePercentage >= 80 ? 'text-green-600' :
+                                user.profilePercentage >= 40 ? 'text-amber-600' : 'text-blue-600'
                               }`}>{user.profilePercentage}%</span>
                             </div>
-                            <div className="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                               <div
                                 className={`h-full rounded-full transition-all ${
                                   user.profilePercentage >= 80 ? 'bg-green-500' :
@@ -148,15 +147,15 @@ const Header = () => {
                             </div>
                           </div>
                         )}
-                        <DropdownMenuSeparator className="bg-slate-700" />
-                        <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer text-slate-200 focus:bg-slate-800 focus:text-white">
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate('/freelancer-profile')} className="cursor-pointer">
                           <User className="h-4 w-4 mr-2" />
                           Update Profile
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-slate-700" />
+                        <DropdownMenuSeparator />
                       </>
                     )}
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-400 focus:bg-slate-800 focus:text-red-400">
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                       <LogOut className="h-4 w-4 mr-2" />
                       Logout
                     </DropdownMenuItem>
@@ -167,7 +166,7 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white border border-slate-700 hover:bg-slate-800 bg-transparent transition-all duration-200"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 hover:bg-gray-50 bg-transparent transition-all duration-200"
                 >
                   Log in
                 </Link>
@@ -184,13 +183,13 @@ const Header = () => {
           <div className="md:hidden flex items-center gap-2">
             <button
               onClick={() => setShowDemo(true)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-emerald-400 bg-emerald-500/10 rounded-full border border-emerald-500/20"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"
             >
-              <Play className="h-3 w-3 fill-emerald-400" />
+              <Play className="h-3 w-3 fill-emerald-500" />
               Demo
             </button>
             {isAuthenticated ? (
-              <button onClick={handleLogout} className="text-xs px-3 py-1.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              <button onClick={handleLogout} className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
                 Logout
               </button>
             ) : (
@@ -207,7 +206,7 @@ const Header = () => {
 
       {/* Demo Video Dialog */}
       <Dialog open={showDemo} onOpenChange={setShowDemo}>
-        <DialogContent className="sm:max-w-3xl p-0 overflow-hidden rounded-2xl bg-[#111827] border-slate-700">
+        <DialogContent className="sm:max-w-3xl p-0 overflow-hidden rounded-2xl">
           <div className="aspect-video w-full">
             <iframe
               src="/demo-explainer.html"
@@ -221,39 +220,39 @@ const Header = () => {
 
       {/* Join Role Choice Dialog */}
       <Dialog open={showJoinChoice} onOpenChange={setShowJoinChoice}>
-        <DialogContent className="sm:max-w-lg bg-[#111827] border-slate-700">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-white">
+            <DialogTitle className="text-center text-xl font-bold text-gray-900">
               How would you like to join?
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 mt-2">
             <button
               onClick={() => { setShowJoinChoice(false); navigate('/register?role=FreeLancer'); }}
-              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-slate-700 hover:border-orange-500 hover:bg-slate-800/50 transition-all text-left"
+              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-orange-500 hover:bg-orange-50 transition-all text-left"
             >
-              <div className="h-12 w-12 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0 group-hover:bg-orange-500/20 transition-colors">
-                <Briefcase className="h-6 w-6 text-orange-400" />
+              <div className="h-12 w-12 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
+                <Briefcase className="h-6 w-6 text-orange-500" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-white mb-1">I'm a Professional</h3>
-                <p className="text-sm text-slate-400">I want to offer my IT skills and earn hourly, part-time, or full-time</p>
+                <h3 className="font-bold text-gray-900 mb-1">I'm a Professional</h3>
+                <p className="text-sm text-gray-500">I want to offer my IT skills and earn hourly, part-time, or full-time</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-slate-600 group-hover:text-orange-400 mt-1 transition-colors" />
+              <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-orange-500 mt-1 transition-colors" />
             </button>
 
             <button
               onClick={() => { setShowJoinChoice(false); navigate('/register?role=Client'); }}
-              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-slate-700 hover:border-blue-500 hover:bg-slate-800/50 transition-all text-left"
+              className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
             >
-              <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-500/20 transition-colors">
-                <Users className="h-6 w-6 text-blue-400" />
+              <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                <Users className="h-6 w-6 text-blue-500" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-white mb-1">Need Work Support</h3>
-                <p className="text-sm text-slate-400">I want to hire IT professionals on hourly basis for my projects</p>
+                <h3 className="font-bold text-gray-900 mb-1">Need Work Support</h3>
+                <p className="text-sm text-gray-500">I want to hire IT professionals on hourly basis for my projects</p>
               </div>
-              <ArrowRight className="h-5 w-5 text-slate-600 group-hover:text-blue-400 mt-1 transition-colors" />
+              <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 mt-1 transition-colors" />
             </button>
           </div>
         </DialogContent>

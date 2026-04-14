@@ -14,7 +14,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#080E1A] text-white py-12 border-t border-slate-800">
+    <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
       <div className="container">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
@@ -26,14 +26,14 @@ const Footer = () => {
                 <span className="text-white">360</span>
               </span>
             </Link>
-            <p className="text-slate-400 text-sm">
+            <p className="text-gray-400 text-sm">
               360° IT solutions — connecting professionals with quality projects. Privacy-first freelancing platform.
             </p>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4 text-white">Quick Links</h3>
-            <ul className="space-y-2 text-slate-400 text-sm">
+            <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link to="/" className="hover:text-orange-400 transition-colors">Home</Link></li>
               <li><Link to="/browse" className="hover:text-orange-400 transition-colors">Find Talent</Link></li>
               {isAuthenticated ? (
@@ -49,7 +49,7 @@ const Footer = () => {
 
           <div>
             <h3 className="font-semibold mb-4 text-white">Contact Us</h3>
-            <ul className="space-y-3 text-slate-400 text-sm">
+            <ul className="space-y-3 text-gray-400 text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-orange-500" />
                 <a href="tel:9441363687" className="hover:text-orange-400 transition-colors">9441363687</a>
@@ -67,7 +67,7 @@ const Footer = () => {
 
           <div>
             <h3 className="font-semibold mb-4 text-white">Legal</h3>
-            <ul className="space-y-2 text-slate-400 text-sm">
+            <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link to="/privacy" className="hover:text-orange-400 transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-orange-400 transition-colors">Terms of Service</Link></li>
               {!isAuthenticated && (
@@ -77,11 +77,11 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-8 pt-8 text-center">
-          <p className="text-slate-500 text-sm">
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+          <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} WorkSupport360. All rights reserved.
           </p>
-          <p className="text-slate-600 text-xs mt-2">
+          <p className="text-gray-600 text-xs mt-2">
             Developed by <span className="text-orange-500 font-semibold">Mahvenx IT Solutions Pvt Ltd</span>
           </p>
         </div>
