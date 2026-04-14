@@ -280,23 +280,23 @@ const FreelancerProfileForm = () => {
   return (
     <div className="h-screen flex flex-col bg-gray-50 text-gray-900" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
       {/* Top Bar */}
-      <header className="h-[52px] flex items-center justify-between px-8 border-b border-slate-700/40 bg-[#0D1B2E] shrink-0 sticky top-0 z-50">
-        <div className="text-lg tracking-tight font-bold text-slate-100">
+      <header className="h-[52px] flex items-center justify-between px-8 border-b border-gray-200 bg-white shrink-0 sticky top-0 z-50">
+        <div className="text-lg tracking-tight font-bold text-gray-900">
           Update Profile
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border ${
-            completionPct >= 80 ? 'bg-green-500/15 text-green-400 border-green-500/30' :
-            completionPct >= 40 ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
-            'bg-blue-500/15 text-blue-400 border-blue-500/30'
+            completionPct >= 80 ? 'bg-green-50 text-green-600 border-green-200' :
+            completionPct >= 40 ? 'bg-amber-50 text-amber-600 border-amber-200' :
+            'bg-blue-50 text-blue-600 border-blue-200'
           }`}>
             Profile {completionPct}% complete
           </span>
-          <div className="flex items-center gap-2 px-3 py-1 border border-slate-600/50 rounded-full cursor-pointer hover:border-orange-500/50 transition-colors">
-            <div className="w-[26px] h-[26px] rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-[11px] font-semibold flex items-center justify-center">
+          <div className="flex items-center gap-2 px-3 py-1 border border-gray-200 rounded-full cursor-pointer hover:border-orange-300 transition-colors">
+            <div className="w-[26px] h-[26px] rounded-full bg-orange-50 border border-orange-200 text-orange-500 text-[11px] font-semibold flex items-center justify-center">
               {initials}
             </div>
-            <span className="text-xs text-slate-400">{watchedValues.fullName || user?.fullName || 'User'}</span>
+            <span className="text-xs text-gray-600">{watchedValues.fullName || user?.fullName || 'User'}</span>
           </div>
           <button
             type="button"
@@ -312,10 +312,10 @@ const FreelancerProfileForm = () => {
       {/* 3-column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Nav */}
-        <nav className="w-[260px] border-r border-slate-700/40 py-7 overflow-y-auto bg-[#0D1B2E] shrink-0 hidden lg:block" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
+        <nav className="w-[260px] border-r border-gray-200 py-7 overflow-y-auto bg-white shrink-0 hidden lg:block" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d1d5db transparent' }}>
           {NAV_SECTIONS.map(section => (
             <div key={section.title} className="mb-7">
-              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500/80 px-5 mb-1.5">
+              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500 px-5 mb-1.5">
                 {section.title}
               </div>
               {section.items.map(item => {
@@ -328,13 +328,13 @@ const FreelancerProfileForm = () => {
                     onClick={() => setActivePage(item.id)}
                     className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
                       isActive
-                        ? 'text-orange-400 bg-orange-500/15 border-l-orange-500 font-medium'
-                        : 'text-slate-400 border-l-transparent hover:text-slate-200 hover:bg-slate-700/30'
+                        ? 'text-orange-600 bg-orange-50 border-l-orange-500 font-medium'
+                        : 'text-gray-500 border-l-transparent hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
                     <span className="text-sm w-[18px] text-center">{item.icon}</span>
                     <span className="flex-1">{item.label}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-slate-600'}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-gray-300'}`} />
                   </button>
                 );
               })}
@@ -343,7 +343,7 @@ const FreelancerProfileForm = () => {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-10 py-9" style={{ scrollbarWidth: 'thin', scrollbarColor: '#334155 transparent' }}>
+        <main className="flex-1 overflow-y-auto px-10 py-9" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d1d5db transparent' }}>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
 
