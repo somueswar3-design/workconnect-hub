@@ -544,62 +544,193 @@ const Home = () => {
           </div>
         </div>
       </section>
+{/* ══════════════════ LIVE PROJECTS ══════════════════ */}
+<section ref={worksSectionRef} className="py-16 bg-[#0B1120] border-t border-slate-800/50">
+  <div className="container mx-auto px-4">
 
-      {/* ══════════════════ LIVE PROJECTS ══════════════════ */}
-      {!isClient && (
-        <section ref={worksSectionRef} className="py-20 bg-[#0e1726] border-t border-slate-800/50">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">OPEN WORK</p>
-                <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Live Projects
-                </h2>
-              </div>
-              <Button onClick={openPostRequirement} className="gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full">
-                Post a project
-              </Button>
-            </div>
+    {/* Heading */}
+    <div className="text-center mb-10">
+      <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">
+        LIVE PROJECTS
+      </p>
+      <h2 className="text-2xl sm:text-3xl font-black text-white">
+        Explore Ongoing Projects
+      </h2>
+      <p className="text-slate-400 mt-2 text-sm">
+        Discover real projects you can work on right now.
+      </p>
+    </div>
 
-            {reqLoading ? (
-              <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
-            ) : requirements.length === 0 ? (
-              <div className="text-center py-12"><FileText className="h-10 w-10 text-slate-600 mx-auto mb-3" /><p className="text-slate-400">No live openings at the moment. Check back soon!</p></div>
-            ) : (
-              <div className="space-y-3">
-                {requirements.slice(0, 6).map((req, idx) => {
-                  const skills = req.skillsRequired ? req.skillsRequired.split(',').map(s => s.trim()).filter(Boolean) : [];
-                  const icons = [Settings, Lock, Code, Database, Cloud, Cpu];
-                  const IconComp = icons[idx % icons.length];
-                  const iconBgs = ['bg-slate-700', 'bg-emerald-700', 'bg-blue-700', 'bg-violet-700', 'bg-cyan-700', 'bg-rose-700'];
-                  return (
-                    <div key={req.id} className="bg-[#1a2332] border border-slate-700/40 rounded-xl p-5 flex items-center gap-5 hover:border-slate-600 transition-all group">
-                      <div className={`h-11 w-11 rounded-xl ${iconBgs[idx % iconBgs.length]} flex items-center justify-center shrink-0`}>
-                        <IconComp className="h-5 w-5 text-white/70" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-white text-sm mb-1 truncate">{req.title}</h3>
-                        <p className="text-xs text-slate-400 truncate">{req.description || `${skills.join(', ')}`}</p>
-                        <div className="flex items-center gap-4 mt-1.5 text-xs text-slate-500">
-                          <span className="text-orange-400 font-semibold">₹{req.budget?.toLocaleString() || '—'}</span>
-                          <span>{req.minExperience || 0}+ yrs</span>
-                          <span>{skills.length} skills</span>
-                        </div>
-                      </div>
-                      <Button onClick={() => handleInterestClick(req)} variant="outline" size="sm" className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-800 rounded-full shrink-0">
-                        Apply <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  );
-                })}
+    {/* 🔹 Pagination Logic */}
+    {(() => {
+      const [currentPage, setCurrentPage] = useState(1);
+      const projectsPerPage = 6;
+
+      const projects = [
+        {
+          id: 1,
+          title: "E-commerce Website",
+          description: "A full-stack MERN application for online shopping.",
+          status: "In Progress",
+        },
+        {
+          id: 2,
+          title: "Mobile Banking App",
+          description: "Cross-platform app with secure transactions.",
+          status: "Completed",
+        },
+        {
+          id: 3,
+          title: "AI Chatbot",
+          description: "Customer support chatbot using NLP.",
+          status: "Pending",
+        },
+        {
+          id: 4,
+          title: "Portfolio Builder",
+          description: "Create developer portfolios easily.",
+          status: "Completed",
+        },
+        {
+          id: 5,
+          title: "Task Manager",
+          description: "Organize tasks with drag-and-drop UI.",
+          status: "In Progress",
+        },
+        {
+          id: 6,
+          title: "Food Delivery App",
+          description: "Order food with real-time tracking.",
+          status: "Pending",
+        },
+        {
+          id: 7,
+          title: "Fitness Tracker",
+          description: "Track workouts and health stats.",
+          status: "In Progress",
+        },
+        {
+          id: 8,
+          title: "Chat Application",
+          description: "Realtime messaging using sockets.",
+          status: "Completed",
+        },
+        {
+          id: 9,
+          title: "Blog Platform",
+          description: "Write and share articles with ease.",
+          status: "Pending",
+        },
+        {
+          id: 10,
+          title: "Task Management App",
+          description: "Organize and prioritize tasks efficiently.",
+          status: "In Progress",
+        },
+        {
+          id: 11,
+          title: "Social Media Dashboard",
+          description: "Manage all your social accounts in one place.",
+          status: "Completed",
+        },
+        {
+          id: 12,
+          title: "Online Learning Platform",
+          description: "Access courses and earn certificates.",
+          status: "In Progress",
+        },
+        {
+          id: 13,
+          title: "Health & Fitness App",
+          description: "Track workouts, nutrition, and health metrics.",
+          status: "Pending",
+        },
+        {
+          id: 14,
+          title: "Travel Planning App",
+          description: "Plan trips and manage itineraries with ease.",
+          status: "In Progress",
+        },
+        {
+          id: 15,
+          title: "Clothing e-commerce platform",
+          description: "Collaborate on projects with task boards and timelines.",
+          status: "Completed",
+        }
+      ];
+
+      const indexOfLast = currentPage * projectsPerPage;
+      const indexOfFirst = indexOfLast - projectsPerPage;
+      const currentProjects = projects.slice(indexOfFirst, indexOfLast);
+
+      return (
+        <>
+          {/* Projects Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+            {currentProjects.map((project) => (
+              <div
+                key={project.id}
+                className="bg-[#1a2332] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 hover:bg-[#1e2a3a] transition-all"
+              >
+                {/* Title */}
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {project.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-slate-400 mb-4 leading-relaxed">
+                  {project.description}
+                </p>
+
+                {/* Status */}
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                      project.status === "Completed"
+                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                        : project.status === "In Progress"
+                        ? "bg-orange-500/10 text-orange-400 border border-orange-500/20"
+                        : "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                    }`}
+                  >
+                    {project.status}
+                  </span>
+
+                  <Button
+                    size="sm"
+                    className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-4 py-1.5 rounded-lg"
+                  >
+                    View Details
+                  </Button>
+                </div>
               </div>
-            )}
+            ))}
           </div>
-        </section>
-      )}
 
-      {/* ══════════════════ HOW IT WORKS ══════════════════ */}
+          {/* Pagination Buttons */}
+          <div className="flex justify-center mt-8 gap-2">
+            {Array.from({
+              length: Math.ceil(projects.length / projectsPerPage),
+            }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 text-xs rounded-md ${
+                  currentPage === i + 1
+                    ? "bg-orange-500 text-white"
+                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </>
+      );
+    })()}
+  </div>
+</section>
+ {/* ══════════════════ HOW IT WORKS ══════════════════ */}
       <section className="py-20 bg-[#0B1120] border-t border-slate-800/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
