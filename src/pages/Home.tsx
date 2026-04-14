@@ -24,7 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { countries } from '@/data/countries';
 import { Checkbox } from '@/components/ui/checkbox';
 
-const ITEMS_PER_PAGE = 48;
+const ITEMS_PER_PAGE = 6;
 
 const HERO_TABS = ['Find freelancers', 'Browse projects', 'Post a job'] as const;
 const SKILL_TAGS = ['React', 'Node.js', 'AWS', 'DevOps', 'Python', 'Cybersecurity', 'UI/UX', 'Mobile', 'Java', '.NET', 'Angular', 'Data Science'];
@@ -65,6 +65,8 @@ const Home = () => {
   const [interestComment, setInterestComment] = useState('');
   const [interestSubmitting, setInterestSubmitting] = useState(false);
   const [interestSuccess, setInterestSuccess] = useState(false);
+  const [reqCurrentPage, setReqCurrentPage] = useState(1);
+  const REQ_PER_PAGE = 6;
   const [postReqOpen, setPostReqOpen] = useState(false);
   const [postReqSubmitting, setPostReqSubmitting] = useState(false);
   const [postReqForm, setPostReqForm] = useState({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: '', countryCode: '+91', contactPhone: '' });
@@ -469,7 +471,7 @@ const Home = () => {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                      {paginated.slice(0, 12).map((f, idx) => {
+                      {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
                         const avatarColor = avatarColors[idx % avatarColors.length];
@@ -478,17 +480,20 @@ const Home = () => {
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            onClick={() => handleDemoClick(f)}
-                            className="bg-[#1a2332] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 hover:bg-[#1e2a3a] transition-all cursor-pointer group"
+                            className="bg-[#1a2332] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 hover:bg-[#1e2a3a] transition-all group"
                           >
                             {/* Header */}
                             <div className="flex items-center gap-3 mb-3">
                               <div className={`h-12 w-12 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-slate-700/50`}>
                                 {initials}
                               </div>
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <h3 className="font-bold text-white text-sm truncate group-hover:text-orange-400 transition-colors">{f.fullName}</h3>
                                 <p className="text-xs text-slate-400 truncate">{skills[0] || 'IT Professional'} developer</p>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className={`h-2 w-2 rounded-full ${isAvailable ? 'bg-emerald-400' : 'bg-slate-500'}`} />
+                                <span className={`text-[10px] font-medium ${isAvailable ? 'text-emerald-400' : 'text-slate-500'}`}>{isAvailable ? 'Available' : 'Busy'}</span>
                               </div>
                             </div>
 
@@ -501,20 +506,26 @@ const Home = () => {
                             </div>
 
                             {/* Skill Tags */}
-                            <div className="flex flex-wrap gap-1.5 mb-4">
+                            <div className="flex flex-wrap gap-1.5 mb-3">
                               {skills.slice(0, 3).map((skill, si) => (
                                 <span key={si} className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-slate-300 font-medium">{skill}</span>
                               ))}
+                              {skills.length > 3 && <span className="text-[11px] px-2 py-1 rounded-lg bg-slate-800/50 text-slate-500">+{skills.length - 3}</span>}
                             </div>
 
-                            {/* Footer */}
-                            <div className="flex items-center justify-between pt-2 border-t border-slate-800/60">
+                            {/* Rate + Country */}
+                            <div className="flex items-center justify-between mb-4 text-sm">
                               <span className="text-lg font-black text-white">{symbol}{f.hourRate || '—'}<span className="text-xs font-normal text-slate-500">/hr</span></span>
-                              <div className="flex items-center gap-1.5">
-                                <span className={`h-2 w-2 rounded-full ${isAvailable ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-                                <span className={`text-xs font-medium ${isAvailable ? 'text-emerald-400' : 'text-slate-500'}`}>{isAvailable ? 'Available' : 'Busy'}</span>
-                              </div>
+                              {f.country && <span className="text-xs text-slate-500 flex items-center gap-1"><Globe className="h-3 w-3" />{f.country}</span>}
                             </div>
+
+                            {/* Connect Button */}
+                            <Button
+                              onClick={() => handleDemoClick(f)}
+                              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 rounded-xl border-0"
+                            >
+                              <Phone className="h-3.5 w-3.5 mr-1.5" /> Connect
+                            </Button>
                           </div>
                         );
                       })}
@@ -545,191 +556,84 @@ const Home = () => {
         </div>
       </section>
 {/* ══════════════════ LIVE PROJECTS ══════════════════ */}
-<section ref={worksSectionRef} className="py-16 bg-[#0B1120] border-t border-slate-800/50">
-  <div className="container mx-auto px-4">
+      <section ref={worksSectionRef} className="py-16 bg-[#0B1120] border-t border-slate-800/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">LIVE PROJECTS</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-white">Explore Ongoing Projects</h2>
+            <p className="text-slate-400 mt-2 text-sm">Discover real projects you can work on right now.</p>
+          </div>
 
-    {/* Heading */}
-    <div className="text-center mb-10">
-      <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">
-        LIVE PROJECTS
-      </p>
-      <h2 className="text-2xl sm:text-3xl font-black text-white">
-        Explore Ongoing Projects
-      </h2>
-      <p className="text-slate-400 mt-2 text-sm">
-        Discover real projects you can work on right now.
-      </p>
-    </div>
+          {reqLoading ? (
+            <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
+          ) : requirements.length === 0 ? (
+            <div className="text-center py-16">
+              <Briefcase className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-400">No live projects available right now.</p>
+            </div>
+          ) : (() => {
+            const reqTotalPages = Math.ceil(requirements.length / REQ_PER_PAGE);
+            const reqPaginated = requirements.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
+            return (
+              <>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+                  {reqPaginated.map((req) => {
+                    const skills = req.skillsRequired?.split(',').map(s => s.trim()).filter(Boolean) || [];
+                    return (
+                      <div key={req.id} className="bg-[#1a2332] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 hover:bg-[#1e2a3a] transition-all">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="text-base font-bold text-white line-clamp-2">{req.title}</h3>
+                          <span className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${
+                            req.status?.toLowerCase() === 'open' || req.status?.toLowerCase() === 'pending'
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                          }`}>{req.status || 'Open'}</span>
+                        </div>
 
-    {/* 🔹 Pagination Logic */}
-    {(() => {
-      const [currentPage, setCurrentPage] = useState(1);
-      const projectsPerPage = 6;
+                        {req.description && <p className="text-sm text-slate-400 mb-3 leading-relaxed line-clamp-2">{req.description}</p>}
 
-      const projects = [
-        {
-          id: 1,
-          title: "E-commerce Website",
-          description: "A full-stack MERN application for online shopping.",
-          status: "In Progress",
-        },
-        {
-          id: 2,
-          title: "Mobile Banking App",
-          description: "Cross-platform app with secure transactions.",
-          status: "Completed",
-        },
-        {
-          id: 3,
-          title: "AI Chatbot",
-          description: "Customer support chatbot using NLP.",
-          status: "Pending",
-        },
-        {
-          id: 4,
-          title: "Portfolio Builder",
-          description: "Create developer portfolios easily.",
-          status: "Completed",
-        },
-        {
-          id: 5,
-          title: "Task Manager",
-          description: "Organize tasks with drag-and-drop UI.",
-          status: "In Progress",
-        },
-        {
-          id: 6,
-          title: "Food Delivery App",
-          description: "Order food with real-time tracking.",
-          status: "Pending",
-        },
-        {
-          id: 7,
-          title: "Fitness Tracker",
-          description: "Track workouts and health stats.",
-          status: "In Progress",
-        },
-        {
-          id: 8,
-          title: "Chat Application",
-          description: "Realtime messaging using sockets.",
-          status: "Completed",
-        },
-        {
-          id: 9,
-          title: "Blog Platform",
-          description: "Write and share articles with ease.",
-          status: "Pending",
-        },
-        {
-          id: 10,
-          title: "Task Management App",
-          description: "Organize and prioritize tasks efficiently.",
-          status: "In Progress",
-        },
-        {
-          id: 11,
-          title: "Social Media Dashboard",
-          description: "Manage all your social accounts in one place.",
-          status: "Completed",
-        },
-        {
-          id: 12,
-          title: "Online Learning Platform",
-          description: "Access courses and earn certificates.",
-          status: "In Progress",
-        },
-        {
-          id: 13,
-          title: "Health & Fitness App",
-          description: "Track workouts, nutrition, and health metrics.",
-          status: "Pending",
-        },
-        {
-          id: 14,
-          title: "Travel Planning App",
-          description: "Plan trips and manage itineraries with ease.",
-          status: "In Progress",
-        },
-        {
-          id: 15,
-          title: "Clothing e-commerce platform",
-          description: "Collaborate on projects with task boards and timelines.",
-          status: "Completed",
-        }
-      ];
+                        {skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {skills.slice(0, 4).map((skill, si) => (
+                              <span key={si} className="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-medium">{skill}</span>
+                            ))}
+                            {skills.length > 4 && <span className="text-[11px] px-2 py-1 rounded-lg bg-slate-800/50 text-slate-500">+{skills.length - 4}</span>}
+                          </div>
+                        )}
 
-      const indexOfLast = currentPage * projectsPerPage;
-      const indexOfFirst = indexOfLast - projectsPerPage;
-      const currentProjects = projects.slice(indexOfFirst, indexOfLast);
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 mb-4">
+                          {req.budget > 0 && <span className="flex items-center gap-1 font-semibold text-slate-300"><DollarSign className="h-3 w-3 text-emerald-400" />{req.budget.toLocaleString()}</span>}
+                          {req.minExperience > 0 && <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{req.minExperience}+ yrs</span>}
+                          {req.country && <span className="flex items-center gap-1"><Globe className="h-3 w-3" />{req.country}</span>}
+                        </div>
 
-      return (
-        <>
-          {/* Projects Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-            {currentProjects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-[#1a2332] border border-slate-700/40 rounded-2xl p-5 hover:border-slate-600 hover:bg-[#1e2a3a] transition-all"
-              >
-                {/* Title */}
-                <h3 className="text-lg font-bold text-white mb-2">
-                  {project.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-sm text-slate-400 mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-
-                {/* Status */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                      project.status === "Completed"
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                        : project.status === "In Progress"
-                        ? "bg-orange-500/10 text-orange-400 border border-orange-500/20"
-                        : "bg-slate-500/10 text-slate-400 border border-slate-500/20"
-                    }`}
-                  >
-                    {project.status}
-                  </span>
-
-                  <Button
-                    size="sm"
-                    className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-4 py-1.5 rounded-lg"
-                  >
-                    View Details
-                  </Button>
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-800/60">
+                          <span className="text-[10px] text-slate-500 flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(req.createdOn).toLocaleDateString()}</span>
+                          <Button size="sm" onClick={() => handleInterestClick(req)} className="h-7 text-xs gap-1 bg-orange-500 hover:bg-orange-600 text-white border-0">
+                            <Heart className="h-3 w-3" /> I'm Interested
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Pagination Buttons */}
-          <div className="flex justify-center mt-8 gap-2">
-            {Array.from({
-              length: Math.ceil(projects.length / projectsPerPage),
-            }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 text-xs rounded-md ${
-                  currentPage === i + 1
-                    ? "bg-orange-500 text-white"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-        </>
-      );
-    })()}
-  </div>
-</section>
+                {reqTotalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
+                    <Button variant="outline" size="sm" disabled={reqCurrentPage === 1} onClick={() => setReqCurrentPage(1)} className="h-8 px-2 text-xs border-slate-700 text-slate-300 hover:bg-slate-800">First</Button>
+                    <Button variant="outline" size="sm" disabled={reqCurrentPage === 1} onClick={() => setReqCurrentPage(p => p - 1)} className="h-8 px-2 border-slate-700 text-slate-300 hover:bg-slate-800"><ChevronLeft className="h-3 w-3" /></Button>
+                    {Array.from({ length: reqTotalPages }, (_, i) => i + 1).map(page => (
+                      <Button key={page} variant={reqCurrentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setReqCurrentPage(page)} className={`h-8 w-8 p-0 text-xs ${reqCurrentPage === page ? 'bg-orange-500 hover:bg-orange-600 border-orange-500' : 'border-slate-700 text-slate-300 hover:bg-slate-800'}`}>{page}</Button>
+                    ))}
+                    <Button variant="outline" size="sm" disabled={reqCurrentPage === reqTotalPages} onClick={() => setReqCurrentPage(p => p + 1)} className="h-8 px-2 border-slate-700 text-slate-300 hover:bg-slate-800"><ChevronRight className="h-3 w-3" /></Button>
+                    <Button variant="outline" size="sm" disabled={reqCurrentPage === reqTotalPages} onClick={() => setReqCurrentPage(reqTotalPages)} className="h-8 px-2 text-xs border-slate-700 text-slate-300 hover:bg-slate-800">Last</Button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      </section>
  {/* ══════════════════ HOW IT WORKS ══════════════════ */}
       <section className="py-20 bg-[#0B1120] border-t border-slate-800/50">
         <div className="container mx-auto px-4">
