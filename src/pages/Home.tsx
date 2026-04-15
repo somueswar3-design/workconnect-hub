@@ -379,6 +379,7 @@ const Home = () => {
             </div>
           </div>
         </div>
+      </section>
 
       {/* ══════════════════ MAIN CONTENT: Sidebar + Freelancer Grid ══════════════════ */}
       <section ref={freelancerSectionRef} className="bg-gray-50">
