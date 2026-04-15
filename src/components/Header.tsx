@@ -57,10 +57,10 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
             <span className="text-xl font-black tracking-tight italic">
-              <span className="text-orange-500">Work</span>
-              <span className="text-orange-400">Support</span>
-              <span className="text-gray-900">360</span>
-            </span>
+  <span className="text-orange-500 mr-1">Work</span>
+  <span className="text-orange-400 mr-1">Support</span>
+  <span className="text-gray-900">360</span>
+</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-2">
