@@ -29,6 +29,25 @@ const ITEMS_PER_PAGE = 6;
 const HERO_TABS = ['Find freelancers', 'Browse projects', 'Post a job'] as const;
 const SKILL_TAGS = ['React', 'Node.js', 'AWS', 'DevOps', 'Python', 'Cybersecurity', 'UI/UX', 'Mobile', 'Java', '.NET', 'Angular', 'Data Science'];
 
+const CATEGORIES = [
+  { label: 'Web Development', icon: Code, type: 'IT' },
+  { label: 'Mobile Development', icon: Smartphone, type: 'IT' },
+  { label: 'Cloud & DevOps', icon: Cloud, type: 'IT' },
+  { label: 'Data Science & AI', icon: Database, type: 'IT' },
+  { label: 'Cybersecurity', icon: Lock, type: 'IT' },
+  { label: 'UI/UX Design', icon: Palette, type: 'IT' },
+  { label: 'QA & Testing', icon: Settings, type: 'IT' },
+  { label: 'ERP & SAP', icon: Cpu, type: 'IT' },
+  { label: 'Digital Marketing', icon: TrendingUp, type: 'Non-IT' },
+  { label: 'Content Writing', icon: FileText, type: 'Non-IT' },
+  { label: 'Graphic Design', icon: MonitorPlay, type: 'Non-IT' },
+  { label: 'SEO & Analytics', icon: BarChart3, type: 'Non-IT' },
+  { label: 'E-Commerce', icon: ShoppingCart, type: 'Non-IT' },
+  { label: 'Healthcare IT', icon: Stethoscope, type: 'Non-IT' },
+  { label: 'Finance & Banking', icon: Landmark, type: 'Non-IT' },
+  { label: 'Education & Training', icon: GraduationCap, type: 'Non-IT' },
+];
+
 const AVAILABILITY_OPTIONS = ['Available now', 'Part-time', 'Full-time'];
 const RATE_OPTIONS = [
   { label: 'Under $20/hr', min: 0, max: 20 },
