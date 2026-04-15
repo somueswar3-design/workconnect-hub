@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard, Search } from 'lucide-react';
+import { LogIn, LogOut, User, Play, Briefcase, Users, ArrowRight, LayoutDashboard, Search, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
@@ -113,6 +113,21 @@ const Header = () => {
                   <LayoutDashboard className="h-4 w-4" />
                   My Works
                 </Link>
+                {user?.role?.toLowerCase() === 'client' && (
+                  <button
+                    onClick={() => {
+                      if (location.pathname === '/') {
+                        (window as any).__openPostRequirement?.();
+                      } else {
+                        navigate('/', { state: { openPostRequirement: true } });
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition-all rounded-full shadow-sm"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Post a Requirement
+                  </button>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 border border-gray-200">
