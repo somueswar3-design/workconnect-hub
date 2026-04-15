@@ -115,13 +115,15 @@ const Home = () => {
   useEffect(() => {
     (window as any).__scrollToFreelancers = () => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     (window as any).__scrollToWorks = () => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-    return () => { delete (window as any).__scrollToFreelancers; delete (window as any).__scrollToWorks; };
+    (window as any).__openPostRequirement = () => openPostRequirement();
+    return () => { delete (window as any).__scrollToFreelancers; delete (window as any).__scrollToWorks; delete (window as any).__openPostRequirement; };
   }, []);
 
   useEffect(() => {
     const state = locationState.state as any;
     if (state?.scrollToFreelancers) setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
     if (state?.scrollToWorks) setTimeout(() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
+    if (state?.openPostRequirement) setTimeout(() => openPostRequirement(), 300);
   }, [locationState.state]);
 
   const filtered = useMemo(() => {
