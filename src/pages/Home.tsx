@@ -286,7 +286,15 @@ const Home = () => {
                 onChange={e => { setFilterSkill(e.target.value); setCurrentPage(1); }}
               >
                 <option value="">All categories</option>
-                {uniqueSkills.slice(0, 20).map(s => <option key={s} value={s}>{s}</option>)}
+                {CATEGORIES.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
+              </select>
+              <select
+                className="bg-transparent text-gray-700 text-sm px-4 py-4 border-r border-gray-200 outline-none min-w-[120px] appearance-none cursor-pointer"
+                value={filterCountry || ''}
+                onChange={e => { setFilterCountry(e.target.value); setCurrentPage(1); }}
+              >
+                <option value="">All Countries</option>
+                {countries.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
               </select>
               <input
                 type="text"
@@ -319,6 +327,58 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════ CATEGORIES ══════════════════ */}
+      <section className="py-12 bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">CATEGORIES</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Browse by Domain</h2>
+            <p className="text-gray-500 mt-2 text-sm">IT & Non-IT categories — find the right professionals for any project.</p>
+          </div>
+
+          {/* IT Categories */}
+          <div className="mb-6">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Code className="h-4 w-4 text-orange-500" /> IT & Technology
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {CATEGORIES.filter(c => c.type === 'IT').map(cat => (
+                <button
+                  key={cat.label}
+                  onClick={() => { setFilterSkill(cat.label); setSearchQuery(cat.label); setCurrentPage(1); freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-md hover:shadow-orange-500/10 transition-all bg-white group"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
+                    <cat.icon className="h-5 w-5 text-orange-500" />
+                  </div>
+                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Non-IT Categories */}
+          <div>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-blue-500" /> Non-IT & Digital
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {CATEGORIES.filter(c => c.type === 'Non-IT').map(cat => (
+                <button
+                  key={cat.label}
+                  onClick={() => { setFilterSkill(cat.label); setSearchQuery(cat.label); setCurrentPage(1); freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md hover:shadow-blue-500/10 transition-all bg-white group"
+                >
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                    <cat.icon className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
       {/* ══════════════════ MAIN CONTENT: Sidebar + Freelancer Grid ══════════════════ */}
       <section ref={freelancerSectionRef} className="bg-gray-50">
