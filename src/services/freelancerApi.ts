@@ -1,7 +1,7 @@
 import { FreelancerStats, InterestFormData } from '@/types/project';
 import { WorkerProfile } from '@/types/profile';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
 
 const getAuthHeaders = (): Record<string, string> => {
   const token = localStorage.getItem('auth_token');

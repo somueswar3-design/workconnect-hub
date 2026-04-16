@@ -45,7 +45,7 @@ const Login = () => {
       if (role.toLowerCase() === 'freelancer') {
         try {
           const statusRes = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167'}/api/freelancer/profile-status?userId=${userId}`,
+            `${import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net'}/api/freelancer/profile-status?userId=${userId}`,
             { headers: { 'Authorization': `Bearer ${result.token}` } }
           );
           const statusData = await statusRes.json();
