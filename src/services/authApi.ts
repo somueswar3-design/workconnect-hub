@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7167';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
 
 export interface RegisterRequest {
   email: string;
