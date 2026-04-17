@@ -76,6 +76,9 @@ const Home = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
   const [selectedFreelancer, setSelectedFreelancer] = useState<FreelancerProfileDto | null>(null);
+  const [profileViewOpen, setProfileViewOpen] = useState(false);
+  const [profileFreelancer, setProfileFreelancer] = useState<FreelancerProfileDto | null>(null);
+  const [profileIdx, setProfileIdx] = useState(0);
   const [demoForm, setDemoForm] = useState({ projectTitle: '', description: '', clientBudget: '', contactEmail: '', contactPhone: '', budgetCountry: 'India', phoneCountryCode: '+91' });
   const [demoSubmitting, setDemoSubmitting] = useState(false);
   const [requirements, setRequirements] = useState<ClientRequirementResponse[]>([]);
@@ -601,13 +604,22 @@ const Home = () => {
                               {f.country && <span className="text-xs text-gray-500 flex items-center gap-1"><Globe className="h-3 w-3" />{f.country}</span>}
                             </div>
 
-                            {/* Connect Button */}
-                            <Button
-                              onClick={() => handleDemoClick(f)}
-                              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 rounded-xl border-0"
-                            >
-                              <Phone className="h-3.5 w-3.5 mr-1.5" /> Connect
-                            </Button>
+                            {/* Action Buttons */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button
+                                onClick={() => { setProfileFreelancer(f); setProfileIdx(idx); setProfileViewOpen(true); }}
+                                variant="outline"
+                                className="border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold text-sm h-9 rounded-xl"
+                              >
+                                <User className="h-3.5 w-3.5 mr-1.5" /> View Profile
+                              </Button>
+                              <Button
+                                onClick={() => handleDemoClick(f)}
+                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 rounded-xl border-0"
+                              >
+                                <Phone className="h-3.5 w-3.5 mr-1.5" /> Connect
+                              </Button>
+                            </div>
                           </div>
                         );
                       })}
