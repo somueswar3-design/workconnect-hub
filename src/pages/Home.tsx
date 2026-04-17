@@ -865,11 +865,11 @@ const Home = () => {
             return (
               <>
                 {/* Header banner */}
-                <div className="relative bg-gradient-to-r from-orange-500 to-amber-500 px-6 pt-6 pb-16 rounded-t-lg">
+                <div className="relative bg-gradient-to-r from-orange-500 to-amber-500 h-20 rounded-t-lg">
                   <h2 className="sr-only">Profile</h2>
                 </div>
-                <div className="px-6 -mt-12 pb-6">
-                  <div className="flex items-end gap-4 mb-4">
+                <div className="px-6 -mt-10 pb-6">
+                  <div className="flex items-end gap-4 mb-4 flex-wrap sm:flex-nowrap">
                     <div className={`h-20 w-20 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-2xl ring-4 ring-white shadow-lg shrink-0`}>
                       {initials}
                     </div>
