@@ -848,6 +848,173 @@ const Home = () => {
       )}
 
       {/* ══════════════════ DIALOGS ══════════════════ */}
+      {/* View Profile Dialog (Freelancer.in style) */}
+      <Dialog open={profileViewOpen} onOpenChange={setProfileViewOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+          {profileFreelancer && (() => {
+            const f = profileFreelancer;
+            const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
+            const secSkills = f.secondarySkills ? f.secondarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
+            const langs = (f.languagesKnown || f.speakingLanguage || '').split(',').map(s => s.trim()).filter(Boolean);
+            const symbol = getCurrencySymbol(f.country);
+            const initials = f.fullName ? f.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??';
+            const avatarColor = avatarColors[profileIdx % avatarColors.length];
+            const rating = (4.7 + (profileIdx % 4) * 0.1).toFixed(1);
+            const reviews = 50 + profileIdx * 13;
+            const exp = f.experienceYears || f.experience || 0;
+            return (
+              <>
+                {/* Header banner */}
+                <div className="relative bg-gradient-to-r from-orange-500 to-amber-500 px-6 pt-6 pb-16 rounded-t-lg">
+                  <h2 className="sr-only">Profile</h2>
+                </div>
+                <div className="px-6 -mt-12 pb-6">
+                  <div className="flex items-end gap-4 mb-4">
+                    <div className={`h-20 w-20 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-2xl ring-4 ring-white shadow-lg shrink-0`}>
+                      {initials}
+                    </div>
+                    <div className="flex-1 min-w-0 pb-1">
+                      <h2 className="text-xl font-black text-gray-900 truncate">{f.fullName}</h2>
+                      <p className="text-sm text-gray-500 truncate">{skills[0] || 'IT Professional'} • {f.country}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />)}
+                        </div>
+                        <span className="text-xs text-gray-600 font-semibold">{rating}</span>
+                        <span className="text-xs text-gray-400">({reviews} reviews)</span>
+                      </div>
+                    </div>
+                    <div className="text-right pb-1">
+                      <p className="text-2xl font-black text-gray-900">{symbol}{f.hourRate || '—'}</p>
+                      <p className="text-xs text-gray-400">/hour</p>
+                    </div>
+                  </div>
+
+                  <Tabs defaultValue="overview" className="w-full">
+                    <TabsList className="w-full justify-start bg-gray-100 h-10">
+                      <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+                      <TabsTrigger value="experience" className="text-xs">Experience</TabsTrigger>
+                      <TabsTrigger value="skills" className="text-xs">Skills</TabsTrigger>
+                      <TabsTrigger value="reviews" className="text-xs">Reviews</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="overview" className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-900 mb-2">About</h4>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          {f.bioDescption || `Experienced ${skills[0] || 'IT'} professional with ${exp || 'several'} years of hands-on expertise. Passionate about delivering high-quality work and collaborating with clients to bring their vision to life.`}
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500">Country</p><p className="font-semibold text-gray-900 flex items-center gap-1"><Globe className="h-3.5 w-3.5 text-orange-500" />{f.country || '—'}</p></div>
+                        <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500">Experience</p><p className="font-semibold text-gray-900 flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-orange-500" />{exp ? `${exp}+ years` : '—'}</p></div>
+                        <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500">Hourly Rate</p><p className="font-semibold text-gray-900 flex items-center gap-1"><DollarSign className="h-3.5 w-3.5 text-orange-500" />{symbol}{f.hourRate || '—'}/hr</p></div>
+                        <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500">Hours/Day</p><p className="font-semibold text-gray-900 flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-orange-500" />{f.hoursAvailablePerDay || '8'} hrs</p></div>
+                      </div>
+                      {langs.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-gray-900 mb-2">Languages</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {langs.map((l, i) => <span key={i} className="text-xs px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-600 font-medium">{l}</span>)}
+                          </div>
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="experience" className="mt-4 space-y-3">
+                      <div className="border-l-2 border-orange-500 pl-4 py-1">
+                        <p className="text-sm font-bold text-gray-900">{f.currentCompanyRole || skills[0] || 'Professional'}</p>
+                        <p className="text-xs text-gray-500">{f.currentCompany || f.companyName || 'Independent'}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{exp ? `${exp}+ years experience` : 'Current'}</p>
+                      </div>
+                      {f.anyFreelnacingExperience ? (
+                        <div className="border-l-2 border-gray-200 pl-4 py-1">
+                          <p className="text-sm font-bold text-gray-900">Freelancing Experience</p>
+                          <p className="text-xs text-gray-500">{f.anyFreelnacingExperience}+ years on freelance projects</p>
+                        </div>
+                      ) : null}
+                      <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600">
+                        <p className="font-semibold text-gray-900 mb-1">Availability</p>
+                        <p>Working {f.hoursAvailablePerDay || '8'} hours per day{f.isAvailbleInweeknds ? ', including weekends' : ', weekdays only'}.</p>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="skills" className="mt-4 space-y-4">
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-900 mb-2">Primary Skills</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {skills.length > 0 ? skills.map((s, i) => <span key={i} className="text-xs px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-700 font-semibold">{s}</span>) : <p className="text-xs text-gray-400">No skills listed</p>}
+                        </div>
+                      </div>
+                      {secSkills.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-gray-900 mb-2">Secondary Skills</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {secSkills.map((s, i) => <span key={i} className="text-xs px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200 text-gray-700 font-medium">{s}</span>)}
+                          </div>
+                        </div>
+                      )}
+                      {f.skillSetDesc && (
+                        <div>
+                          <h4 className="text-sm font-bold text-gray-900 mb-2">Skill Description</h4>
+                          <p className="text-sm text-gray-600 leading-relaxed">{f.skillSetDesc}</p>
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="reviews" className="mt-4 space-y-3">
+                      <div className="flex items-center gap-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-4 border border-orange-100">
+                        <div className="text-center">
+                          <p className="text-3xl font-black text-gray-900">{rating}</p>
+                          <div className="flex items-center gap-0.5 justify-center mt-1">
+                            {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-3 w-3 fill-amber-400 text-amber-400" />)}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{reviews} reviews</p>
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          {[5, 4, 3, 2, 1].map(stars => (
+                            <div key={stars} className="flex items-center gap-2 text-xs">
+                              <span className="w-3 text-gray-500">{stars}</span>
+                              <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-full bg-amber-400" style={{ width: `${stars === 5 ? 70 : stars === 4 ? 20 : stars === 3 ? 7 : stars === 2 ? 2 : 1}%` }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {[
+                        { name: 'Sarah M.', rating: 5, text: 'Excellent work and great communication. Delivered ahead of schedule.', date: '2 weeks ago' },
+                        { name: 'James L.', rating: 5, text: 'Highly skilled and professional. Will definitely hire again.', date: '1 month ago' },
+                        { name: 'Priya K.', rating: 4, text: 'Good quality work and responsive throughout the project.', date: '2 months ago' },
+                      ].map((r, i) => (
+                        <div key={i} className="border-b border-gray-100 pb-3 last:border-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-sm font-bold text-gray-900">{r.name}</p>
+                            <span className="text-[10px] text-gray-400">{r.date}</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 mb-1">
+                            {Array.from({ length: r.rating }).map((_, si) => <Star key={si} className="h-3 w-3 fill-amber-400 text-amber-400" />)}
+                          </div>
+                          <p className="text-xs text-gray-600">{r.text}</p>
+                        </div>
+                      ))}
+                    </TabsContent>
+                  </Tabs>
+
+                  <div className="flex gap-2 mt-5 pt-4 border-t border-gray-100">
+                    <Button variant="outline" onClick={() => setProfileViewOpen(false)} className="flex-1 border-gray-300">Close</Button>
+                    <Button onClick={() => { setProfileViewOpen(false); handleDemoClick(f); }} className="flex-1 bg-orange-500 hover:bg-orange-600 text-white gap-1.5">
+                      <Phone className="h-4 w-4" /> Connect Now
+                    </Button>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
+
+
       <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
