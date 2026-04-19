@@ -84,6 +84,24 @@ const RATE_OPTIONS = [
   { label: '$100+/hr', min: 100, max: Infinity },
 ];
 
+const PanelOption = ({ icon: Icon, title, desc, active, onClick }: { icon: any; title: string; desc: string; active: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left flex items-start gap-3 p-4 rounded-xl border transition-all ${
+      active ? 'bg-white border-orange-400 shadow-sm' : 'bg-white/60 border-transparent hover:bg-white hover:border-gray-200'
+    }`}
+  >
+    <div className={`h-9 w-9 shrink-0 rounded-lg flex items-center justify-center ${active ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'}`}>
+      <Icon className="h-4 w-4" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className={`text-sm font-bold mb-0.5 ${active ? 'text-orange-600' : 'text-gray-900'}`}>{title}</p>
+      <p className="text-xs text-gray-500 leading-snug">{desc}</p>
+    </div>
+    <ChevronRight className={`h-4 w-4 shrink-0 mt-2 ${active ? 'text-orange-500' : 'text-gray-300'}`} />
+  </button>
+);
+
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
