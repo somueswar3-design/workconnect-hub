@@ -449,58 +449,157 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ══════════════════ CATEGORIES ══════════════════ */}
-      <section className="py-12 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">CATEGORIES</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Browse by Domain</h2>
-            <p className="text-gray-500 mt-2 text-sm">IT & Non-IT categories — find the right professionals for any project.</p>
-          </div>
+      {/* ══════════════════ MAKE IT REAL (Freelancer.in style) ══════════════════ */}
+      <section className="relative overflow-hidden bg-gray-900 border-b border-gray-800">
+        <div className="container mx-auto px-4 py-14">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            <div className="relative z-10">
+              <h2 className="text-4xl sm:text-5xl font-black leading-[1.05] mb-2">
+                <span className="text-orange-500">Make it real</span>
+              </h2>
+              <h3 className="text-3xl sm:text-4xl font-black text-white mb-8 leading-tight">
+                with WorkSupport360
+              </h3>
 
-          {/* IT Categories */}
-          <div className="mb-6">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Code className="h-4 w-4 text-orange-500" /> IT & Technology
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {CATEGORIES.filter(c => c.type === 'IT').map(cat => (
-                <button
-                  key={cat.label}
-                  onClick={() => { setFilterSkill(cat.label); setSearchQuery(cat.label); setCurrentPage(1); freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-md hover:shadow-orange-500/10 transition-all bg-white group"
-                >
-                  <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                    <cat.icon className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
-                </button>
-              ))}
+              <div className="grid sm:grid-cols-2 gap-6 mb-8">
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-2">The best talent</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Discover reliable professionals by exploring their portfolios and immersing yourself in the feedback shared on their profiles.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-2">Fast bids</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Get quick, no-obligation quotes from skilled freelancers. 80% of jobs receive bids within 60 seconds. Your idea is just moments from reality.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-2">Quality work</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Access top-rated experts across IT, design, marketing and more. Every professional is verified for quality.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-white mb-2">Safe & secure</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Your project, your money, your data — all protected. Pay only when you're satisfied with the milestone.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button onClick={() => setHeroMode('hire')} className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full px-6 h-11">
+                  Hire a Freelancer
+                </Button>
+                <Button onClick={() => setHeroMode('work')} variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:text-white font-bold rounded-full px-6 h-11 bg-transparent">
+                  Earn Money Freelancing
+                </Button>
+              </div>
             </div>
-          </div>
 
-          {/* Non-IT Categories */}
-          <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-500" /> Non-IT & Digital
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {CATEGORIES.filter(c => c.type === 'Non-IT').map(cat => (
-                <button
-                  key={cat.label}
-                  onClick={() => { setFilterSkill(cat.label); setSearchQuery(cat.label); setCurrentPage(1); freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md hover:shadow-blue-500/10 transition-all bg-white group"
-                >
-                  <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                    <cat.icon className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
-                </button>
-              ))}
+            <div className="relative">
+              <img
+                src={heroMakeItReal}
+                alt="Vibrant hummingbird made of colorful splashes representing creativity"
+                width={1280}
+                height={768}
+                loading="lazy"
+                className="w-full h-auto object-contain"
+              />
             </div>
           </div>
         </div>
       </section>
+
+      {/* ══════════════════ CATEGORY DRILLDOWN ══════════════════ */}
+      <section className="py-12 bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">EXPLORE</p>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
+              {drilldownCategory ? drilldownCategory : 'Pick a category'}
+            </h2>
+            <p className="text-gray-500 mt-2 text-sm">
+              {drilldownCategory ? 'Select one or more technologies to filter freelancers.' : 'Click a category to see related technologies.'}
+            </p>
+          </div>
+
+          {!drilldownCategory ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.label}
+                  onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
+                    cat.type === 'IT' ? 'hover:border-orange-300 hover:shadow-orange-500/10' : 'hover:border-blue-300 hover:shadow-blue-500/10'
+                  }`}
+                >
+                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
+                    cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
+                  }`}>
+                    <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
+                  </div>
+                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto bg-gray-50 border border-gray-200 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-5">
+                <Button variant="ghost" size="sm" onClick={() => { setDrilldownCategory(null); setSelectedTechs([]); }} className="gap-1.5 text-gray-600">
+                  <ChevronLeft className="h-4 w-4" /> Back to categories
+                </Button>
+                {selectedTechs.length > 0 && (
+                  <span className="text-xs text-gray-500">
+                    {selectedTechs.length} selected
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-5">
+                {(CATEGORY_TECHS[drilldownCategory] || []).map(tech => {
+                  const active = selectedTechs.includes(tech);
+                  return (
+                    <button
+                      key={tech}
+                      onClick={() => setSelectedTechs(prev => active ? prev.filter(t => t !== tech) : [...prev, tech])}
+                      className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all ${
+                        active
+                          ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                          : 'bg-white border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600'
+                      }`}
+                    >
+                      {active && <CheckCircle className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />}
+                      {tech}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  disabled={selectedTechs.length === 0}
+                  onClick={() => {
+                    const query = selectedTechs.join(', ');
+                    setFilterSkill(selectedTechs[0] || drilldownCategory);
+                    setSearchQuery(query);
+                    setCurrentPage(1);
+                    freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5"
+                >
+                  <Search className="h-4 w-4" /> Find {selectedTechs.length || ''} freelancer{selectedTechs.length !== 1 ? 's' : ''}
+                </Button>
+                <Button variant="outline" onClick={() => setSelectedTechs([])} className="border-gray-300 text-gray-600">
+                  Clear
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
 
       {/* ══════════════════ MAIN CONTENT: Sidebar + Freelancer Grid ══════════════════ */}
       <section ref={freelancerSectionRef} className="bg-gray-50">
