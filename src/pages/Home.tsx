@@ -126,6 +126,9 @@ const Home = () => {
   const [selectedRates, setSelectedRates] = useState<string[]>(['$20–$50/hr']);
   const [selectedSkillFilters, setSelectedSkillFilters] = useState<string[]>([]);
   const [heroSearchInput, setHeroSearchInput] = useState('');
+  const [heroMode, setHeroMode] = useState<HeroMode>('hire');
+  const [hirePanel, setHirePanel] = useState<HirePanel>('skill');
+  const [workPanel, setWorkPanel] = useState<WorkPanel>('skill');
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true); setHasError(false);
