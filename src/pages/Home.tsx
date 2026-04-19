@@ -410,6 +410,8 @@ const Home = () => {
                   {heroMode === 'work' ? 'Do you want projects like these?' : 'Popular searches'}
                 </p>
 
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {(heroMode === 'hire' ? HIRE_TILES : WORK_TILES).map(tile => (
                     <button
                       key={tile.label}
                       onClick={() => {
