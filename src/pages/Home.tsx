@@ -169,6 +169,8 @@ const Home = () => {
   const [heroMode, setHeroMode] = useState<HeroMode>('hire');
   const [hirePanel, setHirePanel] = useState<HirePanel>('skill');
   const [workPanel, setWorkPanel] = useState<WorkPanel>('skill');
+  const [drilldownCategory, setDrilldownCategory] = useState<string | null>(null);
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true); setHasError(false);
@@ -722,7 +724,7 @@ const Home = () => {
                             {/* Action Buttons */}
                             <div className="grid grid-cols-2 gap-2">
                               <Button
-                                onClick={() => { setProfileFreelancer(f); setProfileIdx(idx); setProfileViewOpen(true); }}
+                                onClick={() => navigate(`/professional/${f.freelancerId || f.id || f.userId || idx}`)}
                                 variant="outline"
                                 className="border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold text-sm h-9 rounded-xl"
                               >
