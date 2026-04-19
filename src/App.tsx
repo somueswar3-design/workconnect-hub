@@ -27,6 +27,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerProfileForm from "./pages/FreelancerProfileForm";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ProfessionalDetail from "./pages/ProfessionalDetail";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
                     <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
                     <Route path="/browse" element={<ProtectedRoute><BrowseWorkers /></ProtectedRoute>} />
                     <Route path="/talent-search" element={<TalentSearch />} />
+                    <Route path="/professional/:id" element={<ProfessionalDetail />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />
