@@ -97,6 +97,8 @@ const CATEGORY_TECHS: Record<string, string[]> = {
   'Education & Training': ['LMS', 'Moodle', 'Curriculum Design', 'eLearning Authoring', 'Instructional Design'],
 };
 
+const AVAILABILITY_OPTIONS = ['Available now', 'Part-time', 'Full-time'];
+
 const RATE_OPTIONS = [
   { label: 'Under $20/hr', min: 0, max: 20 },
   { label: '$20–$50/hr', min: 20, max: 50 },
