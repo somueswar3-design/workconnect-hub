@@ -24,10 +24,37 @@ import { submitFreelancerInterest } from '@/services/freelancerApi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { countries } from '@/data/countries';
 import { Checkbox } from '@/components/ui/checkbox';
+import catWeb from '@/assets/cat-web.jpg';
+import catMobile from '@/assets/cat-mobile.jpg';
+import catDesign from '@/assets/cat-design.jpg';
+import catData from '@/assets/cat-data.jpg';
+import catMarketing from '@/assets/cat-marketing.jpg';
+import catWriting from '@/assets/cat-writing.jpg';
 
 const ITEMS_PER_PAGE = 6;
 
 const HERO_TABS = ['Find freelancers', 'Browse projects', 'Post a job'] as const;
+type HeroMode = 'hire' | 'work';
+type HirePanel = 'skill' | 'location' | 'category';
+type WorkPanel = 'skill' | 'language' | 'featured';
+
+const HIRE_TILES = [
+  { label: 'Graphic designers', img: catDesign, filter: 'UI/UX Design' },
+  { label: 'Website designers', img: catWeb, filter: 'Web Development' },
+  { label: 'Mobile app developers', img: catMobile, filter: 'Mobile Development' },
+  { label: 'Logo designers', img: catMarketing, filter: 'Graphic Design' },
+  { label: 'Product designers', img: catWriting, filter: 'UI/UX Design' },
+  { label: 'Data scientists', img: catData, filter: 'Data Science & AI' },
+];
+const WORK_TILES = [
+  { label: 'Website jobs', img: catWeb, filter: 'Web Development' },
+  { label: 'Graphic design jobs', img: catDesign, filter: 'Graphic Design' },
+  { label: 'Data entry jobs', img: catData, filter: 'Data Science & AI' },
+  { label: 'Mobile app jobs', img: catMobile, filter: 'Mobile Development' },
+  { label: 'Marketing jobs', img: catMarketing, filter: 'Digital Marketing' },
+  { label: 'Logistics jobs', img: catWriting, filter: 'E-Commerce' },
+];
+const LANGUAGES = ['English', 'Hindi', 'Tamil', 'Telugu', 'Spanish', 'French', 'German', 'Mandarin'];
 const SKILL_TAGS = ['React', 'Node.js', 'AWS', 'DevOps', 'Python', 'Cybersecurity', 'UI/UX', 'Mobile', 'Java', '.NET', 'Angular', 'Data Science'];
 
 const CATEGORIES = [
