@@ -305,7 +305,7 @@ const Home = () => {
                   heroMode === 'hire' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                Hire a Talent
+                Hire a Freelancer
               </button>
               <button
                 onClick={() => setHeroMode('work')}
