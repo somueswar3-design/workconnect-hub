@@ -267,97 +267,142 @@ const Home = () => {
     <div className="flex flex-col min-h-screen bg-white">
 
       {/* ══════════════════ HERO ══════════════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        {/* Video Background */}
-        <div className="absolute inset-0">
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-15">
-            <source src="https://cdn.pixabay.com/video/2020/05/31/40205-426958995_large.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 via-gray-900/60 to-gray-900" />
-        </div>
-
-        <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-24 pb-12">
-          {/* Heading */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] mb-5 tracking-tight">
-              <span className="text-white">Find & Hire</span>
-              <br />
-              <span className="text-orange-500">Expert IT Professionals</span>
+      <section className="relative overflow-hidden bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 pt-10 pb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] mb-3 tracking-tight text-gray-900">
+              Hire experts. <span className="text-orange-500">Get work done.</span>
             </h1>
-            <p className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto">
-              Browse verified IT support pros — hourly, part-time, or full-time. Ready for your timeline.
+            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+              Connect with verified IT & creative professionals — hourly, part-time or full-time.
             </p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
-              {HERO_TABS.map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => handleHeroTabClick(tab)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                    heroTab === tab
-                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25'
-                      : 'text-gray-300 hover:text-white'
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="max-w-3xl mx-auto mb-6">
-            <div className="flex items-center bg-white rounded-2xl overflow-hidden shadow-xl">
-              <div className="flex items-center px-4 border-r border-gray-200">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
-              <select
-                className="bg-transparent text-gray-700 text-sm px-4 py-4 border-r border-gray-200 outline-none min-w-[140px] appearance-none cursor-pointer"
-                value={filterSkill || ''}
-                onChange={e => { setFilterSkill(e.target.value); setCurrentPage(1); }}
-              >
-                <option value="">All categories</option>
-                {CATEGORIES.map(c => <option key={c.label} value={c.label}>{c.label}</option>)}
-              </select>
-              <select
-                className="bg-transparent text-gray-700 text-sm px-4 py-4 border-r border-gray-200 outline-none min-w-[120px] appearance-none cursor-pointer"
-                value={filterCountry || ''}
-                onChange={e => { setFilterCountry(e.target.value); setCurrentPage(1); }}
-              >
-                <option value="">All Countries</option>
-                {countries.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
-              </select>
-              <input
-                type="text"
-                placeholder="Search skills, roles, or names..."
-                value={heroSearchInput}
-                onChange={e => setHeroSearchInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleHeroSearch()}
-                className="flex-1 bg-transparent text-gray-900 px-4 py-4 outline-none placeholder:text-gray-400 text-sm"
-              />
-              <Button
-                onClick={handleHeroSearch}
-                className="m-2 px-6 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl border-0"
-              >
-                Search
-              </Button>
-            </div>
-          </div>
-
-          {/* Skill Tags */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-            {SKILL_TAGS.map(skill => (
+          {/* Mode tabs */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200">
               <button
-                key={skill}
-                onClick={() => handleSkillTagClick(skill)}
-                className="px-4 py-2 rounded-full border border-white/20 text-sm text-gray-300 hover:text-white hover:border-white/40 transition-all bg-white/10 hover:bg-white/15"
+                onClick={() => setHeroMode('hire')}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+                  heroMode === 'hire' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
+                }`}
               >
-                {skill}
+                Hire a Talent
               </button>
-            ))}
+              <button
+                onClick={() => setHeroMode('work')}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+                  heroMode === 'work' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Earn Money Freelancing
+              </button>
+            </div>
+          </div>
+
+          <div className="max-w-6xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              {/* Left options panel */}
+              <div className="lg:col-span-4 bg-gray-50 p-5 space-y-3 border-r border-gray-200">
+                {heroMode === 'hire' ? (
+                  <>
+                    <PanelOption icon={Code} title="By skill" desc="Looking for a freelancer with a specific skill? Start here." active={hirePanel === 'skill'} onClick={() => setHirePanel('skill')} />
+                    <PanelOption icon={MapPin} title="By location" desc="Search for freelancers based on their location and timezone." active={hirePanel === 'location'} onClick={() => setHirePanel('location')} />
+                    <PanelOption icon={Briefcase} title="By category" desc="Find freelancers that suit a certain project category." active={hirePanel === 'category'} onClick={() => setHirePanel('category')} />
+                  </>
+                ) : (
+                  <>
+                    <PanelOption icon={Code} title="By skill" desc="Search for work that requires a particular skill." active={workPanel === 'skill'} onClick={() => setWorkPanel('skill')} />
+                    <PanelOption icon={Languages} title="By language" desc="Find projects that are in your language." active={workPanel === 'language'} onClick={() => setWorkPanel('language')} />
+                    <PanelOption icon={Award} title="Featured jobs" desc="Explore our current list of top featured projects." active={workPanel === 'featured'} onClick={() => setWorkPanel('featured')} />
+                  </>
+                )}
+              </div>
+
+              {/* Right content */}
+              <div className="lg:col-span-8 p-5">
+                <div className="flex items-stretch bg-white border border-gray-200 rounded-xl overflow-hidden mb-4 shadow-sm">
+                  <div className="flex items-center px-3 border-r border-gray-200">
+                    <Search className="h-4 w-4 text-gray-400" />
+                  </div>
+                  {heroMode === 'work' && workPanel === 'language' ? (
+                    <select
+                      className="bg-transparent text-gray-700 text-sm px-3 outline-none flex-1 cursor-pointer py-3"
+                      value={heroSearchInput}
+                      onChange={e => setHeroSearchInput(e.target.value)}
+                    >
+                      <option value="">Select language…</option>
+                      {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+                    </select>
+                  ) : (heroMode === 'hire' && hirePanel === 'location') ? (
+                    <select
+                      className="bg-transparent text-gray-700 text-sm px-3 outline-none flex-1 cursor-pointer py-3"
+                      value={filterCountry}
+                      onChange={e => { setFilterCountry(e.target.value); setCurrentPage(1); }}
+                    >
+                      <option value="">All countries</option>
+                      {countries.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder={heroMode === 'hire' ? 'Search skills, roles, or names…' : 'Search project keywords…'}
+                      value={heroSearchInput}
+                      onChange={e => setHeroSearchInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleHeroSearch()}
+                      className="flex-1 bg-transparent text-gray-900 px-3 outline-none placeholder:text-gray-400 text-sm py-3"
+                    />
+                  )}
+                  <Button
+                    onClick={() => {
+                      if (heroMode === 'work') worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      else handleHeroSearch();
+                    }}
+                    className="m-1.5 px-5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg border-0"
+                  >
+                    Search
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {(heroMode === 'hire' ? HIRE_TILES : WORK_TILES).map(tile => (
+                    <button
+                      key={tile.label}
+                      onClick={() => {
+                        if (heroMode === 'work') {
+                          worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                          setFilterSkill(tile.filter);
+                          setSearchQuery(tile.filter);
+                          setCurrentPage(1);
+                          freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-orange-400 hover:shadow-lg transition-all bg-white text-left"
+                    >
+                      <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                        <img src={tile.img} alt={tile.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                      <div className="px-3 py-2.5 bg-white">
+                        <p className="text-sm font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{tile.label}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {SKILL_TAGS.slice(0, 8).map(skill => (
+                    <button
+                      key={skill}
+                      onClick={() => handleSkillTagClick(skill)}
+                      className="px-3 py-1 rounded-full border border-gray-200 text-xs text-gray-600 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
