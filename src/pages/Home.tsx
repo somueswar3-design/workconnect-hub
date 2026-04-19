@@ -30,6 +30,7 @@ import catDesign from '@/assets/cat-design.jpg';
 import catData from '@/assets/cat-data.jpg';
 import catMarketing from '@/assets/cat-marketing.jpg';
 import catWriting from '@/assets/cat-writing.jpg';
+import heroMakeItReal from '@/assets/hero-makeitreal.jpg';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -76,7 +77,26 @@ const CATEGORIES = [
   { label: 'Education & Training', icon: GraduationCap, type: 'Non-IT' },
 ];
 
-const AVAILABILITY_OPTIONS = ['Available now', 'Part-time', 'Full-time'];
+// Technologies under each category for drilldown
+const CATEGORY_TECHS: Record<string, string[]> = {
+  'Web Development': ['React', 'Next.js', 'Vue.js', 'Angular', 'Node.js', 'Django', 'Laravel', 'Rails', 'ASP.NET', 'WordPress'],
+  'Mobile Development': ['React Native', 'Flutter', 'Swift / iOS', 'Kotlin / Android', 'Ionic', 'Xamarin'],
+  'Cloud & DevOps': ['AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'GitHub Actions'],
+  'Data Science & AI': ['Python', 'TensorFlow', 'PyTorch', 'Pandas', 'OpenAI / LLMs', 'NLP', 'Computer Vision', 'MLOps'],
+  'Cybersecurity': ['Penetration Testing', 'SIEM', 'SOC', 'OWASP', 'Compliance (ISO/SOC2)', 'Cloud Security'],
+  'UI/UX Design': ['Figma', 'Adobe XD', 'Sketch', 'Wireframing', 'Prototyping', 'Design Systems'],
+  'QA & Testing': ['Selenium', 'Cypress', 'Playwright', 'JUnit', 'TestNG', 'Manual QA', 'Performance Testing'],
+  'ERP & SAP': ['SAP ABAP', 'S/4HANA', 'SAP Fiori', 'Oracle ERP', 'NetSuite', 'Microsoft Dynamics'],
+  'Digital Marketing': ['SEO', 'Google Ads', 'Facebook Ads', 'Email Marketing', 'Content Strategy', 'Marketing Automation'],
+  'Content Writing': ['Blog Writing', 'Copywriting', 'Technical Writing', 'Translation', 'Proofreading', 'Scriptwriting'],
+  'Graphic Design': ['Logo Design', 'Branding', 'Illustration', 'Social Media Graphics', 'Print Design', 'Motion Graphics'],
+  'SEO & Analytics': ['Google Analytics', 'GA4', 'Looker Studio', 'SEO Audit', 'Keyword Research', 'Tag Manager'],
+  'E-Commerce': ['Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'Amazon Listings', 'Product Photography'],
+  'Healthcare IT': ['HL7', 'FHIR', 'EHR Integration', 'HIPAA Compliance', 'Telehealth Platforms'],
+  'Finance & Banking': ['Core Banking', 'Trading Systems', 'Risk Modelling', 'Fintech APIs', 'Blockchain'],
+  'Education & Training': ['LMS', 'Moodle', 'Curriculum Design', 'eLearning Authoring', 'Instructional Design'],
+};
+
 const RATE_OPTIONS = [
   { label: 'Under $20/hr', min: 0, max: 20 },
   { label: '$20–$50/hr', min: 20, max: 50 },
