@@ -47,19 +47,8 @@ const Register = () => {
     const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
     try {
       await authApi.register({ email: data.email, password: data.password, role: apiRole });
-      toast.success('Registration successful!');
-      try {
-        const result = await authApi.login({ email: data.email, password: data.password });
-        login(result.token, { email: data.email });
-        if (isFreelancer) {
-          navigate('/freelancer-profile');
-        } else {
-          navigate('/');
-        }
-      } catch {
-        toast.info('Please log in with your new credentials.');
-        navigate('/login');
-      }
+      toast.success('Registration successful! Please verify your email.');
+      navigate('/verify-otp', { state: { email: data.email, role: apiRole } });
     } catch (error: any) {
       toast.error(error.message || 'Registration failed. Please try again.');
     } finally {
