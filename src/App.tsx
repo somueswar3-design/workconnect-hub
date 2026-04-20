@@ -28,6 +28,7 @@ import FreelancerProfileForm from "./pages/FreelancerProfileForm";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProfessionalDetail from "./pages/ProfessionalDetail";
+import VerifyOtp from "./pages/VerifyOtp";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
                     <Route path="/" element={<AuthRedirectHome />} />
                     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/verify-otp" element={<VerifyOtp />} />
                     <Route path="/register/freelancer" element={<RegisterChoice />} />
                     <Route path="/freelancer-profile" element={<ProtectedRoute><FreelancerProfileForm /></ProtectedRoute>} />
                     <Route path="/login" element={<Login />} />
