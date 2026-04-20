@@ -521,88 +521,83 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">EXPLORE</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
-              {drilldownCategory ? drilldownCategory : 'Pick a category'}
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm">
-              {drilldownCategory ? 'Select one or more technologies to filter freelancers.' : 'Click a category to see related technologies.'}
-            </p>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Pick a category</h2>
+            <p className="text-gray-500 mt-2 text-sm">Click a category to see related technologies.</p>
           </div>
 
-          {!drilldownCategory ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.label}
-                  onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
-                    cat.type === 'IT' ? 'hover:border-orange-300 hover:shadow-orange-500/10' : 'hover:border-blue-300 hover:shadow-blue-500/10'
-                  }`}
-                >
-                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
-                    cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
-                  }`}>
-                    <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
-                  </div>
-                  <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="max-w-4xl mx-auto bg-gray-50 border border-gray-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <Button variant="ghost" size="sm" onClick={() => { setDrilldownCategory(null); setSelectedTechs([]); }} className="gap-1.5 text-gray-600">
-                  <ChevronLeft className="h-4 w-4" /> Back to categories
-                </Button>
-                {selectedTechs.length > 0 && (
-                  <span className="text-xs text-gray-500">
-                    {selectedTechs.length} selected
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-5">
-                {(CATEGORY_TECHS[drilldownCategory] || []).map(tech => {
-                  const active = selectedTechs.includes(tech);
-                  return (
-                    <button
-                      key={tech}
-                      onClick={() => setSelectedTechs(prev => active ? prev.filter(t => t !== tech) : [...prev, tech])}
-                      className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all ${
-                        active
-                          ? 'bg-orange-500 border-orange-500 text-white shadow-md'
-                          : 'bg-white border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600'
-                      }`}
-                    >
-                      {active && <CheckCircle className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />}
-                      {tech}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  disabled={selectedTechs.length === 0}
-                  onClick={() => {
-                    const query = selectedTechs.join(', ');
-                    setFilterSkill(selectedTechs[0] || drilldownCategory);
-                    setSearchQuery(query);
-                    setCurrentPage(1);
-                    freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5"
-                >
-                  <Search className="h-4 w-4" /> Find {selectedTechs.length || ''} freelancer{selectedTechs.length !== 1 ? 's' : ''}
-                </Button>
-                <Button variant="outline" onClick={() => setSelectedTechs([])} className="border-gray-300 text-gray-600">
-                  Clear
-                </Button>
-              </div>
-            </div>
-          )}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.label}
+                onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
+                  cat.type === 'IT' ? 'hover:border-orange-300 hover:shadow-orange-500/10' : 'hover:border-blue-300 hover:shadow-blue-500/10'
+                }`}
+              >
+                <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
+                  cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
+                }`}>
+                  <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
+                </div>
+                <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* ══════════════════ CATEGORY TECH POPUP ══════════════════ */}
+      <Dialog open={!!drilldownCategory} onOpenChange={(open) => { if (!open) { setDrilldownCategory(null); setSelectedTechs([]); } }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-gray-900">{drilldownCategory}</DialogTitle>
+            <DialogDescription>Select one or more technologies to filter freelancers.</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-2 py-2 max-h-[50vh] overflow-y-auto">
+            {(drilldownCategory ? (CATEGORY_TECHS[drilldownCategory] || []) : []).map(tech => {
+              const active = selectedTechs.includes(tech);
+              return (
+                <button
+                  key={tech}
+                  onClick={() => setSelectedTechs(prev => active ? prev.filter(t => t !== tech) : [...prev, tech])}
+                  className={`text-sm px-4 py-2 rounded-full border font-semibold transition-all ${
+                    active
+                      ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600'
+                  }`}
+                >
+                  {active && <CheckCircle className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />}
+                  {tech}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-100">
+            <span className="text-xs text-gray-500">{selectedTechs.length} selected</span>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setSelectedTechs([])} className="border-gray-300 text-gray-600">
+                Clear
+              </Button>
+              <Button
+                disabled={selectedTechs.length === 0}
+                onClick={() => {
+                  const query = selectedTechs.join(', ');
+                  setFilterSkill(selectedTechs[0] || drilldownCategory || '');
+                  setSearchQuery(query);
+                  setCurrentPage(1);
+                  setDrilldownCategory(null);
+                  setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+                }}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5"
+              >
+                <Search className="h-4 w-4" /> Find freelancer{selectedTechs.length !== 1 ? 's' : ''}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
 
       {/* ══════════════════ MAIN CONTENT: Sidebar + Freelancer Grid ══════════════════ */}
