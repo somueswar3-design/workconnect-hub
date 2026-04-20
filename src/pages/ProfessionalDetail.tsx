@@ -147,34 +147,38 @@ const ProfessionalDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT (2/3) — Profile detail */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Header card */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            {/* Header card — gradient banner + green circle avatar (Eswar style) */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm relative">
               <div className="h-24 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500" />
-              <div className="px-6 pb-6 -mt-12">
-                <div className="flex flex-wrap items-end gap-4">
-                  <div className={`h-24 w-24 rounded-full ${avatarColors[idx]} flex items-center justify-center text-white font-bold text-3xl ring-4 ring-white shadow-lg shrink-0`}>
-                    {initials}
+              <div className="px-6 pb-6 pt-4 relative">
+                {/* Green avatar overlapping banner */}
+                <div className="absolute -top-12 left-6">
+                  <div className="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-3xl ring-4 ring-white shadow-lg">
+                    {initials.charAt(0)}
                   </div>
-                  <div className="flex-1 min-w-0 pb-1">
-                    <h1 className="text-2xl font-black text-gray-900">{profile.fullName}</h1>
-                    <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-3 flex-wrap">
-                      <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" />{skills[0] || 'IT Professional'}</span>
-                      {profile.country && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{profile.country}</span>}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900">{rating}</span>
-                      <span className="text-xs text-gray-500">({reviews} reviews)</span>
-                      <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
-                        <CheckCircle className="h-3 w-3" /> Verified
-                      </span>
+                </div>
+
+                {/* Rate floating right */}
+                <div className="absolute right-6 top-6 text-right">
+                  <p className="text-3xl font-black text-gray-900">{symbol}{profile.hourRate || '—'}</p>
+                  <p className="text-xs text-gray-400">per hour</p>
+                </div>
+
+                <div className="ml-28 pr-32">
+                  <h1 className="text-2xl font-black text-gray-900">{profile.fullName}</h1>
+                  <p className="text-sm text-gray-500 mt-1 flex items-center gap-3 flex-wrap">
+                    <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" />{skills[0] || 'IT Professional'}</span>
+                    {profile.country && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{profile.country}</span>}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-3xl font-black text-gray-900">{symbol}{profile.hourRate || '—'}</p>
-                    <p className="text-xs text-gray-400">per hour</p>
+                    <span className="text-sm font-semibold text-gray-900">{rating}</span>
+                    <span className="text-xs text-gray-500">({reviews} reviews)</span>
+                    <span className="ml-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                      <CheckCircle className="h-3 w-3" /> Verified
+                    </span>
                   </div>
                 </div>
               </div>
@@ -308,60 +312,27 @@ const ProfessionalDetail = () => {
           {/* RIGHT (1/3) — Bid + Contact */}
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-4">
+              {/* Contact card only (Place a Bid removed) */}
               <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-black text-gray-900">Place a Bid</h3>
-                  <Award className="h-5 w-5 text-orange-500" />
-                </div>
-
-                {!isAuthenticated && (
-                  <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-start gap-2">
-                    <Lock className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
-                    <div className="text-xs">
-                      <p className="font-semibold text-orange-700">Login required</p>
-                      <p className="text-orange-600/80 mt-0.5">You need an account to bid or contact.</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-xs text-gray-600">Your bid amount ({symbol})</Label>
-                    <Input type="number" placeholder="e.g. 1500" value={bidAmount} onChange={e => setBidAmount(e.target.value)} className="h-9 mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-gray-600">Estimated delivery (days)</Label>
-                    <Input type="number" placeholder="e.g. 14" value={bidDays} onChange={e => setBidDays(e.target.value)} className="h-9 mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-gray-600">Message</Label>
-                    <Textarea placeholder="Briefly describe your project…" value={bidMessage} onChange={e => setBidMessage(e.target.value)} rows={3} className="mt-1 text-sm" />
-                  </div>
-                  <Button onClick={handlePlaceBid} disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white gap-1.5 font-bold">
-                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                    {isAuthenticated ? 'Place Bid' : 'Login to Bid'}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
-                <h3 className="font-black text-gray-900 mb-3">Contact</h3>
-                <div className="space-y-2">
-                  <Button onClick={handleContact} variant="outline" className="w-full justify-start gap-2 border-gray-300">
+                <h3 className="font-black text-gray-900 mb-4 text-lg">Contact</h3>
+                <div className="space-y-2.5">
+                  <Button onClick={handleContact} variant="outline" className="w-full justify-start gap-3 border-gray-200 h-12 text-gray-800 font-medium hover:bg-orange-50 hover:border-orange-200">
                     <Phone className="h-4 w-4 text-orange-500" />
                     {isAuthenticated ? 'Reveal phone' : 'Login to view phone'}
                   </Button>
-                  <Button onClick={handleContact} variant="outline" className="w-full justify-start gap-2 border-gray-300">
+                  <Button onClick={handleContact} variant="outline" className="w-full justify-start gap-3 border-gray-200 h-12 text-gray-800 font-medium hover:bg-orange-50 hover:border-orange-200">
                     <Mail className="h-4 w-4 text-orange-500" />
                     {isAuthenticated ? 'Send message' : 'Login to message'}
                   </Button>
-                  <Button onClick={() => requireLoginOr(() => toast({ title: 'Saved!', description: 'Added to favourites.' }))} variant="outline" className="w-full justify-start gap-2 border-gray-300">
+                  <Button onClick={() => requireLoginOr(() => toast({ title: 'Saved!', description: 'Added to favourites.' }))} variant="outline" className="w-full justify-start gap-3 border-gray-200 h-12 text-gray-800 font-medium hover:bg-rose-50 hover:border-rose-200">
                     <Heart className="h-4 w-4 text-rose-500" /> Save to favourites
                   </Button>
                 </div>
                 {!isAuthenticated && (
-                  <div className="mt-3 text-center">
-                    <Link to="/login" className="text-xs text-orange-600 font-semibold hover:underline">Already a member? Log in →</Link>
+                  <div className="mt-4 text-center">
+                    <Link to="/login" className="text-sm text-orange-600 font-semibold hover:underline inline-flex items-center gap-1">
+                      Already a member? Log in →
+                    </Link>
                   </div>
                 )}
               </div>
