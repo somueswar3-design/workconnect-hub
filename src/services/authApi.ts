@@ -1,8 +1,4 @@
-// Base URLs are read from Vite env vars. Configure these in your .env file:
-//   VITE_API_BASE_URL                 -> main auth API
-//   VITE_FREELANCER_API_BASE_URL      -> freelancer OTP endpoints (defaults to VITE_API_BASE_URL)
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
-const FREELANCER_API_BASE = import.meta.env.VITE_FREELANCER_API_BASE_URL || API_BASE;
+import { API_BASE_URL as API_BASE, FREELANCER_API_BASE_URL as FREELANCER_API_BASE } from '@/config/api';
 
 export interface RegisterRequest {
   email: string;
