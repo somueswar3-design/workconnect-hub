@@ -46,11 +46,11 @@ const Register = () => {
     setIsLoading(true);
     const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
     try {
-      await authApi.register({ email: data.email, password: data.password, role: apiRole });
-      toast.success('Registration successful! Please verify your email.');
-      navigate('/verify-otp', { state: { email: data.email, role: apiRole } });
+      await authApi.sendOtp(data.email);
+      toast.success('OTP sent! Please check your email.');
+      navigate('/verify-otp', { state: { email: data.email, password: data.password, role: apiRole } });
     } catch (error: any) {
-      toast.error(error.message || 'Registration failed. Please try again.');
+      toast.error(error.message || 'Failed to send OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
