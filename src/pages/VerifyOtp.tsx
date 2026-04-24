@@ -69,27 +69,43 @@ const VerifyOtp = () => {
       return;
     }
     setVerifying(true);
-    // Simulated verification (backend OTP endpoint not yet wired).
-    await new Promise(r => setTimeout(r, 900));
-    setVerifying(false);
-    toast.success('Email verified successfully!');
-    localStorage.removeItem('pending_otp_email');
-    if (role.toLowerCase() === 'freelancer') {
+    try {
+      await authApi.verifyOtp(email, code);
+      toast.success('Email verified! Creating your account...');
+      if (password) {
+        try {
+          await authApi.register({ email, password, role });
+        } catch (regErr: any) {
+          // Ignore "already exists" so users can re-verify
+          const msg = String(regErr?.message || '').toLowerCase();
+          if (!msg.includes('exist') && !msg.includes('already')) {
+            throw regErr;
+          }
+        }
+      }
+      localStorage.removeItem('pending_otp_email');
       navigate('/login', { state: { verified: true, email } });
-    } else {
-      navigate('/login', { state: { verified: true, email } });
+    } catch (error: any) {
+      toast.error(error.message || 'Verification failed. Please try again.');
+    } finally {
+      setVerifying(false);
     }
   };
 
   const handleResend = async () => {
     if (secondsLeft > 0) return;
     setResending(true);
-    await new Promise(r => setTimeout(r, 700));
-    setResending(false);
-    setSecondsLeft(60);
-    setDigits(Array(OTP_LENGTH).fill(''));
-    inputs.current[0]?.focus();
-    toast.success('A new OTP has been sent to your email');
+    try {
+      await authApi.resendOtp(email);
+      setSecondsLeft(60);
+      setDigits(Array(OTP_LENGTH).fill(''));
+      inputs.current[0]?.focus();
+      toast.success('A new OTP has been sent to your email');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to resend OTP');
+    } finally {
+      setResending(false);
+    }
   };
 
   const maskedEmail = email
