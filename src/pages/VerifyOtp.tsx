@@ -14,6 +14,7 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = (location.state as any)?.email || localStorage.getItem('pending_otp_email') || '';
+  const password = (location.state as any)?.password || '';
   const role = (location.state as any)?.role || 'FreeLancer';
 
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
