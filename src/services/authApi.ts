@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
+const FREELANCER_API_BASE = import.meta.env.VITE_FREELANCER_API_BASE_URL || API_BASE;
 
 export interface RegisterRequest {
   email: string;
@@ -127,6 +128,42 @@ export const authApi = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || 'Password change failed');
+    }
+    return { status: res.status };
+  },
+
+  sendOtp: async (email: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/send-otp?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to send OTP');
+    }
+    return { status: res.status };
+  },
+
+  verifyOtp: async (email: string, otp: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/verify-otp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Invalid OTP');
+    }
+    return { status: res.status };
+  },
+
+  resendOtp: async (email: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/resend-otp?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to resend OTP');
     }
     return { status: res.status };
   },
