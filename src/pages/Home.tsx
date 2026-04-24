@@ -202,6 +202,27 @@ const Home = () => {
     if (state?.openPostRequirement) setTimeout(() => openPostRequirement(), 300);
   }, [locationState.state]);
 
+  // Redirect logged-in freelancers to profile update if profile not yet completed
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    if (user.role?.toLowerCase() !== 'freelancer') return;
+    if (!user.userId) return;
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    (async () => {
+      try {
+        const { API_BASE_URL } = await import('@/config/api');
+        const res = await fetch(`${API_BASE_URL}/api/freelancer/profile-status?userId=${user.userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!data?.profileUpdated) navigate('/freelancer-profile');
+      } catch {
+        navigate('/freelancer-profile');
+      }
+    })();
+  }, [isAuthenticated, user?.userId, user?.role, navigate]);
+
   const filtered = useMemo(() => {
     let result = freelancers;
     if (filterSkill.trim()) { const q = filterSkill.toLowerCase(); result = result.filter(f => f.primarySkills?.toLowerCase().includes(q)); }
@@ -942,31 +963,6 @@ const Home = () => {
               </>
             );
           })()}
-        </div>
-      </section>
-
-      {/* ══════════════════ HOW IT WORKS ══════════════════ */}
-      <section className="py-20 bg-gray-50 border-t border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-3">HOW IT WORKS</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900">Simple. Transparent. Fast.</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: Search, title: 'Search & discover', desc: 'Browse verified IT professionals or post your project. Filter by skills, rate, availability.' },
-              { icon: Users, title: 'Interview & agree', desc: 'Book time slots, conduct interviews, agree on rate — all managed through the platform.' },
-              { icon: CheckCircle, title: 'Work & get paid', desc: 'Weekly timesheets, approval workflows, auto-invoicing. Transparent payments.' },
-            ].map((step, i) => (
-              <div key={i} className="group relative bg-white border border-gray-200 rounded-2xl p-7 hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30 mb-4 group-hover:scale-110 transition-transform">
-                  <step.icon className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
