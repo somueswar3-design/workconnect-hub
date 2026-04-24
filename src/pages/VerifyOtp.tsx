@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { authApi } from '@/services/authApi';
 import wsLogo from '@/assets/worksupport360-logo.png';
 
 const OTP_LENGTH = 6;
