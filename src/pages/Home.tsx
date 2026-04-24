@@ -202,10 +202,11 @@ const Home = () => {
     if (state?.openPostRequirement) setTimeout(() => openPostRequirement(), 300);
   }, [locationState.state]);
 
-  // Redirect logged-in freelancers to profile update if profile not yet completed
+  // Show profile-completion banner for freelancers whose profile is incomplete
+  const [profileIncomplete, setProfileIncomplete] = useState(false);
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
-    if (user.role?.toLowerCase() !== 'freelancer') return;
+    if (!isAuthenticated || !user) { setProfileIncomplete(false); return; }
+    if (user.role?.toLowerCase() !== 'freelancer') { setProfileIncomplete(false); return; }
     if (!user.userId) return;
     const token = localStorage.getItem('auth_token');
     if (!token) return;
@@ -216,12 +217,12 @@ const Home = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        if (!data?.profileUpdated) navigate('/freelancer-profile');
+        setProfileIncomplete(!data?.profileUpdated);
       } catch {
-        navigate('/freelancer-profile');
+        setProfileIncomplete(true);
       }
     })();
-  }, [isAuthenticated, user?.userId, user?.role, navigate]);
+  }, [isAuthenticated, user?.userId, user?.role]);
 
   const filtered = useMemo(() => {
     let result = freelancers;
