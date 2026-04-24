@@ -247,7 +247,54 @@ const FreelancerProfileForm = () => {
     }
   };
 
-  const markDoneAndContinue = (currentSection: string, nextSection: string) => {
+  const saveCurrentProgress = async (): Promise<boolean> => {
+    const data = form.getValues();
+    setIsLoading(true);
+    try {
+      const payload = {
+        id: profileId,
+        userId: parseInt(user?.userId || '0'),
+        freelancerUserStatus: true,
+        fullName: data.fullName || '',
+        gender: genderMap[data.gender] ?? 0,
+        country: data.country || '',
+        phoneNumber: data.phoneNumber || '',
+        companyName: data.companyName || '',
+        experienceYears: parseInt(data.experienceYears) || 0,
+        primarySkills: data.primarySkills || '',
+        secondarySkills: data.secondarySkills || '',
+        skillSetDesc: data.skillSetDesc || '',
+        anyFreelnacingExperience: freelancingExpMap[data.anyFreelancingExperience] ?? 0,
+        currentCompany: data.currentCompany || '',
+        currentCompanyRole: data.currentCompanyRole || '',
+        languagesKnown: data.languagesKnown || '',
+        speakingLanguage: data.speakingLanguage || '',
+        hoursAvailablePerDay: data.hoursAvailablePerDay || '',
+        hourRate: data.hourRate || '',
+        isAvailbleInweeknds: data.isAvailableInWeekends || false,
+        bioDescption: data.bioDescription || '',
+        linkedInProfile: data.linkedInProfile || '',
+        portfolioURL: data.portfolioURL || '',
+        createdOn: new Date().toISOString(),
+        updatedOn: new Date().toISOString(),
+      };
+      const saved = await saveFreelancerProfile(payload);
+      if (saved?.id) setProfileId(saved.id);
+      const pct = calculateProfilePercentage(data);
+      updateUser({ profilePercentage: pct, fullName: data.fullName });
+      toast.success('Progress saved');
+      return true;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to save progress');
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const markDoneAndContinue = async (currentSection: string, nextSection: string) => {
+    const ok = await saveCurrentProgress();
+    if (!ok) return;
     setCompletedSections(prev => new Set(prev).add(currentSection));
     setActivePage(nextSection);
   };
