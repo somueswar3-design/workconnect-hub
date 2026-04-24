@@ -249,6 +249,7 @@ const FreelancerProfileForm = () => {
 
   const saveCurrentProgress = async (): Promise<boolean> => {
     const data = form.getValues();
+    console.log('[ProfileForm] saveCurrentProgress called', { userId: user?.userId, profileId, data });
     setIsLoading(true);
     try {
       const payload = {
