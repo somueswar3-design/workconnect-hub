@@ -5,7 +5,7 @@
 
 export const API_BASE_URL: string =
   import.meta.env.VITE_API_BASE_URL ||
-  'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
+  'https://localhost:7167';
 
 export const FREELANCER_API_BASE_URL: string =
   import.meta.env.VITE_FREELANCER_API_BASE_URL || API_BASE_URL;
