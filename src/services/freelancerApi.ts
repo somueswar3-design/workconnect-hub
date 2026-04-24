@@ -31,12 +31,19 @@ export const getFreelancerProfile = async (userId: string): Promise<any | null> 
 
 // Save/update freelancer profile
 export const saveFreelancerProfile = async (payload: any): Promise<any> => {
-  const res = await fetch(`${API_BASE}/api/freelancer/profile`, {
+  const url = `${API_BASE}/api/freelancer/profile`;
+  console.log('[freelancerApi] POST', url, payload);
+  const res = await fetch(url, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error('Failed to save profile');
+  console.log('[freelancerApi] response status', res.status);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    console.error('[freelancerApi] save failed', res.status, errText);
+    throw new Error(`Failed to save profile (${res.status}): ${errText || res.statusText}`);
+  }
   return res.json();
 };
 
