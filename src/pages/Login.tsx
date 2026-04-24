@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authApi } from '@/services/authApi';
+import { API_BASE_URL } from '@/config/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -45,7 +46,7 @@ const Login = () => {
       if (role.toLowerCase() === 'freelancer') {
         try {
           const statusRes = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net'}/api/freelancer/profile-status?userId=${userId}`,
+            `${API_BASE_URL}/api/freelancer/profile-status?userId=${userId}`,
             { headers: { 'Authorization': `Bearer ${result.token}` } }
           );
           const statusData = await statusRes.json();

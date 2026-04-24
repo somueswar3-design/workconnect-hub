@@ -1,6 +1,5 @@
 import { WorkerProfile } from '@/types/profile';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
+import { API_BASE_URL as API_BASE } from '@/config/api';
 
 const getAuthHeaders = (): Record<string, string> => {
   const token = localStorage.getItem('auth_token');
