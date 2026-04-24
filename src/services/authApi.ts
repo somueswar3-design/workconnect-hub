@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://support360api-gnbxffdbdvemcjan.canadacentral-01.azurewebsites.net';
+const FREELANCER_API_BASE = import.meta.env.VITE_FREELANCER_API_BASE_URL || API_BASE;
 
 export interface RegisterRequest {
   email: string;
