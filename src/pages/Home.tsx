@@ -956,7 +956,7 @@ const Home = () => {
             {[
               { icon: Search, title: 'Search & discover', desc: 'Browse verified IT professionals or post your project. Filter by skills, rate, availability.' },
               { icon: Users, title: 'Interview & agree', desc: 'Book time slots, conduct interviews, agree on rate — all managed through the platform.' },
-              { icon: CheckCircle2, title: 'Work & get paid', desc: 'Weekly timesheets, approval workflows, auto-invoicing. Transparent payments.' },
+              { icon: CheckCircle, title: 'Work & get paid', desc: 'Weekly timesheets, approval workflows, auto-invoicing. Transparent payments.' },
             ].map((step, i) => (
               <div key={i} className="group relative bg-white border border-gray-200 rounded-2xl p-7 hover:border-orange-300 hover:shadow-xl hover:shadow-orange-500/10 transition-all">
                 <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30 mb-4 group-hover:scale-110 transition-transform">
