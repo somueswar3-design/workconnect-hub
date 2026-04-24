@@ -131,4 +131,40 @@ export const authApi = {
     }
     return { status: res.status };
   },
+
+  sendOtp: async (email: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/send-otp?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to send OTP');
+    }
+    return { status: res.status };
+  },
+
+  verifyOtp: async (email: string, otp: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/verify-otp?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Invalid OTP');
+    }
+    return { status: res.status };
+  },
+
+  resendOtp: async (email: string): Promise<{ status: number }> => {
+    const res = await fetch(`${FREELANCER_API_BASE}/api/freelancer/resend-otp?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to resend OTP');
+    }
+    return { status: res.status };
+  },
 };
