@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Free Pexels stock videos — freelancers, remote work, IT professionals
+// Free Mixkit stock videos — freelancers coding, remote work, designers
 const VIDEO_SLIDES = [
   {
-    src: 'https://videos.pexels.com/video-files/3194277/3194277-uhd_2560_1440_25fps.mp4',
+    src: 'https://assets.mixkit.co/videos/4699/4699-720.mp4',
     title: 'Build with world-class freelancers',
     tag: 'TRUSTED BY 10,000+ TEAMS',
   },
   {
-    src: 'https://videos.pexels.com/video-files/4974931/4974931-uhd_2732_1440_25fps.mp4',
+    src: 'https://assets.mixkit.co/videos/4434/4434-720.mp4',
     title: 'Remote talent. Real results.',
     tag: 'WORK FROM ANYWHERE',
   },
   {
-    src: 'https://videos.pexels.com/video-files/5495824/5495824-uhd_2560_1440_25fps.mp4',
+    src: 'https://assets.mixkit.co/videos/4625/4625-720.mp4',
     title: 'Designers, developers & creators',
     tag: 'VERIFIED PROFESSIONALS',
   },
   {
-    src: 'https://videos.pexels.com/video-files/8347501/8347501-uhd_2560_1440_25fps.mp4',
+    src: 'https://assets.mixkit.co/videos/4787/4787-720.mp4',
     title: 'Hire faster. Ship sooner.',
     tag: 'HOURLY · PART-TIME · FULL-TIME',
   },
