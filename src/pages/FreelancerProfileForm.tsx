@@ -437,6 +437,14 @@ const FreelancerProfileForm = () => {
           }`}>
             Profile {completionPct}% complete
           </span>
+          <button
+            type="button"
+            onClick={goToNextSection}
+            disabled={isLoading}
+            className="bg-orange-500 text-gray-900 rounded-lg px-4 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-colors disabled:opacity-60"
+          >
+            {isLoading ? 'Saving…' : (activePage === 'links' ? 'Publish ✓' : 'Continue →')}
+          </button>
           <div className="flex items-center gap-2 px-3 py-1 border border-gray-200 rounded-full cursor-pointer hover:border-orange-300 transition-colors">
             <div className="w-[26px] h-[26px] rounded-full bg-orange-50 border border-orange-200 text-orange-500 text-[11px] font-semibold flex items-center justify-center">
               {initials}
