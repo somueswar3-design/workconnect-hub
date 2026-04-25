@@ -26,25 +26,55 @@ const profileSchema = z.object({
   phoneNumber: z.string().min(5, 'Phone number is required'),
   companyName: z.string().optional(),
   experienceYears: z.string().min(1, 'Experience is required'),
+  skillCategory: z.string().min(1, 'Please pick a category first'),
   primarySkills: z.string().min(1, 'Add at least one primary skill'),
   secondarySkills: z.string().optional(),
   skillSetDesc: z.string().min(1, 'Please describe your skill set'),
   anyFreelancingExperience: z.string().min(1, 'Freelancing experience is required'),
   currentCompany: z.string().optional(),
   currentCompanyRole: z.string().optional(),
-  languagesKnown: z.string().min(1, 'Languages known is required'),
+  engagementType: z.string().min(1, 'Select engagement type'),
+  languagesKnown: z.string().min(1, 'Select at least one language'),
   speakingLanguage: z.string().min(1, 'Select preferred speaking language'),
   hoursAvailablePerDay: z.string().min(1, 'Hours per day is required'),
   hourRate: z.string().min(1, 'Hourly rate is required'),
   isAvailableInWeekends: z.boolean().optional(),
   bioDescription: z.string().min(10, 'Bio must be at least 10 characters'),
-  linkedInProfile: z.string().optional(),
+  projectUrls: z.string().optional(),
   portfolioURL: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 const languageOptions = ['English', 'Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Bengali', 'Gujarati', 'Urdu'];
+
+const SKILL_CATEGORIES: Record<string, string[]> = {
+  'Web Development': ['React', 'Next.js', 'Vue.js', 'Angular', 'Node.js', 'TypeScript', 'Tailwind CSS', 'GraphQL'],
+  'Mobile Development': ['Flutter', 'React Native', 'Swift', 'Kotlin', 'Android (Java)', 'iOS', 'Expo'],
+  'Desktop Apps': ['Electron', 'WPF', '.NET', 'C++', 'Qt', 'JavaFX'],
+  'Cloud & DevOps': ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'CI/CD'],
+  'Data & AI/ML': ['Python', 'TensorFlow', 'PyTorch', 'Pandas', 'LangChain', 'OpenAI', 'NLP'],
+  'Backend & Database': ['Java', 'Spring Boot', 'Go', 'PostgreSQL', 'MongoDB', 'Redis', 'Microservices'],
+  'Design & UX': ['Figma', 'Adobe XD', 'UI Design', 'UX Research', 'Prototyping', 'Webflow'],
+  'QA & Testing': ['Selenium', 'Cypress', 'Playwright', 'Jest', 'Manual Testing', 'Postman'],
+};
+
+const SAMPLE_PROJECT_URLS = [
+  'https://github.com/facebook/react',
+  'https://github.com/vercel/next.js',
+  'https://github.com/tensorflow/tensorflow',
+  'https://github.com/flutter/flutter',
+  'https://github.com/microsoft/vscode',
+];
+
+const ENGAGEMENT_TYPES = [
+  { icon: '⏱', label: 'Hourly', desc: 'Pay per hour. Flexible scope.' },
+  { icon: '🗓', label: 'Part-time', desc: '20–30h/week. Ongoing.' },
+  { icon: '💼', label: 'Full-time', desc: '40h/week dedicated.' },
+  { icon: '📋', label: 'Fixed project', desc: 'Milestone-based delivery.' },
+  { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
+  { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
+];
 
 const genderMap: Record<string, number> = { male: 0, female: 1, other: 2, 'prefer-not': 3 };
 const reverseGenderMap: Record<number, string> = { 0: 'male', 1: 'female', 2: 'other', 3: 'prefer-not' };
@@ -152,11 +182,12 @@ const FreelancerProfileForm = () => {
     defaultValues: {
       fullName: '', gender: '', country: '', phoneNumber: '',
       companyName: '', experienceYears: '',
-      primarySkills: '', secondarySkills: '', skillSetDesc: '',
+      skillCategory: '', primarySkills: '', secondarySkills: '', skillSetDesc: '',
       anyFreelancingExperience: '', currentCompany: '', currentCompanyRole: '',
+      engagementType: 'Part-time',
       languagesKnown: '', speakingLanguage: '',
       hoursAvailablePerDay: '', hourRate: '', isAvailableInWeekends: false,
-      bioDescription: '', linkedInProfile: '', portfolioURL: '',
+      bioDescription: '', projectUrls: '', portfolioURL: '',
     },
   });
 
@@ -176,19 +207,21 @@ const FreelancerProfileForm = () => {
             phoneNumber: data.phoneNumber || '',
             companyName: data.companyName || '',
             experienceYears: data.experienceYears?.toString() || '',
+            skillCategory: data.skillCategory || '',
             primarySkills: data.primarySkills || '',
             secondarySkills: data.secondarySkills || '',
             skillSetDesc: data.skillSetDesc || '',
             anyFreelancingExperience: reverseFreelancingExpMap[data.anyFreelnacingExperience] || '',
             currentCompany: data.currentCompany || '',
             currentCompanyRole: data.currentCompanyRole || '',
+            engagementType: data.engagementType || 'Part-time',
             languagesKnown: data.languagesKnown || '',
             speakingLanguage: data.speakingLanguage || '',
             hoursAvailablePerDay: data.hoursAvailablePerDay || '',
             hourRate: data.hourRate || '',
             isAvailableInWeekends: data.isAvailbleInweeknds || false,
             bioDescription: data.bioDescption || '',
-            linkedInProfile: data.linkedInProfile || '',
+            projectUrls: data.projectUrls || data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
           // Update profile percentage in context
@@ -227,7 +260,10 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate,
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription,
-        linkedInProfile: data.linkedInProfile || '',
+        linkedInProfile: data.projectUrls || '',
+        skillCategory: data.skillCategory || '',
+        engagementType: data.engagementType || 'Part-time',
+        projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
@@ -274,7 +310,10 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate || '',
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription || '',
-        linkedInProfile: data.linkedInProfile || '',
+        linkedInProfile: data.projectUrls || '',
+        skillCategory: data.skillCategory || '',
+        engagementType: data.engagementType || 'Part-time',
+        projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
@@ -293,7 +332,26 @@ const FreelancerProfileForm = () => {
     }
   };
 
+  const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
+    identity: ['fullName', 'gender', 'country', 'phoneNumber'],
+    about: ['bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
+    experience: [],
+    rates: ['hourRate', 'hoursAvailablePerDay'],
+    availability: ['engagementType'],
+    languages: ['languagesKnown', 'speakingLanguage'],
+    links: [],
+  };
+
   const markDoneAndContinue = async (currentSection: string, nextSection: string) => {
+    const fields = SECTION_FIELDS[currentSection] || [];
+    if (fields.length) {
+      const valid = await form.trigger(fields);
+      if (!valid) {
+        toast.error('Please complete the required fields before continuing');
+        return;
+      }
+    }
     const ok = await saveCurrentProgress();
     if (!ok) return;
     setCompletedSections(prev => new Set(prev).add(currentSection));
@@ -308,7 +366,7 @@ const FreelancerProfileForm = () => {
       watchedValues.experienceYears, watchedValues.anyFreelancingExperience,
       watchedValues.languagesKnown, watchedValues.speakingLanguage,
       watchedValues.hoursAvailablePerDay, watchedValues.hourRate,
-      watchedValues.bioDescription, watchedValues.linkedInProfile, watchedValues.portfolioURL,
+      watchedValues.bioDescription, watchedValues.projectUrls, watchedValues.portfolioURL,
     ];
     const filled = fields.filter(f => f && String(f).trim().length > 0);
     return Math.round((filled.length / fields.length) * 100);
@@ -346,14 +404,6 @@ const FreelancerProfileForm = () => {
             </div>
             <span className="text-xs text-gray-600">{watchedValues.fullName || user?.fullName || 'User'}</span>
           </div>
-          <button
-            type="button"
-            onClick={form.handleSubmit(handleSubmit)}
-            disabled={isLoading}
-            className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
-          >
-            {isLoading ? 'Saving...' : 'Save changes'}
-          </button>
         </div>
       </header>
 
@@ -551,16 +601,60 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">❋</span> Primary skills (shown on card)
+                      <span className="text-base">◇</span> Pick your category first <span className="text-red-500">*</span>
                     </div>
-                    <FormField control={form.control} name="primarySkills" render={({ field }) => (
+                    <p className="text-[12px] text-gray-500 mb-3">Choose a category — we'll suggest the right primary skills below.</p>
+                    <FormField control={form.control} name="skillCategory" render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <SkillTagInput value={field.value} onChange={field.onChange} placeholder="Type a skill and press Add..." />
-                        </FormControl>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {Object.keys(SKILL_CATEGORIES).map(cat => {
+                            const selected = field.value === cat;
+                            return (
+                              <button key={cat} type="button"
+                                onClick={() => field.onChange(cat)}
+                                className={`px-3 py-2.5 rounded-lg text-xs font-medium border transition-all text-left ${
+                                  selected ? 'bg-orange-50 text-orange-600 border-orange-400 ring-1 ring-orange-300' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300'
+                                }`}
+                              >{cat}</button>
+                            );
+                          })}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )} />
+                  </div>
+
+                  <div className={`bg-white border rounded-2xl p-6 mb-4 transition-colors ${watchedValues.skillCategory ? 'border-gray-200 hover:border-gray-300' : 'border-dashed border-gray-200 opacity-60 pointer-events-none'}`}>
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">❋</span> Primary skills <span className="text-red-500">*</span>
+                      {!watchedValues.skillCategory && <span className="text-[11px] text-gray-400 font-normal">(pick a category first)</span>}
+                    </div>
+                    <FormField control={form.control} name="primarySkills" render={({ field }) => {
+                      const tags = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                      const suggested = (SKILL_CATEGORIES[watchedValues.skillCategory] || []).filter(s => !tags.includes(s));
+                      const addTag = (t: string) => { if (!tags.includes(t)) field.onChange([...tags, t].join(', ')); };
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <SkillTagInput value={field.value} onChange={field.onChange} placeholder="Type a skill and press Add..." />
+                          </FormControl>
+                          {suggested.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Suggested for {watchedValues.skillCategory}</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {suggested.map(s => (
+                                  <button key={s} type="button" onClick={() => addTag(s)}
+                                    className="px-3 py-1 rounded-full text-xs border border-orange-200 bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors">
+                                    + {s}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }} />
                   </div>
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
@@ -736,24 +830,31 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">◑</span> Engagement type
+                      <span className="text-base">◑</span> Engagement type <span className="text-red-500">*</span>
+                      <span className="text-[11px] text-gray-400 font-normal ml-2">Default: Part-time</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { icon: '⏱', label: 'Hourly', desc: 'Pay per hour. Flexible scope.' },
-                        { icon: '🗓', label: 'Part-time', desc: '20–30h/week. Ongoing.' },
-                        { icon: '💼', label: 'Full-time', desc: '40h/week dedicated.' },
-                        { icon: '📋', label: 'Fixed project', desc: 'Milestone-based delivery.' },
-                        { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
-                        { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
-                      ].map(item => (
-                        <div key={item.label} className="border border-gray-200 rounded-xl p-4 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-all text-center">
-                          <div className="text-xl mb-1">{item.icon}</div>
-                          <div className="text-[13px] font-semibold text-gray-900 mb-1">{item.label}</div>
-                          <div className="text-[11px] text-gray-400 leading-relaxed">{item.desc}</div>
+                    <FormField control={form.control} name="engagementType" render={({ field }) => (
+                      <FormItem>
+                        <div className="grid grid-cols-3 gap-3">
+                          {ENGAGEMENT_TYPES.map(item => {
+                            const selected = field.value === item.label;
+                            return (
+                              <button key={item.label} type="button"
+                                onClick={() => field.onChange(item.label)}
+                                className={`border rounded-xl p-4 cursor-pointer transition-all text-center ${
+                                  selected ? 'border-orange-400 bg-orange-50 ring-1 ring-orange-300' : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                }`}
+                              >
+                                <div className="text-xl mb-1">{item.icon}</div>
+                                <div className={`text-[13px] font-semibold mb-1 ${selected ? 'text-orange-600' : 'text-gray-900'}`}>{item.label}</div>
+                                <div className="text-[11px] text-gray-400 leading-relaxed">{item.desc}</div>
+                              </button>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
 
                   <div className="flex justify-between mt-4">
@@ -850,19 +951,38 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">▷</span> Online profiles
+                      <span className="text-base">▷</span> Project URLs & portfolio
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabel}>LinkedIn Profile</FormLabel>
-                          <FormControl><input className={fieldInput} placeholder="https://linkedin.com/in/..." {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                    <FormField control={form.control} name="projectUrls" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Project URLs (GitHub, live demos, case studies)</FormLabel>
+                        <FormControl>
+                          <SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="Paste a project URL and press Add..." />
+                        </FormControl>
+                        <FormMessage />
+                        <div className="mt-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Sample GitHub projects — click to add</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {SAMPLE_PROJECT_URLS.map(url => {
+                              const tags = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                              const already = tags.includes(url);
+                              return (
+                                <button key={url} type="button"
+                                  disabled={already}
+                                  onClick={() => field.onChange([...tags, url].join(', '))}
+                                  className="px-3 py-1 rounded-full text-[11px] border border-gray-200 bg-gray-50 text-gray-600 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                  {url.replace('https://github.com/', '')}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </FormItem>
+                    )} />
+                    <div className="mt-4">
                       <FormField control={form.control} name="portfolioURL" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={fieldLabel}>Portfolio / Website</FormLabel>
+                          <FormLabel className={fieldLabel}>Portfolio / Website (optional)</FormLabel>
                           <FormControl><input className={fieldInput} placeholder="https://yoursite.com" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
