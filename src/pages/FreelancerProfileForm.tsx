@@ -182,11 +182,12 @@ const FreelancerProfileForm = () => {
     defaultValues: {
       fullName: '', gender: '', country: '', phoneNumber: '',
       companyName: '', experienceYears: '',
-      primarySkills: '', secondarySkills: '', skillSetDesc: '',
+      skillCategory: '', primarySkills: '', secondarySkills: '', skillSetDesc: '',
       anyFreelancingExperience: '', currentCompany: '', currentCompanyRole: '',
+      engagementType: 'Part-time',
       languagesKnown: '', speakingLanguage: '',
       hoursAvailablePerDay: '', hourRate: '', isAvailableInWeekends: false,
-      bioDescription: '', linkedInProfile: '', portfolioURL: '',
+      bioDescription: '', projectUrls: '', portfolioURL: '',
     },
   });
 
