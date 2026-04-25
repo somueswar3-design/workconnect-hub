@@ -791,7 +791,7 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div className={filtered.length > 20 ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
