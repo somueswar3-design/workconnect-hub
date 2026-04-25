@@ -31,6 +31,7 @@ import catData from '@/assets/cat-data.jpg';
 import catMarketing from '@/assets/cat-marketing.jpg';
 import catWriting from '@/assets/cat-writing.jpg';
 import heroMakeItReal from '@/assets/hero-makeitreal.jpg';
+import HeroVideoBanner from '@/components/HeroVideoBanner';
 
 const ITEMS_PER_PAGE = 20;
 
