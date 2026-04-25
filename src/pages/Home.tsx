@@ -920,14 +920,23 @@ const Home = () => {
 
           {reqLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
-          ) : requirements.length === 0 ? (
-            <div className="text-center py-16">
-              <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No live projects available right now.</p>
-            </div>
           ) : (() => {
-            const reqTotalPages = Math.ceil(requirements.length / REQ_PER_PAGE);
-            const reqPaginated = requirements.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
+            const filteredReqs = featuredFilter === 'All'
+              ? requirements
+              : requirements.filter(r => {
+                  const haystack = `${r.title || ''} ${r.description || ''} ${r.skillsRequired || ''}`.toLowerCase();
+                  return haystack.includes(featuredFilter.toLowerCase());
+                });
+            if (filteredReqs.length === 0) {
+              return (
+                <div className="text-center py-16">
+                  <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No projects match the selected filter.</p>
+                </div>
+              );
+            }
+            const reqTotalPages = Math.ceil(filteredReqs.length / REQ_PER_PAGE);
+            const reqPaginated = filteredReqs.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
             return (
               <>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
