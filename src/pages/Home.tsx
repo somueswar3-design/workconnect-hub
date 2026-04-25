@@ -56,7 +56,15 @@ const WORK_TILES = [
   { label: 'Logistics jobs', img: catWriting, filter: 'E-Commerce' },
 ];
 const LANGUAGES = ['English', 'Hindi', 'Tamil', 'Telugu', 'Spanish', 'French', 'German', 'Mandarin'];
-const SKILL_TAGS = ['React', 'Node.js', 'AWS', 'DevOps', 'Python', 'Cybersecurity', 'UI/UX', 'Mobile', 'Java', '.NET', 'Angular', 'Data Science'];
+const SKILL_TAGS = [
+  'Mobile', 'Desktop', 'Website', 'Web Development', 'Backend', 'Frontend',
+  'React', 'React Native', 'Node.js', 'Angular', 'Vue.js', 'Next.js',
+  'Python', 'Java', '.NET', 'PHP', 'Ruby', 'Go',
+  'iOS', 'Android', 'Flutter', 'Swift', 'Kotlin',
+  'AWS', 'Azure', 'Google Cloud', 'DevOps', 'Docker', 'Kubernetes',
+  'Cybersecurity', 'UI/UX', 'Figma', 'Data Science', 'Machine Learning', 'AI',
+];
+const FEATURED_JOB_FILTERS = ['All', 'Mobile', 'Web', 'Desktop', 'Cloud', 'AI/ML', 'Design'];
 
 const CATEGORIES = [
   { label: 'Web Development', icon: Code, type: 'IT' },
@@ -171,6 +179,7 @@ const Home = () => {
   const [workPanel, setWorkPanel] = useState<WorkPanel>('skill');
   const [drilldownCategory, setDrilldownCategory] = useState<string | null>(null);
   const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
+  const [featuredFilter, setFeaturedFilter] = useState<string>('All');
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true); setHasError(false);
@@ -418,187 +427,165 @@ const Home = () => {
                 )}
               </div>
 
-              {/* Right content */}
+              {/* Right content — strictly panel-aware (mutually exclusive) */}
               <div className="lg:col-span-8 p-5">
-                <div className="flex items-stretch bg-white border border-gray-200 rounded-xl overflow-hidden mb-4 shadow-sm">
-                  <div className="flex items-center px-3 border-r border-gray-200">
-                    <Search className="h-4 w-4 text-gray-400" />
-                  </div>
-                  {heroMode === 'work' && workPanel === 'language' ? (
-                    <select
-                      className="bg-transparent text-gray-700 text-sm px-3 outline-none flex-1 cursor-pointer py-3"
-                      value={heroSearchInput}
-                      onChange={e => setHeroSearchInput(e.target.value)}
-                    >
-                      <option value="">Select language…</option>
-                      {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-                    </select>
-                  ) : (heroMode === 'hire' && hirePanel === 'location') ? (
-                    <select
-                      className="bg-transparent text-gray-700 text-sm px-3 outline-none flex-1 cursor-pointer py-3"
-                      value={filterCountry}
-                      onChange={e => { setFilterCountry(e.target.value); setCurrentPage(1); }}
-                    >
-                      <option value="">All countries</option>
-                      {countries.map(c => <option key={c.code} value={c.name}>{c.name}</option>)}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      placeholder={heroMode === 'hire' ? 'Search skills, roles, or names…' : 'Search project keywords…'}
-                      value={heroSearchInput}
-                      onChange={e => setHeroSearchInput(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleHeroSearch()}
-                      className="flex-1 bg-transparent text-gray-900 px-3 outline-none placeholder:text-gray-400 text-sm py-3"
-                    />
-                  )}
-                  <Button
-                    onClick={() => {
-                      if (heroMode === 'work') worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                      else handleHeroSearch();
-                    }}
-                    className="m-1.5 px-5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg border-0"
-                  >
-                    Search
-                  </Button>
-                </div>
 
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                  {heroMode === 'work' ? 'Do you want projects like these?' : 'Popular searches'}
-                </p>
+                {/* ───── HIRE MODE ───── */}
+                {heroMode === 'hire' && hirePanel === 'skill' && (
+                  <>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a skill</p>
+                    <div className="flex flex-wrap gap-2">
+                      {SKILL_TAGS.map(skill => (
+                        <button
+                          key={skill}
+                          onClick={() => handleSkillTagClick(skill)}
+                          className="px-4 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
+                        >
+                          {skill}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {(heroMode === 'hire' ? HIRE_TILES : WORK_TILES).map(tile => (
-                    <button
-                      key={tile.label}
-                      onClick={() => {
-                        if (heroMode === 'work') {
-                          worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                          setFilterSkill(tile.filter);
-                          setSearchQuery(tile.filter);
-                          setCurrentPage(1);
-                          freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }}
-                      className="group relative rounded-xl overflow-hidden border border-gray-200 hover:border-orange-400 hover:shadow-lg transition-all bg-white text-left"
-                    >
-                      <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-                        <img src={tile.img} alt={tile.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                {heroMode === 'hire' && hirePanel === 'location' && (
+                  <>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a country</p>
+                    <div className="flex flex-wrap gap-2 max-h-[420px] overflow-y-auto pr-1">
+                      {countries.map(c => {
+                        const active = filterCountry === c.name;
+                        return (
+                          <button
+                            key={c.code}
+                            onClick={() => {
+                              setFilterCountry(c.name);
+                              setCurrentPage(1);
+                              freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                              active
+                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                            }`}
+                          >
+                            <MapPin className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />
+                            {c.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {heroMode === 'hire' && hirePanel === 'category' && (
+                  <>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a category</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {CATEGORIES.map(cat => (
+                        <button
+                          key={cat.label}
+                          onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
+                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
+                            cat.type === 'IT' ? 'hover:border-orange-300' : 'hover:border-blue-300'
+                          }`}
+                        >
+                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
+                            cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
+                          }`}>
+                            <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          </div>
+                          <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* ───── WORK MODE ───── */}
+                {heroMode === 'work' && workPanel === 'skill' && (
+                  <>
+                    <div className="flex items-stretch bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                      <div className="flex items-center px-3 border-r border-gray-200">
+                        <Search className="h-4 w-4 text-gray-400" />
                       </div>
-                      <div className="px-3 py-2.5 bg-white">
-                        <p className="text-sm font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{tile.label}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                      <input
+                        type="text"
+                        placeholder="Search project keywords…"
+                        value={heroSearchInput}
+                        onChange={e => setHeroSearchInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                        className="flex-1 bg-transparent text-gray-900 px-3 outline-none placeholder:text-gray-400 text-sm py-3"
+                      />
+                      <Button
+                        onClick={() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                        className="m-1.5 px-5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg border-0"
+                      >
+                        Search
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-3">Type a project keyword and press Search to browse matching projects below.</p>
+                  </>
+                )}
 
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {SKILL_TAGS.slice(0, 8).map(skill => (
-                    <button
-                      key={skill}
-                      onClick={() => handleSkillTagClick(skill)}
-                      className="px-3 py-1 rounded-full border border-gray-200 text-xs text-gray-600 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
+                {heroMode === 'work' && workPanel === 'language' && (
+                  <>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a language</p>
+                    <div className="flex flex-wrap gap-2">
+                      {LANGUAGES.map(l => {
+                        const active = heroSearchInput === l;
+                        return (
+                          <button
+                            key={l}
+                            onClick={() => { setHeroSearchInput(l); worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
+                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                              active
+                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                            }`}
+                          >
+                            <Languages className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />
+                            {l}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {heroMode === 'work' && workPanel === 'featured' && (
+                  <>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Filter featured jobs</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {FEATURED_JOB_FILTERS.map(f => {
+                        const active = featuredFilter === f;
+                        return (
+                          <button
+                            key={f}
+                            onClick={() => {
+                              setFeaturedFilter(f);
+                              worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                              active
+                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
+                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                            }`}
+                          >
+                            {f}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <Button
+                      onClick={() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                      className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5"
                     >
-                      {skill}
-                    </button>
-                  ))}
-                </div>
+                      <Award className="h-4 w-4" /> View featured projects
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════ MAKE IT REAL (Freelancer.in style) ══════════════════ */}
-      <section className="relative overflow-hidden bg-gray-900 border-b border-gray-800">
-        <div className="container mx-auto px-4 py-14">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div className="relative z-10">
-              <h2 className="text-4xl sm:text-5xl font-black leading-[1.05] mb-2">
-                <span className="text-orange-500">Make it real</span>
-              </h2>
-              <h3 className="text-3xl sm:text-4xl font-black text-white mb-8 leading-tight">
-                with WorkSupport360
-              </h3>
-
-              <div className="grid sm:grid-cols-2 gap-6 mb-8">
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2">The best talent</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    Discover reliable professionals by exploring their portfolios and immersing yourself in the feedback shared on their profiles.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2">Fast bids</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    Get quick, no-obligation quotes from skilled freelancers. 80% of jobs receive bids within 60 seconds. Your idea is just moments from reality.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2">Quality work</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    Access top-rated experts across IT, design, marketing and more. Every professional is verified for quality.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold text-white mb-2">Safe & secure</h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    Your project, your money, your data — all protected. Pay only when you're satisfied with the milestone.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <Button onClick={() => setHeroMode('hire')} className="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full px-6 h-11">
-                  Hire a Freelancer
-                </Button>
-                <Button onClick={() => setHeroMode('work')} variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:text-white font-bold rounded-full px-6 h-11 bg-transparent">
-                  Earn Money Freelancing
-                </Button>
-              </div>
-            </div>
-
-            <div className="relative">
-              <img
-                src={heroMakeItReal}
-                alt="Vibrant hummingbird made of colorful splashes representing creativity"
-                width={1280}
-                height={768}
-                loading="lazy"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════ CATEGORY DRILLDOWN ══════════════════ */}
-      <section className="py-12 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">EXPLORE</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Pick a category</h2>
-            <p className="text-gray-500 mt-2 text-sm">Click a category to see related technologies.</p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.label}
-                onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
-                  cat.type === 'IT' ? 'hover:border-orange-300 hover:shadow-orange-500/10' : 'hover:border-blue-300 hover:shadow-blue-500/10'
-                }`}
-              >
-                <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
-                  cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
-                }`}>
-                  <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
-                </div>
-                <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -933,14 +920,23 @@ const Home = () => {
 
           {reqLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
-          ) : requirements.length === 0 ? (
-            <div className="text-center py-16">
-              <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No live projects available right now.</p>
-            </div>
           ) : (() => {
-            const reqTotalPages = Math.ceil(requirements.length / REQ_PER_PAGE);
-            const reqPaginated = requirements.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
+            const filteredReqs = featuredFilter === 'All'
+              ? requirements
+              : requirements.filter(r => {
+                  const haystack = `${r.title || ''} ${r.description || ''} ${r.skillsRequired || ''}`.toLowerCase();
+                  return haystack.includes(featuredFilter.toLowerCase());
+                });
+            if (filteredReqs.length === 0) {
+              return (
+                <div className="text-center py-16">
+                  <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No projects match the selected filter.</p>
+                </div>
+              );
+            }
+            const reqTotalPages = Math.ceil(filteredReqs.length / REQ_PER_PAGE);
+            const reqPaginated = filteredReqs.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
             return (
               <>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
