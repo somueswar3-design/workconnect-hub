@@ -179,6 +179,7 @@ const Home = () => {
   const [workPanel, setWorkPanel] = useState<WorkPanel>('skill');
   const [drilldownCategory, setDrilldownCategory] = useState<string | null>(null);
   const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
+  const [featuredFilter, setFeaturedFilter] = useState<string>('All');
 
   const loadFreelancers = async (filters?: FreelancerFilterParams) => {
     setIsLoading(true); setHasError(false);
