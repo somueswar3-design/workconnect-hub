@@ -32,7 +32,7 @@ import catMarketing from '@/assets/cat-marketing.jpg';
 import catWriting from '@/assets/cat-writing.jpg';
 import heroMakeItReal from '@/assets/hero-makeitreal.jpg';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 20;
 
 const HERO_TABS = ['Find freelancers', 'Browse projects', 'Post a job'] as const;
 type HeroMode = 'hire' | 'work';
