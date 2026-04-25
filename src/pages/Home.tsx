@@ -67,22 +67,22 @@ const SKILL_TAGS = [
 const FEATURED_JOB_FILTERS = ['All', 'Mobile', 'Web', 'Desktop', 'Cloud', 'AI/ML', 'Design'];
 
 const CATEGORIES = [
-  { label: 'Web Development', icon: Code, type: 'IT' },
-  { label: 'Mobile Development', icon: Smartphone, type: 'IT' },
-  { label: 'Cloud & DevOps', icon: Cloud, type: 'IT' },
-  { label: 'Data Science & AI', icon: Database, type: 'IT' },
-  { label: 'Cybersecurity', icon: Lock, type: 'IT' },
-  { label: 'UI/UX Design', icon: Palette, type: 'IT' },
-  { label: 'QA & Testing', icon: Settings, type: 'IT' },
-  { label: 'ERP & SAP', icon: Cpu, type: 'IT' },
-  { label: 'Digital Marketing', icon: TrendingUp, type: 'Non-IT' },
-  { label: 'Content Writing', icon: FileText, type: 'Non-IT' },
-  { label: 'Graphic Design', icon: MonitorPlay, type: 'Non-IT' },
-  { label: 'SEO & Analytics', icon: BarChart3, type: 'Non-IT' },
-  { label: 'E-Commerce', icon: ShoppingCart, type: 'Non-IT' },
-  { label: 'Healthcare IT', icon: Stethoscope, type: 'Non-IT' },
-  { label: 'Finance & Banking', icon: Landmark, type: 'Non-IT' },
-  { label: 'Education & Training', icon: GraduationCap, type: 'Non-IT' },
+  { label: 'Web Development', icon: Code, type: 'IT', image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=400&q=80', gradient: 'from-orange-400 to-pink-500' },
+  { label: 'Mobile Development', icon: Smartphone, type: 'IT', image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80', gradient: 'from-purple-500 to-indigo-500' },
+  { label: 'Cloud & DevOps', icon: Cloud, type: 'IT', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80', gradient: 'from-sky-400 to-blue-600' },
+  { label: 'Data Science & AI', icon: Database, type: 'IT', image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&q=80', gradient: 'from-emerald-400 to-teal-600' },
+  { label: 'Cybersecurity', icon: Lock, type: 'IT', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&q=80', gradient: 'from-slate-700 to-red-600' },
+  { label: 'UI/UX Design', icon: Palette, type: 'IT', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b8?w=400&q=80', gradient: 'from-pink-400 to-rose-500' },
+  { label: 'QA & Testing', icon: Settings, type: 'IT', image: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=400&q=80', gradient: 'from-amber-400 to-orange-500' },
+  { label: 'ERP & SAP', icon: Cpu, type: 'IT', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80', gradient: 'from-cyan-500 to-blue-700' },
+  { label: 'Digital Marketing', icon: TrendingUp, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80', gradient: 'from-fuchsia-500 to-purple-600' },
+  { label: 'Content Writing', icon: FileText, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&q=80', gradient: 'from-yellow-400 to-amber-600' },
+  { label: 'Graphic Design', icon: MonitorPlay, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&q=80', gradient: 'from-rose-400 to-red-500' },
+  { label: 'SEO & Analytics', icon: BarChart3, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80', gradient: 'from-green-400 to-emerald-600' },
+  { label: 'E-Commerce', icon: ShoppingCart, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=80', gradient: 'from-orange-400 to-red-500' },
+  { label: 'Healthcare IT', icon: Stethoscope, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&q=80', gradient: 'from-teal-400 to-cyan-600' },
+  { label: 'Finance & Banking', icon: Landmark, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80', gradient: 'from-indigo-500 to-blue-700' },
+  { label: 'Education & Training', icon: GraduationCap, type: 'Non-IT', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80', gradient: 'from-violet-500 to-purple-600' },
 ];
 
 // Technologies under each category for drilldown
@@ -175,7 +175,7 @@ const Home = () => {
   const [selectedSkillFilters, setSelectedSkillFilters] = useState<string[]>([]);
   const [heroSearchInput, setHeroSearchInput] = useState('');
   const [heroMode, setHeroMode] = useState<HeroMode>('hire');
-  const [hirePanel, setHirePanel] = useState<HirePanel>('skill');
+  const [hirePanel, setHirePanel] = useState<HirePanel>('category');
   const [workPanel, setWorkPanel] = useState<WorkPanel>('skill');
   const [drilldownCategory, setDrilldownCategory] = useState<string | null>(null);
   const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
@@ -485,16 +485,19 @@ const Home = () => {
                         <button
                           key={cat.label}
                           onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
-                          className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white group ${
-                            cat.type === 'IT' ? 'hover:border-orange-300' : 'hover:border-blue-300'
-                          }`}
+                          className="relative h-24 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg hover:scale-[1.03] transition-all group"
                         >
-                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${
-                            cat.type === 'IT' ? 'bg-orange-50 group-hover:bg-orange-100' : 'bg-blue-50 group-hover:bg-blue-100'
-                          }`}>
-                            <cat.icon className={`h-5 w-5 ${cat.type === 'IT' ? 'text-orange-500' : 'text-blue-500'}`} />
+                          <img
+                            src={cat.image}
+                            alt={cat.label}
+                            loading="lazy"
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-70 group-hover:opacity-60 transition-opacity`} />
+                          <div className="relative h-full flex flex-col items-center justify-center gap-1 p-2">
+                            <cat.icon className="h-5 w-5 text-white drop-shadow-md" />
+                            <span className="text-xs font-bold text-white text-center leading-tight drop-shadow-md">{cat.label}</span>
                           </div>
-                          <span className="text-xs font-semibold text-gray-700 text-center leading-tight">{cat.label}</span>
                         </button>
                       ))}
                     </div>
