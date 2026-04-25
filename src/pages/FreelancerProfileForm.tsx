@@ -385,14 +385,6 @@ const FreelancerProfileForm = () => {
             </div>
             <span className="text-xs text-gray-600">{watchedValues.fullName || user?.fullName || 'User'}</span>
           </div>
-          <button
-            type="button"
-            onClick={form.handleSubmit(handleSubmit)}
-            disabled={isLoading}
-            className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-1.5 text-xs font-semibold hover:bg-orange-600 transition-opacity disabled:opacity-60"
-          >
-            {isLoading ? 'Saving...' : 'Save changes'}
-          </button>
         </div>
       </header>
 
