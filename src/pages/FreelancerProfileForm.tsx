@@ -332,7 +332,26 @@ const FreelancerProfileForm = () => {
     }
   };
 
+  const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
+    identity: ['fullName', 'gender', 'country', 'phoneNumber'],
+    about: ['bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
+    experience: [],
+    rates: ['hourRate', 'hoursAvailablePerDay'],
+    availability: ['engagementType'],
+    languages: ['languagesKnown', 'speakingLanguage'],
+    links: [],
+  };
+
   const markDoneAndContinue = async (currentSection: string, nextSection: string) => {
+    const fields = SECTION_FIELDS[currentSection] || [];
+    if (fields.length) {
+      const valid = await form.trigger(fields);
+      if (!valid) {
+        toast.error('Please complete the required fields before continuing');
+        return;
+      }
+    }
     const ok = await saveCurrentProgress();
     if (!ok) return;
     setCompletedSections(prev => new Set(prev).add(currentSection));
