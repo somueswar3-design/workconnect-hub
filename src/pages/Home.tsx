@@ -801,7 +801,7 @@ const Home = () => {
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all group"
+                            className={`bg-white border border-gray-200 rounded-2xl ${filtered.length > 20 ? 'p-3' : 'p-5'} hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all group`}
                           >
                             {/* Header */}
                             <div className="flex items-center gap-3 mb-3">
