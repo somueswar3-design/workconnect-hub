@@ -260,7 +260,10 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate,
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription,
-        linkedInProfile: data.linkedInProfile || '',
+        linkedInProfile: data.projectUrls || '',
+        skillCategory: data.skillCategory || '',
+        engagementType: data.engagementType || 'Part-time',
+        projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
@@ -307,7 +310,10 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate || '',
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription || '',
-        linkedInProfile: data.linkedInProfile || '',
+        linkedInProfile: data.projectUrls || '',
+        skillCategory: data.skillCategory || '',
+        engagementType: data.engagementType || 'Part-time',
+        projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
@@ -341,7 +347,7 @@ const FreelancerProfileForm = () => {
       watchedValues.experienceYears, watchedValues.anyFreelancingExperience,
       watchedValues.languagesKnown, watchedValues.speakingLanguage,
       watchedValues.hoursAvailablePerDay, watchedValues.hourRate,
-      watchedValues.bioDescription, watchedValues.linkedInProfile, watchedValues.portfolioURL,
+      watchedValues.bioDescription, watchedValues.projectUrls, watchedValues.portfolioURL,
     ];
     const filled = fields.filter(f => f && String(f).trim().length > 0);
     return Math.round((filled.length / fields.length) * 100);
