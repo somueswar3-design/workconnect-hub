@@ -761,9 +761,16 @@ const Home = () => {
                   <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 lg:hidden">
                     <Filter className="h-4 w-4" /> Filters
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => navigate('/talent-search')} className="gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 hidden sm:flex">
-                    See all <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  {filtered.length > ITEMS_PER_PAGE && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { const next = currentPage < totalPages ? currentPage + 1 : 1; setCurrentPage(next); }}
+                      className="gap-2 border-orange-300 text-orange-600 hover:bg-orange-50 hidden sm:flex"
+                    >
+                      Show more freelancers <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
 
