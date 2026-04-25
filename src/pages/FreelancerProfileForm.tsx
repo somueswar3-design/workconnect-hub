@@ -336,21 +336,39 @@ const FreelancerProfileForm = () => {
     identity: ['fullName', 'gender', 'country', 'phoneNumber'],
     about: ['bioDescription', 'experienceYears', 'anyFreelancingExperience'],
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
-    experience: [],
+    experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
     availability: ['engagementType'],
     languages: ['languagesKnown', 'speakingLanguage'],
     links: [],
   };
 
-  const markDoneAndContinue = async (currentSection: string, nextSection: string) => {
+  // Custom per-section validation in addition to schema (covers optional schema fields we want required here)
+  const validateSection = async (currentSection: string): Promise<boolean> => {
     const fields = SECTION_FIELDS[currentSection] || [];
-    if (fields.length) {
-      const valid = await form.trigger(fields);
-      if (!valid) {
-        toast.error('Please complete the required fields before continuing');
-        return;
-      }
+    const data = form.getValues();
+
+    // Extra required-checks for sections where schema marks fields optional but UX needs them
+    if (currentSection === 'experience') {
+      if (!data.currentCompany?.trim()) { form.setError('currentCompany', { message: 'Current company is required' }); }
+      if (!data.currentCompanyRole?.trim()) { form.setError('currentCompanyRole', { message: 'Role / job title is required' }); }
+    }
+    if (currentSection === 'languages') {
+      const langs = (data.languagesKnown || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (langs.length === 0) { form.setError('languagesKnown', { message: 'Select at least one language' }); }
+      if (!data.speakingLanguage) { form.setError('speakingLanguage', { message: 'Pick a preferred speaking language' }); }
+    }
+
+    if (!fields.length) return true;
+    const valid = await form.trigger(fields);
+    return valid;
+  };
+
+  const markDoneAndContinue = async (currentSection: string, nextSection: string) => {
+    const valid = await validateSection(currentSection);
+    if (!valid) {
+      toast.error('Please complete the required fields before continuing');
+      return;
     }
     const ok = await saveCurrentProgress();
     if (!ok) return;
@@ -358,18 +376,39 @@ const FreelancerProfileForm = () => {
     setActivePage(nextSection);
   };
 
-  // Calculate profile percentage from actual field values
+  // Continue from currently active section to the next nav item (used by top-right Continue button)
+  const ALL_SECTION_IDS = NAV_SECTIONS.flatMap(s => s.items).map(i => i.id);
+  const goToNextSection = async () => {
+    const idx = ALL_SECTION_IDS.indexOf(activePage);
+    const next = idx >= 0 && idx < ALL_SECTION_IDS.length - 1 ? ALL_SECTION_IDS[idx + 1] : null;
+    if (!next) {
+      // On final section -> submit
+      await form.handleSubmit(handleSubmit)();
+      return;
+    }
+    await markDoneAndContinue(activePage, next);
+  };
+
+  // Unified profile percentage — same calculation everywhere (header + preview)
   const completionPct = (() => {
-    const fields = [
-      watchedValues.fullName, watchedValues.gender, watchedValues.country,
-      watchedValues.phoneNumber, watchedValues.primarySkills, watchedValues.skillSetDesc,
-      watchedValues.experienceYears, watchedValues.anyFreelancingExperience,
-      watchedValues.languagesKnown, watchedValues.speakingLanguage,
-      watchedValues.hoursAvailablePerDay, watchedValues.hourRate,
-      watchedValues.bioDescription, watchedValues.projectUrls, watchedValues.portfolioURL,
-    ];
-    const filled = fields.filter(f => f && String(f).trim().length > 0);
-    return Math.round((filled.length / fields.length) * 100);
+    const d = watchedValues;
+    return calculateProfilePercentage({
+      fullName: d.fullName,
+      gender: d.gender,
+      country: d.country,
+      phoneNumber: d.phoneNumber,
+      primarySkills: d.primarySkills,
+      skillSetDesc: d.skillSetDesc,
+      experienceYears: d.experienceYears,
+      anyFreelancingExperience: d.anyFreelancingExperience,
+      languagesKnown: d.languagesKnown,
+      speakingLanguage: d.speakingLanguage,
+      hoursAvailablePerDay: d.hoursAvailablePerDay,
+      hourRate: d.hourRate,
+      bioDescription: d.bioDescription,
+      linkedInProfile: d.projectUrls,
+      portfolioURL: d.portfolioURL,
+    });
   })();
 
   const initials = watchedValues.fullName
