@@ -339,40 +339,7 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
 
-      {/* Profile completion mandatory banner — freelancers only */}
-      {profileIncomplete && (
-        <div className="relative overflow-hidden border-b border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50">
-          <div className="absolute inset-0 opacity-30 pointer-events-none">
-            <div className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-orange-300 blur-3xl" />
-            <div className="absolute -bottom-10 right-1/3 h-40 w-40 rounded-full bg-amber-300 blur-3xl" />
-          </div>
-          <div className="container mx-auto px-4 py-4 relative">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="h-11 w-11 shrink-0 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-md shadow-orange-500/30 animate-pulse">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
-                    Complete your profile to get hired
-                    <span className="ml-2 inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white align-middle">Mandatory</span>
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
-                    Your profile is shown to clients <strong className="text-orange-600">only after completion</strong>. Finish it to start receiving project invites.
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={() => navigate('/freelancer-profile')}
-                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full shadow-md shadow-orange-500/30 hover:shadow-lg hover:-translate-y-0.5 transition-all"
-              >
-                Complete Profile
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Profile completion banner removed per request */}
 
       {/* ══════════════════ HERO ══════════════════ */}
       <section className="relative overflow-hidden bg-white border-b border-gray-200">
