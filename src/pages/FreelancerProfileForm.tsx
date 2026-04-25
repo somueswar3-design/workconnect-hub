@@ -881,19 +881,38 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">▷</span> Online profiles
+                      <span className="text-base">▷</span> Project URLs & portfolio
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField control={form.control} name="linkedInProfile" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabel}>LinkedIn Profile</FormLabel>
-                          <FormControl><input className={fieldInput} placeholder="https://linkedin.com/in/..." {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
+                    <FormField control={form.control} name="projectUrls" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Project URLs (GitHub, live demos, case studies)</FormLabel>
+                        <FormControl>
+                          <SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="Paste a project URL and press Add..." />
+                        </FormControl>
+                        <FormMessage />
+                        <div className="mt-3">
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Sample GitHub projects — click to add</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {SAMPLE_PROJECT_URLS.map(url => {
+                              const tags = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                              const already = tags.includes(url);
+                              return (
+                                <button key={url} type="button"
+                                  disabled={already}
+                                  onClick={() => field.onChange([...tags, url].join(', '))}
+                                  className="px-3 py-1 rounded-full text-[11px] border border-gray-200 bg-gray-50 text-gray-600 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                  {url.replace('https://github.com/', '')}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </FormItem>
+                    )} />
+                    <div className="mt-4">
                       <FormField control={form.control} name="portfolioURL" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={fieldLabel}>Portfolio / Website</FormLabel>
+                          <FormLabel className={fieldLabel}>Portfolio / Website (optional)</FormLabel>
                           <FormControl><input className={fieldInput} placeholder="https://yoursite.com" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
