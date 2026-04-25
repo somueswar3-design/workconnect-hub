@@ -343,6 +343,7 @@ const Home = () => {
 
       {/* ══════════════════ HERO ══════════════════ */}
       <section className="relative overflow-hidden bg-white border-b border-gray-200">
+        <HeroVideoBanner />
         <div className="container mx-auto px-4 pt-10 pb-12">
           <div className="text-center max-w-3xl mx-auto mb-8">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] mb-3 tracking-tight text-gray-900">
