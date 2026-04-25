@@ -32,7 +32,7 @@ import catMarketing from '@/assets/cat-marketing.jpg';
 import catWriting from '@/assets/cat-writing.jpg';
 import heroMakeItReal from '@/assets/hero-makeitreal.jpg';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 20;
 
 const HERO_TABS = ['Find freelancers', 'Browse projects', 'Post a job'] as const;
 type HeroMode = 'hire' | 'work';
@@ -339,40 +339,7 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
 
-      {/* Profile completion mandatory banner — freelancers only */}
-      {profileIncomplete && (
-        <div className="relative overflow-hidden border-b border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50">
-          <div className="absolute inset-0 opacity-30 pointer-events-none">
-            <div className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-orange-300 blur-3xl" />
-            <div className="absolute -bottom-10 right-1/3 h-40 w-40 rounded-full bg-amber-300 blur-3xl" />
-          </div>
-          <div className="container mx-auto px-4 py-4 relative">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="h-11 w-11 shrink-0 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-md shadow-orange-500/30 animate-pulse">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
-                    Complete your profile to get hired
-                    <span className="ml-2 inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white align-middle">Mandatory</span>
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
-                    Your profile is shown to clients <strong className="text-orange-600">only after completion</strong>. Finish it to start receiving project invites.
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={() => navigate('/freelancer-profile')}
-                className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full shadow-md shadow-orange-500/30 hover:shadow-lg hover:-translate-y-0.5 transition-all"
-              >
-                Complete Profile
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Profile completion banner removed per request */}
 
       {/* ══════════════════ HERO ══════════════════ */}
       <section className="relative overflow-hidden bg-white border-b border-gray-200">
@@ -761,9 +728,16 @@ const Home = () => {
                   <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 lg:hidden">
                     <Filter className="h-4 w-4" /> Filters
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => navigate('/talent-search')} className="gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 hidden sm:flex">
-                    See all <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  {filtered.length > ITEMS_PER_PAGE && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { const next = currentPage < totalPages ? currentPage + 1 : 1; setCurrentPage(next); }}
+                      className="gap-2 border-orange-300 text-orange-600 hover:bg-orange-50 hidden sm:flex"
+                    >
+                      Show more freelancers <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -817,7 +791,7 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div className={filtered.length > 20 ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
@@ -827,7 +801,7 @@ const Home = () => {
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all group"
+                            className={`bg-white border border-gray-200 rounded-2xl ${filtered.length > 20 ? 'p-3' : 'p-5'} hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all group`}
                           >
                             {/* Header */}
                             <div className="flex items-center gap-3 mb-3">
