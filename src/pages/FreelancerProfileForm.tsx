@@ -830,24 +830,31 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">◑</span> Engagement type
+                      <span className="text-base">◑</span> Engagement type <span className="text-red-500">*</span>
+                      <span className="text-[11px] text-gray-400 font-normal ml-2">Default: Part-time</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { icon: '⏱', label: 'Hourly', desc: 'Pay per hour. Flexible scope.' },
-                        { icon: '🗓', label: 'Part-time', desc: '20–30h/week. Ongoing.' },
-                        { icon: '💼', label: 'Full-time', desc: '40h/week dedicated.' },
-                        { icon: '📋', label: 'Fixed project', desc: 'Milestone-based delivery.' },
-                        { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
-                        { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
-                      ].map(item => (
-                        <div key={item.label} className="border border-gray-200 rounded-xl p-4 cursor-pointer hover:bg-gray-50 hover:border-gray-300 transition-all text-center">
-                          <div className="text-xl mb-1">{item.icon}</div>
-                          <div className="text-[13px] font-semibold text-gray-900 mb-1">{item.label}</div>
-                          <div className="text-[11px] text-gray-400 leading-relaxed">{item.desc}</div>
+                    <FormField control={form.control} name="engagementType" render={({ field }) => (
+                      <FormItem>
+                        <div className="grid grid-cols-3 gap-3">
+                          {ENGAGEMENT_TYPES.map(item => {
+                            const selected = field.value === item.label;
+                            return (
+                              <button key={item.label} type="button"
+                                onClick={() => field.onChange(item.label)}
+                                className={`border rounded-xl p-4 cursor-pointer transition-all text-center ${
+                                  selected ? 'border-orange-400 bg-orange-50 ring-1 ring-orange-300' : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                }`}
+                              >
+                                <div className="text-xl mb-1">{item.icon}</div>
+                                <div className={`text-[13px] font-semibold mb-1 ${selected ? 'text-orange-600' : 'text-gray-900'}`}>{item.label}</div>
+                                <div className="text-[11px] text-gray-400 leading-relaxed">{item.desc}</div>
+                              </button>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                   </div>
 
                   <div className="flex justify-between mt-4">
