@@ -601,16 +601,60 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">❋</span> Primary skills (shown on card)
+                      <span className="text-base">◇</span> Pick your category first <span className="text-red-500">*</span>
                     </div>
-                    <FormField control={form.control} name="primarySkills" render={({ field }) => (
+                    <p className="text-[12px] text-gray-500 mb-3">Choose a category — we'll suggest the right primary skills below.</p>
+                    <FormField control={form.control} name="skillCategory" render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <SkillTagInput value={field.value} onChange={field.onChange} placeholder="Type a skill and press Add..." />
-                        </FormControl>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {Object.keys(SKILL_CATEGORIES).map(cat => {
+                            const selected = field.value === cat;
+                            return (
+                              <button key={cat} type="button"
+                                onClick={() => field.onChange(cat)}
+                                className={`px-3 py-2.5 rounded-lg text-xs font-medium border transition-all text-left ${
+                                  selected ? 'bg-orange-50 text-orange-600 border-orange-400 ring-1 ring-orange-300' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-orange-300'
+                                }`}
+                              >{cat}</button>
+                            );
+                          })}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )} />
+                  </div>
+
+                  <div className={`bg-white border rounded-2xl p-6 mb-4 transition-colors ${watchedValues.skillCategory ? 'border-gray-200 hover:border-gray-300' : 'border-dashed border-gray-200 opacity-60 pointer-events-none'}`}>
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">❋</span> Primary skills <span className="text-red-500">*</span>
+                      {!watchedValues.skillCategory && <span className="text-[11px] text-gray-400 font-normal">(pick a category first)</span>}
+                    </div>
+                    <FormField control={form.control} name="primarySkills" render={({ field }) => {
+                      const tags = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                      const suggested = (SKILL_CATEGORIES[watchedValues.skillCategory] || []).filter(s => !tags.includes(s));
+                      const addTag = (t: string) => { if (!tags.includes(t)) field.onChange([...tags, t].join(', ')); };
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <SkillTagInput value={field.value} onChange={field.onChange} placeholder="Type a skill and press Add..." />
+                          </FormControl>
+                          {suggested.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Suggested for {watchedValues.skillCategory}</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {suggested.map(s => (
+                                  <button key={s} type="button" onClick={() => addTag(s)}
+                                    className="px-3 py-1 rounded-full text-xs border border-orange-200 bg-orange-50 text-orange-600 hover:bg-orange-100 transition-colors">
+                                    + {s}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }} />
                   </div>
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
