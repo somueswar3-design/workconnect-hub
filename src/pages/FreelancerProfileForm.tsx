@@ -26,25 +26,55 @@ const profileSchema = z.object({
   phoneNumber: z.string().min(5, 'Phone number is required'),
   companyName: z.string().optional(),
   experienceYears: z.string().min(1, 'Experience is required'),
+  skillCategory: z.string().min(1, 'Please pick a category first'),
   primarySkills: z.string().min(1, 'Add at least one primary skill'),
   secondarySkills: z.string().optional(),
   skillSetDesc: z.string().min(1, 'Please describe your skill set'),
   anyFreelancingExperience: z.string().min(1, 'Freelancing experience is required'),
   currentCompany: z.string().optional(),
   currentCompanyRole: z.string().optional(),
-  languagesKnown: z.string().min(1, 'Languages known is required'),
+  engagementType: z.string().min(1, 'Select engagement type'),
+  languagesKnown: z.string().min(1, 'Select at least one language'),
   speakingLanguage: z.string().min(1, 'Select preferred speaking language'),
   hoursAvailablePerDay: z.string().min(1, 'Hours per day is required'),
   hourRate: z.string().min(1, 'Hourly rate is required'),
   isAvailableInWeekends: z.boolean().optional(),
   bioDescription: z.string().min(10, 'Bio must be at least 10 characters'),
-  linkedInProfile: z.string().optional(),
+  projectUrls: z.string().optional(),
   portfolioURL: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 const languageOptions = ['English', 'Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Bengali', 'Gujarati', 'Urdu'];
+
+const SKILL_CATEGORIES: Record<string, string[]> = {
+  'Web Development': ['React', 'Next.js', 'Vue.js', 'Angular', 'Node.js', 'TypeScript', 'Tailwind CSS', 'GraphQL'],
+  'Mobile Development': ['Flutter', 'React Native', 'Swift', 'Kotlin', 'Android (Java)', 'iOS', 'Expo'],
+  'Desktop Apps': ['Electron', 'WPF', '.NET', 'C++', 'Qt', 'JavaFX'],
+  'Cloud & DevOps': ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'CI/CD'],
+  'Data & AI/ML': ['Python', 'TensorFlow', 'PyTorch', 'Pandas', 'LangChain', 'OpenAI', 'NLP'],
+  'Backend & Database': ['Java', 'Spring Boot', 'Go', 'PostgreSQL', 'MongoDB', 'Redis', 'Microservices'],
+  'Design & UX': ['Figma', 'Adobe XD', 'UI Design', 'UX Research', 'Prototyping', 'Webflow'],
+  'QA & Testing': ['Selenium', 'Cypress', 'Playwright', 'Jest', 'Manual Testing', 'Postman'],
+};
+
+const SAMPLE_PROJECT_URLS = [
+  'https://github.com/facebook/react',
+  'https://github.com/vercel/next.js',
+  'https://github.com/tensorflow/tensorflow',
+  'https://github.com/flutter/flutter',
+  'https://github.com/microsoft/vscode',
+];
+
+const ENGAGEMENT_TYPES = [
+  { icon: '⏱', label: 'Hourly', desc: 'Pay per hour. Flexible scope.' },
+  { icon: '🗓', label: 'Part-time', desc: '20–30h/week. Ongoing.' },
+  { icon: '💼', label: 'Full-time', desc: '40h/week dedicated.' },
+  { icon: '📋', label: 'Fixed project', desc: 'Milestone-based delivery.' },
+  { icon: '🔧', label: 'Daily support', desc: '2h/day IT support slot.' },
+  { icon: '⚡', label: 'On-demand', desc: 'Retainer basis.' },
+];
 
 const genderMap: Record<string, number> = { male: 0, female: 1, other: 2, 'prefer-not': 3 };
 const reverseGenderMap: Record<number, string> = { 0: 'male', 1: 'female', 2: 'other', 3: 'prefer-not' };
