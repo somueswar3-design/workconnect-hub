@@ -56,7 +56,15 @@ const WORK_TILES = [
   { label: 'Logistics jobs', img: catWriting, filter: 'E-Commerce' },
 ];
 const LANGUAGES = ['English', 'Hindi', 'Tamil', 'Telugu', 'Spanish', 'French', 'German', 'Mandarin'];
-const SKILL_TAGS = ['React', 'Node.js', 'AWS', 'DevOps', 'Python', 'Cybersecurity', 'UI/UX', 'Mobile', 'Java', '.NET', 'Angular', 'Data Science'];
+const SKILL_TAGS = [
+  'Mobile', 'Desktop', 'Website', 'Web Development', 'Backend', 'Frontend',
+  'React', 'React Native', 'Node.js', 'Angular', 'Vue.js', 'Next.js',
+  'Python', 'Java', '.NET', 'PHP', 'Ruby', 'Go',
+  'iOS', 'Android', 'Flutter', 'Swift', 'Kotlin',
+  'AWS', 'Azure', 'Google Cloud', 'DevOps', 'Docker', 'Kubernetes',
+  'Cybersecurity', 'UI/UX', 'Figma', 'Data Science', 'Machine Learning', 'AI',
+];
+const FEATURED_JOB_FILTERS = ['All', 'Mobile', 'Web', 'Desktop', 'Cloud', 'AI/ML', 'Design'];
 
 const CATEGORIES = [
   { label: 'Web Development', icon: Code, type: 'IT' },
