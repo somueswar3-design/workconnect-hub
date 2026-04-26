@@ -124,13 +124,55 @@ export function getAllSkills(): string[] {
   return [...new Set(profiles.flatMap(p => p.skills))].sort();
 }
 
-// Search and filter with pagination
-export function searchFreelancers(params: {
+export interface FreelancerFilters {
   query?: string;
   skill?: string;
+  minRate?: number;
+  maxRate?: number;
+  employmentTypes?: string[]; // 'full-time' | 'part-time' | 'hourly' | 'project'
+  availability?: string[]; // 'available' | 'busy' | 'offline'
+  experienceLevels?: string[]; // 'entry' | 'intermediate' | 'expert'
+  countries?: string[];
   page: number;
   pageSize: number;
-}): { profiles: WorkerProfile[]; total: number; totalPages: number } {
+}
+
+function parseRate(s: string): number {
+  const m = s.match(/\d+/);
+  return m ? parseInt(m[0], 10) : 0;
+}
+
+function parseExpYears(s: string): number {
+  const m = s.match(/\d+/);
+  return m ? parseInt(m[0], 10) : 0;
+}
+
+function expLevel(years: number): 'entry' | 'intermediate' | 'expert' {
+  if (years <= 2) return 'entry';
+  if (years <= 5) return 'intermediate';
+  return 'expert';
+}
+
+// Deterministic employment type based on id
+function employmentTypeFor(id: string): 'full-time' | 'part-time' | 'hourly' | 'project' {
+  const types: ('full-time' | 'part-time' | 'hourly' | 'project')[] = ['full-time', 'part-time', 'hourly', 'project'];
+  return types[parseInt(id, 10) % 4];
+}
+
+// Deterministic rating
+function ratingFor(id: string): { rating: number; reviews: number } {
+  const n = parseInt(id, 10);
+  const rating = 4 + ((n * 7) % 11) / 10; // 4.0 - 5.0
+  const reviews = 20 + (n * 13) % 280;
+  return { rating: Math.round(rating * 10) / 10, reviews };
+}
+
+export function getEmploymentType(id: string) { return employmentTypeFor(id); }
+export function getRating(id: string) { return ratingFor(id); }
+export function getExperienceLevel(exp: string) { return expLevel(parseExpYears(exp)); }
+
+// Search and filter with pagination
+export function searchFreelancers(params: FreelancerFilters): { profiles: WorkerProfile[]; total: number; totalPages: number } {
   let results = getMockFreelancers();
 
   if (params.query?.trim()) {
@@ -147,6 +189,31 @@ export function searchFreelancers(params: {
     results = results.filter(p =>
       p.skills.some(s => s.toLowerCase() === params.skill!.toLowerCase())
     );
+  }
+
+  if (params.minRate !== undefined || params.maxRate !== undefined) {
+    const min = params.minRate ?? 0;
+    const max = params.maxRate ?? Infinity;
+    results = results.filter(p => {
+      const r = parseRate(p.hourlyRate);
+      return r >= min && r <= max;
+    });
+  }
+
+  if (params.employmentTypes && params.employmentTypes.length > 0) {
+    results = results.filter(p => params.employmentTypes!.includes(employmentTypeFor(p.id)));
+  }
+
+  if (params.availability && params.availability.length > 0) {
+    results = results.filter(p => params.availability!.includes(p.availability));
+  }
+
+  if (params.experienceLevels && params.experienceLevels.length > 0) {
+    results = results.filter(p => params.experienceLevels!.includes(expLevel(parseExpYears(p.experience))));
+  }
+
+  if (params.countries && params.countries.length > 0) {
+    results = results.filter(p => params.countries!.includes(p.location));
   }
 
   const total = results.length;
