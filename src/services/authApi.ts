@@ -55,6 +55,31 @@ const getAuthHeaders = (): Record<string, string> => {
   return headers;
 };
 
+/**
+ * Extract a human-readable error message from a failed Response. Handles the
+ * common API shapes the backend returns: { error }, { message }, { title },
+ * ASP.NET ProblemDetails { errors: { field: [msg] } }, or a raw string body.
+ */
+const extractErrorMessage = async (res: Response, fallback: string): Promise<string> => {
+  const text = await res.text().catch(() => '');
+  if (!text) return fallback;
+  try {
+    const data = JSON.parse(text);
+    if (typeof data === 'string') return data;
+    if (data?.error && typeof data.error === 'string') return data.error;
+    if (data?.message && typeof data.message === 'string') return data.message;
+    if (data?.detail && typeof data.detail === 'string') return data.detail;
+    if (data?.title && typeof data.title === 'string') return data.title;
+    if (data?.errors && typeof data.errors === 'object') {
+      const flat = Object.values(data.errors).flat().filter(Boolean);
+      if (flat.length) return flat.join(' ');
+    }
+    return fallback;
+  } catch {
+    return text || fallback;
+  }
+};
+
 export const authApi = {
   register: async (data: RegisterRequest): Promise<{ status: number }> => {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
@@ -63,8 +88,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Registration failed');
+      throw new Error(await extractErrorMessage(res, 'Registration failed'));
     }
     return { status: res.status };
   },
@@ -76,8 +100,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Login failed');
+      throw new Error(await extractErrorMessage(res, 'Login failed'));
     }
     const result = await res.json();
     return result;
@@ -90,8 +113,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Google login failed');
+      throw new Error(await extractErrorMessage(res, 'Google login failed'));
     }
     return await res.json();
   },
@@ -103,8 +125,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to send reset email');
+      throw new Error(await extractErrorMessage(res, 'Failed to send reset email'));
     }
     return { status: res.status };
   },
@@ -116,8 +137,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Password reset failed');
+      throw new Error(await extractErrorMessage(res, 'Password reset failed'));
     }
     return { status: res.status };
   },
@@ -129,8 +149,7 @@ export const authApi = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Password change failed');
+      throw new Error(await extractErrorMessage(res, 'Password change failed'));
     }
     return { status: res.status };
   },
@@ -141,8 +160,7 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to send OTP');
+      throw new Error(await extractErrorMessage(res, 'Failed to send OTP'));
     }
     return { status: res.status };
   },
@@ -153,8 +171,7 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Invalid OTP');
+      throw new Error(await extractErrorMessage(res, 'Invalid OTP'));
     }
     return { status: res.status };
   },
@@ -165,8 +182,7 @@ export const authApi = {
       headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to resend OTP');
+      throw new Error(await extractErrorMessage(res, 'Failed to resend OTP'));
     }
     return { status: res.status };
   },
