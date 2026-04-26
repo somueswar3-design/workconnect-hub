@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { requestDemo, FreelancerProfileDto } from '@/services/clientApi';
+import { encryptRole } from '@/lib/roleCipher';
 
 interface HireRequestModalProps {
   open: boolean;
