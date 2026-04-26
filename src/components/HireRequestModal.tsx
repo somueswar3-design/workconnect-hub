@@ -218,7 +218,7 @@ const HireRequestModal = ({ open, onOpenChange, profile, rating, reviews, symbol
     const goRegister = () => {
       handleClose(false);
       try { sessionStorage.setItem('post_login_redirect', returnPath); } catch {}
-      window.location.href = `/register?role=Client&redirect=${encodeURIComponent(returnPath)}`;
+      window.location.href = `/register?t=${encryptRole('Client')}&redirect=${encodeURIComponent(returnPath)}`;
     };
     return (
       <Dialog open={open} onOpenChange={handleClose}>
