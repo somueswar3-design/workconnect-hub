@@ -445,8 +445,23 @@ const ProfessionalDetail = () => {
                     ) : (
                       <div className="space-y-3">
                         <div>
-                          <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Bid amount ({symbol}/hr)</Label>
-                          <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`${symbol}${profile.hourRate || 55}`} className="mt-1 h-10" />
+                          <Label htmlFor="bidHours" className="text-xs font-semibold text-gray-700">Select hours needed</Label>
+                          <Select value={bidHours} onValueChange={setBidHours}>
+                            <SelectTrigger id="bidHours" className="mt-1 h-10">
+                              <SelectValue placeholder="Choose hours" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {['10', '20', '40', '80', '160', '320'].map(h => (
+                                <SelectItem key={h} value={h}>{h} hours</SelectItem>
+                              ))}
+                              <SelectItem value="custom">Custom / Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Your offered amount ({symbol})</Label>
+                          <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`Enter amount in ${symbol}`} className="mt-1 h-10" />
+                          <p className="text-[11px] text-gray-500 mt-1">Enter the total amount you'd like to offer.</p>
                         </div>
                         <div>
                           <Label htmlFor="bidDays" className="text-xs font-semibold text-gray-700">Engagement (days)</Label>
