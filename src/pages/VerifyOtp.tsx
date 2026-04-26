@@ -29,6 +29,7 @@ const VerifyOtp = () => {
   const [resending, setResending] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(60);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const [authError, setAuthError] = useState<FriendlyAuthError | null>(null);
 
   useEffect(() => {
     if (!email) {
