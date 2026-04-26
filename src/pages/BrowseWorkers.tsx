@@ -162,41 +162,13 @@ const BrowseWorkers = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Hero Slider */}
-      <div className="relative overflow-hidden">
-        <div className={`bg-gradient-to-r ${promoSlides[currentSlide].gradient} text-white transition-all duration-700`}>
-          <div className="container py-8 md:py-12">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                    <CurrentIcon className="h-6 w-6" />
-                  </div>
-                  <Badge className="bg-white/20 text-white border-white/30">WorkSupport360</Badge>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight">{promoSlides[currentSlide].title}</h1>
-                <p className="text-base text-white/90 font-medium">{promoSlides[currentSlide].subtitle}</p>
-                <p className="text-white/75 text-sm max-w-xl">{promoSlides[currentSlide].description}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-5">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p - 1 + promoSlides.length) % promoSlides.length)}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex gap-1.5">
-                {promoSlides.map((_, i) => (
-                  <button key={i} onClick={() => setCurrentSlide(i)} className={`h-1.5 rounded-full transition-all ${i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
-                ))}
-              </div>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p + 1) % promoSlides.length)}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container py-6">
+        {/* Page heading */}
+        <div className="mb-5">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Browse Freelancers</h1>
+          <p className="text-sm text-slate-500 mt-1">Find the right professional and request a free demo — our team handles the rest.</p>
+        </div>
+
         {/* Search bar */}
         <div className="mb-5 flex gap-3">
           <div className="relative flex-1">
