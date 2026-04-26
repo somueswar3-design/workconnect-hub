@@ -38,7 +38,7 @@ const ProfessionalDetail = () => {
     (async () => {
       try {
         const all = await getFilteredFreelancers({});
-        const target = parseInt(id || '0', 10);
+        const target = parseInt(decodeId(id) || '0', 10);
         const found = all.find(
           f => (f.freelancerId === target) || (f.id === target) || (f.userId === target)
         ) || null;
