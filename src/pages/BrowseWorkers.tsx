@@ -59,6 +59,7 @@ const BrowseWorkers = () => {
   const [sortBy, setSortBy] = useState('best');
 
   const { toast } = useToast();
+  const navigate = useNavigate();
   const allSkills = useMemo(() => getAllSkills(), []);
 
   useEffect(() => {
