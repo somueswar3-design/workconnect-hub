@@ -771,9 +771,9 @@ const Home = () => {
             <p className="text-gray-400 mb-8 max-w-lg mx-auto">Join WorkSupport360 today and connect with the right opportunities.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild size="lg" className="gap-2 px-8 h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full">
-                <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> I'm a Freelancer</Link>
+                <Link to={`/register?t=${freelancerToken}`}><Briefcase className="h-5 w-5" /> I'm a Freelancer</Link>
               </Button>
-              <Link to="/register?role=Client" className="inline-flex items-center justify-center gap-2 px-8 h-12 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-full border border-gray-600 transition-colors">
+              <Link to={`/register?t=${clientToken}`} className="inline-flex items-center justify-center gap-2 px-8 h-12 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-full border border-gray-600 transition-colors">
                 <Building2 className="h-5 w-5" /> Hire Talent
               </Link>
             </div>
