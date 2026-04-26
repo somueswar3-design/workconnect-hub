@@ -317,6 +317,7 @@ const FreelancerProfileForm = () => {
         engagementType: data.engagementType || 'Part-time',
         projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
+        isProfileCompleted: false,
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
       };
