@@ -385,7 +385,6 @@ const Home = () => {
                   <>
                     <PanelOption icon={Code} title="By skill" desc="Looking for a freelancer with a specific skill? Start here." active={hirePanel === 'skill'} onClick={() => setHirePanel('skill')} />
                     <PanelOption icon={MapPin} title="By location" desc="Search for freelancers based on their location and timezone." active={hirePanel === 'location'} onClick={() => setHirePanel('location')} />
-                    <PanelOption icon={Briefcase} title="By category" desc="Find freelancers that suit a certain project category." active={hirePanel === 'category'} onClick={() => setHirePanel('category')} />
                   </>
                 ) : (
                   <>
