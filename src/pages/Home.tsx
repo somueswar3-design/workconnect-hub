@@ -659,7 +659,7 @@ const Home = () => {
                                 <span className="text-[10px] text-gray-500 mt-0.5">{employmentType}</span>
                               </div>
                               <Button
-                                onClick={() => navigate(`/professional/${f.freelancerId || f.userId || f.id}`)}
+                                onClick={() => navigate(`/professional/${encodeId(f.freelancerId || f.userId || f.id)}`)}
                                 className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs h-8 px-4 rounded-lg shadow-sm"
                               >
                                 Hire Now
