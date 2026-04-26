@@ -614,15 +614,25 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">✦</span> Professional summary
+                      <span className="text-base">✦</span> About me
                     </div>
+                    <FormField control={form.control} name="headline" render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className={fieldLabel}>Headline / Tagline</FormLabel>
+                        <FormControl>
+                          <input className={fieldInput} placeholder="e.g. Senior Full-Stack Developer · React, Node, AWS" maxLength={120} {...field} />
+                        </FormControl>
+                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 120</div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                     <FormField control={form.control} name="bioDescription" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={fieldLabel}>Bio (shown on profile) *</FormLabel>
+                        <FormLabel className={fieldLabel}>About me — long bio (shown on profile) *</FormLabel>
                         <FormControl>
-                          <textarea className={`${fieldInput} min-h-[120px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications..." {...field} />
+                          <textarea className={`${fieldInput} min-h-[140px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications. I specialize in React, Node.js and AWS. I focus on clean architecture, performance, and shipping fast..." maxLength={2000} {...field} />
                         </FormControl>
-                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 600</div>
+                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 2000</div>
                         <FormMessage />
                       </FormItem>
                     )} />
