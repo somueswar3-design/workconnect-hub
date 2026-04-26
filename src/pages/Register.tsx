@@ -91,15 +91,7 @@ const Register = () => {
           transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 mb-8">
-            <img src={wsLogo} alt="WorkSupport360" className="h-10 w-10 rounded-lg" />
-            <span className="text-lg font-bold">
-              <span className="text-orange-500">Work</span>
-              <span className="text-amber-500">Support</span>
-              <span className="text-blue-600">360</span>
-            </span>
-          </Link>
+          
 
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
           <p className="text-gray-500 mb-6">
