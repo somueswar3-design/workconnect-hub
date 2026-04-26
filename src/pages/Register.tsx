@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 import wsLogo from '@/assets/worksupport360-logo.png';
 import heroFreelancer from '@/assets/hero-freelancer.jpg';
 import { GoogleAuthButton } from '@/components/GoogleAuthButton';
+import { decryptRole } from '@/lib/roleCipher';
 
 const registerSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').max(255),
@@ -24,10 +25,9 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const [searchParams] = useSearchParams();
-  // Role is passed as a short opaque token (r=fl|cl) so it isn't human-readable in the URL.
-  // Backend re-validates role independently, so this is presentation-only obfuscation.
-  const roleToken = (searchParams.get('r') || '').toLowerCase();
-  const roleFromToken = roleToken === 'cl' ? 'Client' : roleToken === 'fl' ? 'FreeLancer' : '';
+  // Role arrives as an opaque encrypted token (?t=...) — never as plain text.
+  // Backend re-validates role independently; this only prevents URL leakage.
+  const roleFromToken = decryptRole(searchParams.get('t') || '');
   const [role, setRole] = useState(roleFromToken || 'FreeLancer');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

@@ -3,8 +3,11 @@ import { Briefcase, Users, ArrowRight, CheckCircle2, Sparkles, Building2 } from 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { encryptRole } from '@/lib/roleCipher';
 
 const RegisterChoice = () => {
+  const freelancerToken = encryptRole('FreeLancer');
+  const clientToken = encryptRole('Client');
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-background py-16 px-4">
       <div className="w-full max-w-5xl">
@@ -56,7 +59,7 @@ const RegisterChoice = () => {
               </ul>
 
               <Button asChild className="w-full gap-2 shadow-md shadow-primary/20 group-hover:shadow-lg" size="lg">
-                <Link to="/register?r=fl">
+                <Link to={`/register?t=${freelancerToken}`}>
                   Register as a Freelancer
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
@@ -101,7 +104,7 @@ const RegisterChoice = () => {
 
               <div className="flex flex-col gap-2.5">
                 <Button asChild className="w-full gap-2 bg-secondary hover:bg-secondary/90 shadow-md shadow-secondary/20 group-hover:shadow-lg" size="lg">
-                  <Link to="/register?r=cl">
+                  <Link to={`/register?t=${clientToken}`}>
                     Register to Hire Talent
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
