@@ -89,10 +89,7 @@ const BrowseWorkers = () => {
   }, [searchQuery, skillFilter, rateRange, employmentTypes, availableNow, experienceLevels, currentPage, isLoading]);
 
   const handleHireNow = (profile: WorkerProfile) => {
-    toast({
-      title: '🎉 Request received!',
-      description: `We've noted your interest in ${profile.aliasName}. Our team will arrange a free demo and contact you shortly.`,
-    });
+    navigate(`/professional/${profile.id}`);
   };
 
   const toggleArr = (arr: string[], v: string) =>
