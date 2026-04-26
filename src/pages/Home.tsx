@@ -793,7 +793,39 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="relative group/carousel">
+                      {/* Scroll arrows */}
+                      <button
+                        type="button"
+                        aria-label="Scroll left"
+                        onClick={() => {
+                          const el = document.getElementById('freelancer-scroller');
+                          el?.scrollBy({ left: -el.clientWidth * 0.9, behavior: 'smooth' });
+                        }}
+                        className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-700 hover:text-orange-600 hover:border-orange-400 hover:shadow-lg transition opacity-0 group-hover/carousel:opacity-100"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Scroll right"
+                        onClick={() => {
+                          const el = document.getElementById('freelancer-scroller');
+                          el?.scrollBy({ left: el.clientWidth * 0.9, behavior: 'smooth' });
+                        }}
+                        className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-700 hover:text-orange-600 hover:border-orange-400 hover:shadow-lg transition opacity-0 group-hover/carousel:opacity-100"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+
+                      {/* Edge fades */}
+                      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-gray-50 to-transparent z-10" />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-50 to-transparent z-10" />
+
+                      <div
+                        id="freelancer-scroller"
+                        className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 -mx-1 px-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-orange-300 [&::-webkit-scrollbar-thumb]:rounded-full"
+                      >
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
@@ -805,7 +837,7 @@ const Home = () => {
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className="relative bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/10 transition-all group flex flex-col items-center text-center"
+                            className="snap-start shrink-0 w-[220px] sm:w-[230px] relative bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-orange-400 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group flex flex-col items-center text-center"
                           >
                             {badge && (
                               <span className={`absolute top-3 right-3 text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md ${badge === 'TOP RATED' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-700'}`}>
@@ -847,6 +879,7 @@ const Home = () => {
                           </div>
                         );
                       })}
+                      </div>
                     </div>
                   )}
 
