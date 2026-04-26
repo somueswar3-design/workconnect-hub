@@ -65,14 +65,6 @@ const Header = () => {
           </Link>
 
           <nav className="hidden md:flex items-center gap-2">
-            <button
-              onClick={() => setShowDemo(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-gray-800"
-            >
-              <Play className="h-4 w-4 fill-emerald-500 text-emerald-500" />
-              How It Works
-            </button>
-
             {!(isAuthenticated && user?.role?.toLowerCase() === 'freelancer') && (
               <button
                 onClick={() => {
@@ -85,23 +77,7 @@ const Header = () => {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-orange-400 transition-colors rounded-full hover:bg-gray-800"
               >
                 <Users className="h-4 w-4" />
-                Hire Talent
-              </button>
-            )}
-
-            {!(isAuthenticated && user?.role?.toLowerCase() === 'client') && (
-              <button
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    (window as any).__scrollToWorks?.();
-                  } else {
-                    navigate('/', { state: { scrollToWorks: true } });
-                  }
-                }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-blue-400 transition-colors rounded-full hover:bg-gray-800"
-              >
-                <Search className="h-4 w-4" />
-                Find Work
+                Hire Freelancers
               </button>
             )}
 
@@ -176,13 +152,6 @@ const Header = () => {
           </nav>
 
           <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={() => setShowDemo(true)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"
-            >
-              <Play className="h-3 w-3 fill-emerald-500" />
-              Demo
-            </button>
             {isAuthenticated ? (
               <button onClick={handleLogout} className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
                 Logout
