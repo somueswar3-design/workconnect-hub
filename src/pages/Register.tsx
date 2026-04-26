@@ -3,7 +3,7 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users, CheckCircle2, Sparkles, Star, Globe2 } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users, CheckCircle2, Sparkles, Star, Globe2, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,6 +19,8 @@ import { AuthErrorAlert } from '@/components/AuthErrorAlert';
 import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const registerSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required').max(50, 'First name must be less than 50 characters'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50, 'Last name must be less than 50 characters'),
   email: z.string().trim().email('Please enter a valid email address').max(255),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
