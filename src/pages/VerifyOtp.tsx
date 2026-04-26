@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { authApi } from '@/services/authApi';
 import { useAuth } from '@/contexts/AuthContext';
 import wsLogo from '@/assets/worksupport360-logo.png';
+import { AuthErrorAlert } from '@/components/AuthErrorAlert';
+import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const OTP_LENGTH = 6;
 
