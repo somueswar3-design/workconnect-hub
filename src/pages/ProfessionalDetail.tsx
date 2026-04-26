@@ -163,7 +163,7 @@ const ProfessionalDetail = () => {
                 <Button onClick={() => requireLoginOr(() => toast({ title: 'Saved!', description: 'Added to shortlist.' }))} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 gap-1.5">
                   <Heart className="h-4 w-4" /> Save
                 </Button>
-                <Button onClick={() => document.getElementById('hire-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5">
+                <Button onClick={() => openHire()} className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5">
                   Hire Now →
                 </Button>
               </div>
@@ -373,7 +373,7 @@ const ProfessionalDetail = () => {
                     </div>
 
                     <Button
-                      onClick={() => document.getElementById('hire-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                      onClick={() => openHire()}
                       className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white h-12 font-bold gap-2 text-base"
                     >
                       <Rocket className="h-4 w-4" /> Hire Now — Send Request
