@@ -206,14 +206,14 @@ export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }:
               icon={Briefcase}
               title="I'm a Freelancer"
               desc="Offer your skills and find projects"
-              color="emerald"
+              variant="emerald"
             />
             <RoleCard
               role="Client"
               icon={Users}
               title="I need Work Support"
               desc="Hire freelancers for your projects"
-              color="blue"
+              variant="blue"
             />
           </div>
           {isLoading && (
