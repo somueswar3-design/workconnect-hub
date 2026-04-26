@@ -175,6 +175,8 @@ const VerifyOtp = () => {
           </CardHeader>
 
           <CardContent className="space-y-6 pt-4">
+            <AuthErrorAlert error={authError} onDismiss={() => setAuthError(null)} />
+
             {/* OTP boxes */}
             <div className="flex items-center justify-center gap-2 sm:gap-3">
               {digits.map((d, i) => (
