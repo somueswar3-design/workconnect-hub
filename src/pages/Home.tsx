@@ -711,7 +711,7 @@ const Home = () => {
                   ))}
                 </div>
                 <Button asChild size="lg" className="gap-2 px-8 h-12 bg-gray-900 text-white hover:bg-gray-800 font-bold rounded-full">
-                  <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> Join as Professional</Link>
+                  <Link to={`/register?t=${freelancerToken}`}><Briefcase className="h-5 w-5" /> Join as Professional</Link>
                 </Button>
               </div>
               <div className="hidden md:grid grid-cols-2 gap-4">
