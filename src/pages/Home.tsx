@@ -589,7 +589,7 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
@@ -601,65 +601,63 @@ const Home = () => {
                         const isTopRated = idx % 3 === 0;
                         const isOnline = idx % 2 === 0;
                         const country = f.country || 'INDIA';
+                        const employmentType = idx % 3 === 0 ? 'Full-time' : idx % 3 === 1 ? 'Part-time' : 'Hourly';
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className="relative bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-400 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group"
+                            className="relative bg-white border border-gray-200 rounded-xl p-4 hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300 group flex flex-col"
                           >
-                            <div className="flex items-start gap-4">
-                              {/* Avatar with status dot */}
+                            {/* Header: avatar + name/role */}
+                            <div className="flex items-start gap-3 mb-3">
                               <div className="relative shrink-0">
-                                <div className={`h-16 w-16 rounded-full ${avatarColor} flex items-center justify-center text-white font-extrabold text-xl ring-4 ring-white shadow-md`}>
+                                <div className={`h-14 w-14 rounded-full ${avatarColor} flex items-center justify-center text-white font-extrabold text-lg shadow-sm`}>
                                   {initials}
                                 </div>
                                 {isOnline && (
-                                  <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white" />
+                                  <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white" />
                                 )}
                               </div>
-
-                              {/* Info */}
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 text-base truncate group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
-                                <p className="text-sm text-gray-500 truncate mb-1.5">{role}</p>
-
-                                {/* Rating */}
-                                <div className="flex items-center gap-1 mb-2">
-                                  {Array.from({ length: 5 }).map((_, si) => (
-                                    <Star key={si} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                                  ))}
-                                  <span className="text-xs font-semibold text-gray-700 ml-1">{rating}</span>
-                                  <span className="text-xs text-gray-500">({reviewCount})</span>
-                                </div>
-
-                                {/* Status badges */}
-                                <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                                  {isTopRated && (
-                                    <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md bg-orange-100 text-orange-600">TOP RATED</span>
-                                  )}
-                                  {isOnline && (
-                                    <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700">ONLINE</span>
-                                  )}
-                                  <span className="text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 uppercase">IN {country}</span>
-                                </div>
-
-                                {/* Skill chips */}
-                                <div className="flex flex-wrap gap-1.5 mb-3">
-                                  {skills.slice(0, 3).map((s, si) => (
-                                    <span key={si} className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">{s}</span>
-                                  ))}
+                              <div className="flex-1 min-w-0 pt-0.5">
+                                <h3 className="font-bold text-gray-900 text-[15px] truncate group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
+                                <p className="text-xs text-gray-500 truncate">{role}</p>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                  <span className="text-xs font-semibold text-gray-700">{rating}</span>
+                                  <span className="text-[11px] text-gray-500">({reviewCount})</span>
                                 </div>
                               </div>
                             </div>
 
+                            {/* Status badges */}
+                            <div className="flex flex-wrap items-center gap-1 mb-2">
+                              {isTopRated && (
+                                <span className="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-orange-100 text-orange-600">TOP RATED</span>
+                              )}
+                              {isOnline && (
+                                <span className="text-[10px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">ONLINE</span>
+                              )}
+                              <span className="text-[10px] font-semibold tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 uppercase">IN {country}</span>
+                            </div>
+
+                            {/* Skill chips */}
+                            <div className="flex flex-wrap gap-1 mb-3 min-h-[26px]">
+                              {skills.slice(0, 3).map((s, si) => (
+                                <span key={si} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{s}</span>
+                              ))}
+                            </div>
+
                             {/* Footer: rate + Hire Now */}
-                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                              <div>
-                                <span className="text-xl font-extrabold text-gray-900">{symbol}{f.hourRate || (45 + (idx % 6) * 5)}</span>
-                                <span className="text-sm text-gray-500">/hr</span>
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
+                              <div className="flex flex-col">
+                                <div>
+                                  <span className="text-lg font-extrabold text-gray-900">{symbol}{f.hourRate || (45 + (idx % 6) * 5)}</span>
+                                  <span className="text-xs text-gray-500">/hr</span>
+                                </div>
+                                <span className="text-[10px] text-gray-500 mt-0.5">{employmentType}</span>
                               </div>
                               <Button
                                 onClick={() => navigate(`/professional/${f.freelancerId || f.userId || f.id}`)}
-                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 px-5 rounded-lg shadow-sm"
+                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs h-8 px-4 rounded-lg shadow-sm"
                               >
                                 Hire Now
                               </Button>
@@ -667,14 +665,6 @@ const Home = () => {
                           </div>
                         );
                       })}
-                    </div>
-                  )}
-
-                  {!isAuthenticated && paginated.length > 0 && (
-                    <div className="text-center mt-10">
-                      <Button variant="outline" asChild className="gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 rounded-full px-8">
-                        <Link to="/register?role=Client">Register to view all {filtered.length} professionals <ArrowRight className="h-4 w-4" /></Link>
-                      </Button>
                     </div>
                   )}
 
