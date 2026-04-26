@@ -65,12 +65,8 @@ const BrowseWorkers = () => {
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % promoSlides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
+
+
 
   // Reset page when filters change
   useEffect(() => {
