@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getFilteredFreelancers, FreelancerProfileDto, requestDemo } from '@/services/clientApi';
@@ -31,11 +33,13 @@ const ProfessionalDetail = () => {
   const [profile, setProfile] = useState<FreelancerProfileDto | null>(null);
 
   const [bidAmount, setBidAmount] = useState('');
+  const [bidHours, setBidHours] = useState('');
   const [bidDays, setBidDays] = useState('');
   const [bidMessage, setBidMessage] = useState('');
   const [interviewDate, setInterviewDate] = useState('');
   const [interviewTime, setInterviewTime] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -76,8 +80,8 @@ const ProfessionalDetail = () => {
   };
 
   const handlePlaceBid = () => requireLoginOr(async () => {
-    if (!bidAmount.trim() || !bidMessage.trim()) {
-      toast({ title: 'Validation', description: 'Bid amount and message are required.', variant: 'destructive' });
+    if (!bidAmount.trim() || !bidHours.trim() || !bidMessage.trim()) {
+      toast({ title: 'Validation', description: 'Hours, amount and message are required.', variant: 'destructive' });
       return;
     }
     if (!profile) return;
@@ -86,7 +90,7 @@ const ProfessionalDetail = () => {
       const interviewSchedule = interviewDate
         ? `Preferred interview: ${interviewDate}${interviewTime ? ' at ' + interviewTime : ''}`
         : '';
-      const fullDescription = `${bidMessage}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
+      const fullDescription = `${bidMessage}\nHours: ${bidHours}\nProposed amount: ${symbol}${bidAmount}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
       await requestDemo({
         id: 0,
         clientUserId: parseInt(user?.userId || '0', 10) || 0,
@@ -99,8 +103,8 @@ const ProfessionalDetail = () => {
         adminDescription: fullDescription,
         createdOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Request submitted!', description: 'Our team will arrange the interview shortly.' });
-      setBidAmount(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
+      setShowThankYou(true);
+      setBidAmount(''); setBidHours(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
     } catch {
       toast({ title: 'Error', description: 'Failed to submit request.', variant: 'destructive' });
     } finally {
@@ -441,8 +445,23 @@ const ProfessionalDetail = () => {
                     ) : (
                       <div className="space-y-3">
                         <div>
-                          <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Bid amount ({symbol}/hr)</Label>
-                          <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`${symbol}${profile.hourRate || 55}`} className="mt-1 h-10" />
+                          <Label htmlFor="bidHours" className="text-xs font-semibold text-gray-700">Select hours needed</Label>
+                          <Select value={bidHours} onValueChange={setBidHours}>
+                            <SelectTrigger id="bidHours" className="mt-1 h-10">
+                              <SelectValue placeholder="Choose hours" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {['10', '20', '40', '80', '160', '320'].map(h => (
+                                <SelectItem key={h} value={h}>{h} hours</SelectItem>
+                              ))}
+                              <SelectItem value="custom">Custom / Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Your offered amount ({symbol})</Label>
+                          <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`Enter amount in ${symbol}`} className="mt-1 h-10" />
+                          <p className="text-[11px] text-gray-500 mt-1">Enter the total amount you'd like to offer.</p>
                         </div>
                         <div>
                           <Label htmlFor="bidDays" className="text-xs font-semibold text-gray-700">Engagement (days)</Label>
@@ -475,6 +494,28 @@ const ProfessionalDetail = () => {
           </div>
         </Tabs>
       </div>
+
+      {/* Thank You Popup */}
+      <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+              <CheckCircle className="h-8 w-8 text-emerald-600" />
+            </div>
+            <DialogTitle className="text-center text-2xl font-black text-slate-900">
+              Thanks for your submission!
+            </DialogTitle>
+            <DialogDescription className="text-center text-gray-600 pt-2">
+              Our team will get back to you once your proposal is reviewed and aligned with the client.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center pt-2">
+            <Button onClick={() => setShowThankYou(false)} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
+              Got it
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
