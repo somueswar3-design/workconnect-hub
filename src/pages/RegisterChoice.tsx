@@ -56,7 +56,7 @@ const RegisterChoice = () => {
               </ul>
 
               <Button asChild className="w-full gap-2 shadow-md shadow-primary/20 group-hover:shadow-lg" size="lg">
-                <Link to="/register?role=FreeLancer">
+                <Link to="/register?r=fl">
                   Register as a Freelancer
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
@@ -101,7 +101,7 @@ const RegisterChoice = () => {
 
               <div className="flex flex-col gap-2.5">
                 <Button asChild className="w-full gap-2 bg-secondary hover:bg-secondary/90 shadow-md shadow-secondary/20 group-hover:shadow-lg" size="lg">
-                  <Link to="/register?role=Client">
+                  <Link to="/register?r=cl">
                     Register to Hire Talent
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
