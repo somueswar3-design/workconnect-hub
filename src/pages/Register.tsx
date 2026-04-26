@@ -60,10 +60,20 @@ const Register = () => {
     setIsLoading(true);
     setAuthError(null);
     const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
+    const fullName = `${data.firstName} ${data.lastName}`.trim();
     try {
       await authApi.sendOtp(data.email);
       toast.success('OTP sent! Please check your email.');
-      navigate('/verify-otp', { state: { email: data.email, password: data.password, role: apiRole } });
+      navigate('/verify-otp', {
+        state: {
+          email: data.email,
+          password: data.password,
+          role: apiRole,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          fullName,
+        },
+      });
     } catch (error: any) {
       setAuthError(toFriendlyAuthError(error, 'register'));
     } finally {
