@@ -55,6 +55,31 @@ const getAuthHeaders = (): Record<string, string> => {
   return headers;
 };
 
+/**
+ * Extract a human-readable error message from a failed Response. Handles the
+ * common API shapes the backend returns: { error }, { message }, { title },
+ * ASP.NET ProblemDetails { errors: { field: [msg] } }, or a raw string body.
+ */
+const extractErrorMessage = async (res: Response, fallback: string): Promise<string> => {
+  const text = await res.text().catch(() => '');
+  if (!text) return fallback;
+  try {
+    const data = JSON.parse(text);
+    if (typeof data === 'string') return data;
+    if (data?.error && typeof data.error === 'string') return data.error;
+    if (data?.message && typeof data.message === 'string') return data.message;
+    if (data?.detail && typeof data.detail === 'string') return data.detail;
+    if (data?.title && typeof data.title === 'string') return data.title;
+    if (data?.errors && typeof data.errors === 'object') {
+      const flat = Object.values(data.errors).flat().filter(Boolean);
+      if (flat.length) return flat.join(' ');
+    }
+    return fallback;
+  } catch {
+    return text || fallback;
+  }
+};
+
 export const authApi = {
   register: async (data: RegisterRequest): Promise<{ status: number }> => {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
