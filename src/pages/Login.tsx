@@ -14,6 +14,10 @@ import wsLogo from '@/assets/worksupport360-logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
+  const storedRedirect = (() => { try { return sessionStorage.getItem('post_login_redirect'); } catch { return null; } })();
+  const redirectTo = redirectParam || storedRedirect || '';
   const { login, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +28,7 @@ const Login = () => {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={redirectTo || '/'} replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
