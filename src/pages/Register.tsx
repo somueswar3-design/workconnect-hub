@@ -3,7 +3,7 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Briefcase, Users, CheckCircle2, Sparkles, Star, Globe2 } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users, CheckCircle2, Sparkles, Star, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -26,19 +26,25 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 const Register = () => {
   const [searchParams] = useSearchParams();
   // Role arrives as an opaque encrypted token (?t=...) — never as plain text.
-  // Backend re-validates role independently; this only prevents URL leakage.
-  const roleFromToken = decryptRole(searchParams.get('t') || '');
-  const [role, setRole] = useState(roleFromToken || 'FreeLancer');
+  // If the token is missing or tampered with, send the user to the 404 page.
+  const token = searchParams.get('t') || '';
+  const roleFromToken = decryptRole(token);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const isFreelancer = role.toLowerCase() === 'freelancer';
-
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
+
+  // Invalid / missing / tampered token → 404
+  if (!roleFromToken) {
+    return <Navigate to="/404" replace />;
+  }
+
+  const role = roleFromToken;
+  const isFreelancer = role.toLowerCase() === 'freelancer';
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -80,37 +86,13 @@ const Register = () => {
           </Link>
 
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
-          <p className="text-gray-500 mb-6">Join thousands of professionals & businesses on WorkSupport360.</p>
+          <p className="text-gray-500 mb-6">
+            {isFreelancer
+              ? 'Join as a Freelancer — showcase your skills and find work you love.'
+              : 'Join as a Client — hire vetted talent and get work done faster.'}
+          </p>
 
-          {/* Role tabs */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-xl mb-6">
-            <button
-              type="button"
-              onClick={() => setRole('FreeLancer')}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                isFreelancer
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Briefcase className="h-4 w-4" />
-              Register as a Freelancer
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole('Client')}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                !isFreelancer
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Users className="h-4 w-4" />
-              Hire / Work Support
-            </button>
-          </div>
-
-          {/* Google — role already chosen on this page, skip the picker */}
+          {/* Google — role already chosen on previous step, skip the picker */}
           <GoogleAuthButton
             label="Sign up with Google"
             presetRole={isFreelancer ? 'FreeLancer' : 'Client'}
