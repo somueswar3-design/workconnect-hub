@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Users, Loader2, Star, ChevronLeft, ChevronRight, Shield, Zap, CheckCircle2, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
+import { Search, Filter, Users, Loader2, Star, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
