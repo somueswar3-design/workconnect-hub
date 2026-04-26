@@ -78,28 +78,32 @@ const ProfessionalDetail = () => {
 
   const handlePlaceBid = () => requireLoginOr(async () => {
     if (!bidAmount.trim() || !bidMessage.trim()) {
-      toast({ title: 'Validation', description: 'Bid amount and message required.', variant: 'destructive' });
+      toast({ title: 'Validation', description: 'Bid amount and message are required.', variant: 'destructive' });
       return;
     }
     if (!profile) return;
     setSubmitting(true);
     try {
+      const interviewSchedule = interviewDate
+        ? `Preferred interview: ${interviewDate}${interviewTime ? ' at ' + interviewTime : ''}`
+        : '';
+      const fullDescription = `${bidMessage}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
       await requestDemo({
         id: 0,
         clientUserId: parseInt(user?.userId || '0', 10) || 0,
         freelancerUserId: profile.userId || profile.freelancerId || profile.id || 0,
-        projectTitle: `Bid for ${profile.fullName}`,
+        projectTitle: `Hire Request for ${profile.fullName}`,
         clientBudget: Number(bidAmount) || 0,
         contactEmail: user?.email || '',
         contactPhone: '',
         status: 'Pending',
-        adminDescription: bidMessage,
+        adminDescription: fullDescription,
         createdOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Bid placed!', description: 'Your offer has been submitted.' });
-      setBidAmount(''); setBidDays(''); setBidMessage('');
+      toast({ title: '🎉 Request submitted!', description: 'Our team will arrange the interview shortly.' });
+      setBidAmount(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
     } catch {
-      toast({ title: 'Error', description: 'Failed to submit bid.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to submit request.', variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
