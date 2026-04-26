@@ -493,8 +493,30 @@ const FreelancerProfileForm = () => {
       {/* Content area: form + side preview */}
       <div className="flex-1 max-w-[1200px] w-full mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
         <main className="min-w-0">
+          {/* Reminder banner — stays visible until the freelancer reaches & clicks Publish on the final step */}
+          <div className="mb-6 relative overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 p-4 shadow-sm">
+            <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-orange-400 to-amber-500" />
+            <div className="flex items-start gap-3 pl-2">
+              <div className="shrink-0 w-9 h-9 rounded-full bg-orange-500 text-white flex items-center justify-center text-base shadow-sm">
+                ⚠
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-semibold text-orange-700 leading-snug">
+                  Please finish all steps and click <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[11px] font-bold mx-0.5">Publish profile ✓</span> on the last tab.
+                </div>
+                <div className="text-[12px] text-orange-600/90 mt-1 leading-relaxed">
+                  Your profile will <span className="font-semibold">not be visible to clients</span> until you reach the final <span className="font-medium">Links &amp; portfolio</span> step and publish it.
+                </div>
+              </div>
+              <span className="hidden sm:inline-flex shrink-0 self-center text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white text-orange-600 border border-orange-200">
+                Action needed
+              </span>
+            </div>
+          </div>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
+
 
               {/* IDENTITY */}
               {activePage === 'identity' && (
