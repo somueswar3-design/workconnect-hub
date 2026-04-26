@@ -1,12 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Users, Loader2, Phone, Mail, Star, ChevronLeft, ChevronRight, Shield, Clock, Award, Zap, CheckCircle2, Eye, MapPin, Briefcase, UserPlus, FileText, Video, ClipboardCheck, Handshake, CreditCard, Play, Trophy, BadgeDollarSign, UserCheck, CalendarCheck, FileSignature, Banknote, Target } from 'lucide-react';
+import { Search, Filter, Users, Loader2, Star, ChevronLeft, ChevronRight, Shield, Zap, CheckCircle2, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { WorkerProfile } from '@/types/profile';
-import { searchFreelancers, getAllSkills } from '@/services/mockFreelancerData';
+import {
+  searchFreelancers,
+  getAllSkills,
+  getEmploymentType,
+  getRating,
+  getExperienceLevel,
+} from '@/services/mockFreelancerData';
 import { useToast } from '@/hooks/use-toast';
 import {
   Pagination,
@@ -18,37 +26,43 @@ import {
   PaginationEllipsis,
 } from '@/components/ui/pagination';
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 12;
 
 const promoSlides = [
   {
-    title: "Find Your Perfect IT Professional",
-    subtitle: "Browse skilled freelancers, request a FREE demo, and hire with confidence",
+    title: 'Find Your Perfect IT Professional',
+    subtitle: 'Browse skilled freelancers, request a FREE demo, and hire with confidence',
     description: "Our team coordinates everything — from demo scheduling to project kick-off. You focus on your business, we handle the rest.",
-    gradient: "from-primary to-blue-700",
+    gradient: 'from-primary to-blue-700',
     icon: Users,
   },
   {
-    title: "100% Free Demo Sessions",
+    title: '100% Free Demo Sessions',
     subtitle: "Try before you commit — no charges until you're satisfied",
-    description: "Request a demo with any freelancer. Our team arranges a free session so you can evaluate skills, communication, and fit before any commitment.",
-    gradient: "from-emerald-600 to-teal-700",
+    description: 'Request a demo with any freelancer. Our team arranges a free session so you can evaluate skills, communication, and fit before any commitment.',
+    gradient: 'from-emerald-600 to-teal-700',
     icon: CheckCircle2,
   },
   {
-    title: "Only 15% Service Commission",
-    subtitle: "Transparent pricing with no hidden fees",
-    description: "We charge only 15% commission on the agreed project amount. Payment starts only after admin approval and assignment. Fair, simple, and transparent.",
-    gradient: "from-violet-600 to-purple-700",
+    title: 'Only 15% Service Commission',
+    subtitle: 'Transparent pricing with no hidden fees',
+    description: 'We charge only 15% commission on the agreed project amount. Payment starts only after admin approval and assignment.',
+    gradient: 'from-violet-600 to-purple-700',
     icon: Shield,
   },
-  {
-    title: "We Coordinate Everything",
-    subtitle: "From interest to assignment — our team manages it all",
-    description: "Select a freelancer → Request demo → Admin reviews → Free demo arranged → Approve & assign → Payment begins. You're in control at every step.",
-    gradient: "from-orange-500 to-red-600",
-    icon: Zap,
-  },
+];
+
+const EMPLOYMENT_OPTIONS = [
+  { id: 'full-time', label: 'Full-time' },
+  { id: 'part-time', label: 'Part-time' },
+  { id: 'hourly', label: 'Hourly / Contract' },
+  { id: 'project', label: 'Project-based' },
+];
+
+const EXPERIENCE_OPTIONS = [
+  { id: 'entry', label: 'Entry Level' },
+  { id: 'intermediate', label: 'Intermediate' },
+  { id: 'expert', label: 'Expert' },
 ];
 
 const BrowseWorkers = () => {
@@ -57,54 +71,79 @@ const BrowseWorkers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+  const [view, setView] = useState<'grid' | 'list'>('grid');
 
+  // Filters
+  const [rateRange, setRateRange] = useState<[number, number]>([15, 150]);
+  const [employmentTypes, setEmploymentTypes] = useState<string[]>([]);
+  const [availableNow, setAvailableNow] = useState(false);
+  const [experienceLevels, setExperienceLevels] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState('best');
+
+  const { toast } = useToast();
   const allSkills = useMemo(() => getAllSkills(), []);
 
-  // Simulate initial load
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 400);
+    const t = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(t);
   }, []);
 
-  // Auto-rotate slider
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % promoSlides.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
-  // Reset to page 1 on filter change
+  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, skillFilter]);
+  }, [searchQuery, skillFilter, rateRange, employmentTypes, availableNow, experienceLevels]);
 
   const { profiles, total, totalPages } = useMemo(() => {
     if (isLoading) return { profiles: [], total: 0, totalPages: 0 };
     return searchFreelancers({
       query: searchQuery,
       skill: skillFilter,
+      minRate: rateRange[0],
+      maxRate: rateRange[1],
+      employmentTypes,
+      availability: availableNow ? ['available'] : undefined,
+      experienceLevels,
       page: currentPage,
       pageSize: PAGE_SIZE,
     });
-  }, [searchQuery, skillFilter, currentPage, isLoading]);
+  }, [searchQuery, skillFilter, rateRange, employmentTypes, availableNow, experienceLevels, currentPage, isLoading]);
 
-  const handleRequestDemo = (profile: WorkerProfile) => {
+  const handleHireNow = (profile: WorkerProfile) => {
     toast({
-      title: "🎉 Thank you for your interest!",
-      description: `We've noted your interest in ${profile.aliasName}. Our team will review, contact the freelancer, and get back to you with demo details shortly. Stay tuned!`,
+      title: '🎉 Request received!',
+      description: `We've noted your interest in ${profile.aliasName}. Our team will arrange a free demo and contact you shortly.`,
     });
   };
 
-  const availableCount = useMemo(() => {
-    if (isLoading) return 0;
-    return searchFreelancers({ query: '', skill: 'all', page: 1, pageSize: 1 }).total;
-  }, [isLoading]);
+  const toggleArr = (arr: string[], v: string) =>
+    arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v];
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSkillFilter('all');
+    setRateRange([15, 150]);
+    setEmploymentTypes([]);
+    setAvailableNow(false);
+    setExperienceLevels([]);
+  };
+
+  const activeFilterCount =
+    (searchQuery ? 1 : 0) +
+    (skillFilter !== 'all' ? 1 : 0) +
+    (rateRange[0] !== 15 || rateRange[1] !== 150 ? 1 : 0) +
+    employmentTypes.length +
+    (availableNow ? 1 : 0) +
+    experienceLevels.length;
 
   const CurrentIcon = promoSlides[currentSlide].icon;
 
-  // Pagination range
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = [];
     if (totalPages <= 7) {
@@ -122,41 +161,26 @@ const BrowseWorkers = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       {/* Hero Slider */}
       <div className="relative overflow-hidden">
         <div className={`bg-gradient-to-r ${promoSlides[currentSlide].gradient} text-white transition-all duration-700`}>
-          <div className="container py-10 md:py-14">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1 space-y-3">
+          <div className="container py-8 md:py-12">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm">
-                    <CurrentIcon className="h-7 w-7" />
+                  <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                    <CurrentIcon className="h-6 w-6" />
                   </div>
-                  <Badge className="bg-white/20 text-white border-white/30 text-sm">WorkSupport360</Badge>
+                  <Badge className="bg-white/20 text-white border-white/30">WorkSupport360</Badge>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold leading-tight">{promoSlides[currentSlide].title}</h1>
-                <p className="text-lg text-white/90 font-medium">{promoSlides[currentSlide].subtitle}</p>
+                <p className="text-base text-white/90 font-medium">{promoSlides[currentSlide].subtitle}</p>
                 <p className="text-white/75 text-sm max-w-xl">{promoSlides[currentSlide].description}</p>
               </div>
-              <div className="flex-shrink-0 bg-white/10 backdrop-blur-sm rounded-2xl p-5 space-y-2.5 min-w-[260px]">
-                <h3 className="font-semibold text-base mb-3">How It Works</h3>
-                {[
-                  { step: '1', text: 'Browse & select freelancer' },
-                  { step: '2', text: 'Request FREE demo' },
-                  { step: '3', text: 'Admin arranges demo' },
-                  { step: '4', text: 'Approve & start work' },
-                  { step: '5', text: 'Only 15% commission' },
-                ].map((item) => (
-                  <div key={item.step} className="flex items-center gap-2.5">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-xs font-bold">{item.step}</span>
-                    <span className="text-xs text-white/90">{item.text}</span>
-                  </div>
-                ))}
-              </div>
             </div>
-            <div className="flex items-center gap-3 mt-6">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(prev => (prev - 1 + promoSlides.length) % promoSlides.length)}>
+            <div className="flex items-center gap-3 mt-5">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p - 1 + promoSlides.length) % promoSlides.length)}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex gap-1.5">
@@ -164,7 +188,7 @@ const BrowseWorkers = () => {
                   <button key={i} onClick={() => setCurrentSlide(i)} className={`h-1.5 rounded-full transition-all ${i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
                 ))}
               </div>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(prev => (prev + 1) % promoSlides.length)}>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p + 1) % promoSlides.length)}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -172,300 +196,418 @@ const BrowseWorkers = () => {
         </div>
       </div>
 
-      {/* ─── Project Lifecycle Section ─── */}
-      <ProjectLifecycle />
-
       <div className="container py-6">
-        {/* Stats Bar */}
-        <div className="flex flex-wrap gap-2 mb-5">
-          <Badge variant="outline" className="py-1.5 px-3 border-primary/30">
-            <Users className="h-3.5 w-3.5 mr-1.5 text-primary" />{availableCount.toLocaleString()} Professionals
-          </Badge>
-          <Badge className="py-1.5 px-3 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-            <Zap className="h-3.5 w-3.5 mr-1.5" />Free Demo Available
-          </Badge>
-          <Badge className="py-1.5 px-3 bg-violet-500/10 text-violet-600 border-violet-500/20">
-            <Shield className="h-3.5 w-3.5 mr-1.5" />Only 15% Commission
-          </Badge>
-        </div>
-
-        {/* Search & Filters */}
-        <div className="flex flex-col gap-3 mb-5 sm:flex-row">
+        {/* Search bar */}
+        <div className="mb-5 flex gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search by name, skills, location, company..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+            <Input
+              placeholder="Search freelancers by name, skill, location…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-10 bg-white"
+            />
           </div>
-          <Select value={skillFilter} onValueChange={setSkillFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <Filter className="h-4 w-4 mr-1.5" />
-              <SelectValue placeholder="Filter by skill" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Skills</SelectItem>
-              {allSkills.map((skill) => (
-                <SelectItem key={skill} value={skill}>{skill}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
-        {/* Results Info */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-normal text-xs">
-              {total.toLocaleString()} result{total !== 1 ? 's' : ''}
-            </Badge>
-            {skillFilter !== 'all' && <Badge variant="secondary" className="text-xs">Skill: {skillFilter}</Badge>}
-            {searchQuery && <Badge variant="secondary" className="text-xs">Search: "{searchQuery}"</Badge>}
-          </div>
-          {totalPages > 1 && (
-            <span className="text-xs text-muted-foreground">Page {currentPage} of {totalPages}</span>
-          )}
-        </div>
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+          {/* ─── Filters Sidebar ─── */}
+          <aside className="space-y-4">
+            <div className="rounded-2xl bg-white border border-slate-200 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-slate-900">Filters</h3>
+                  {activeFilterCount > 0 && (
+                    <Badge className="bg-orange-100 text-orange-600 border-0 text-[10px] h-5">{activeFilterCount}</Badge>
+                  )}
+                </div>
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="text-xs font-medium text-orange-500 hover:text-orange-600"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
 
-        {/* Worker Grid — compact small cards */}
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : profiles.length === 0 ? (
-          <div className="text-center py-20">
-            <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">No professionals found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or filters</p>
-          </div>
-        ) : (
-          <>
-            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {profiles.map((profile) => (
-                <CompactFreelancerCard key={profile.id} profile={profile} onRequestDemo={handleRequestDemo} />
-              ))}
+              {/* Hourly Rate */}
+              <FilterSection title="💰 Hourly Rate">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                  <span>Min</span>
+                  <span className="font-semibold text-slate-900">${rateRange[0]}</span>
+                  <span>Max</span>
+                  <span className="font-semibold text-slate-900">${rateRange[1]}</span>
+                </div>
+                <Slider
+                  value={rateRange}
+                  onValueChange={v => setRateRange([v[0], v[1]] as [number, number])}
+                  min={5}
+                  max={300}
+                  step={5}
+                  className="my-3"
+                />
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {[
+                    { l: 'Under $30', r: [5, 30] },
+                    { l: '$15–$80', r: [15, 80] },
+                    { l: '$50–$150', r: [50, 150] },
+                    { l: '$100+', r: [100, 300] },
+                  ].map(p => {
+                    const active = rateRange[0] === p.r[0] && rateRange[1] === p.r[1];
+                    return (
+                      <button
+                        key={p.l}
+                        onClick={() => setRateRange([p.r[0], p.r[1]] as [number, number])}
+                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                          active
+                            ? 'bg-orange-50 border-orange-400 text-orange-600'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+                        }`}
+                      >
+                        {p.l}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterSection>
+
+              {/* Employment Type */}
+              <FilterSection title="💼 Employment Type">
+                <div className="space-y-2.5">
+                  {EMPLOYMENT_OPTIONS.map(opt => (
+                    <label key={opt.id} className="flex items-center gap-2.5 cursor-pointer group">
+                      <Checkbox
+                        checked={employmentTypes.includes(opt.id)}
+                        onCheckedChange={() => setEmploymentTypes(toggleArr(employmentTypes, opt.id))}
+                        className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                      />
+                      <span className="text-sm text-slate-700 group-hover:text-slate-900 flex-1">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
+
+              {/* Availability */}
+              <FilterSection title="🟢 Availability">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-sm text-slate-700">Available now</span>
+                  <Switch
+                    checked={availableNow}
+                    onCheckedChange={setAvailableNow}
+                    className="data-[state=checked]:bg-orange-500"
+                  />
+                </label>
+              </FilterSection>
+
+              {/* Experience */}
+              <FilterSection title="🎓 Experience Level" last>
+                <div className="space-y-2.5">
+                  {EXPERIENCE_OPTIONS.map(opt => (
+                    <label key={opt.id} className="flex items-center gap-2.5 cursor-pointer group">
+                      <Checkbox
+                        checked={experienceLevels.includes(opt.id)}
+                        onCheckedChange={() => setExperienceLevels(toggleArr(experienceLevels, opt.id))}
+                        className="data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                      />
+                      <span className="text-sm text-slate-700 group-hover:text-slate-900 flex-1">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </FilterSection>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                    {getPageNumbers().map((page, idx) =>
-                      page === 'ellipsis' ? (
-                        <PaginationItem key={`e-${idx}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      ) : (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            isActive={page === currentPage}
-                            onClick={() => setCurrentPage(page)}
-                            className="cursor-pointer"
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    )}
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+            {/* Skill quick filter */}
+            <div className="rounded-2xl bg-white border border-slate-200 p-5">
+              <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Filter className="h-4 w-4" /> Skills
+              </h3>
+              <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                <button
+                  onClick={() => setSkillFilter('all')}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                    skillFilter === 'all'
+                      ? 'bg-orange-500 text-white border-orange-500'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-orange-300'
+                  }`}
+                >
+                  All
+                </button>
+                {allSkills.slice(0, 30).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setSkillFilter(s)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                      skillFilter === s
+                        ? 'bg-orange-500 text-white border-orange-500'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-orange-300'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </aside>
+
+          {/* ─── Results ─── */}
+          <main>
+            {/* Active filters chips */}
+            {activeFilterCount > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="text-xs font-semibold text-slate-500 self-center">Active filters:</span>
+                {searchQuery && (
+                  <ActiveChip label={`"${searchQuery}"`} onClear={() => setSearchQuery('')} />
+                )}
+                {skillFilter !== 'all' && (
+                  <ActiveChip label={skillFilter} onClear={() => setSkillFilter('all')} />
+                )}
+                {(rateRange[0] !== 15 || rateRange[1] !== 150) && (
+                  <ActiveChip label={`$${rateRange[0]}–$${rateRange[1]}/hr`} onClear={() => setRateRange([15, 150])} />
+                )}
+                {employmentTypes.map(t => (
+                  <ActiveChip key={t} label={t} onClear={() => setEmploymentTypes(employmentTypes.filter(x => x !== t))} />
+                ))}
+                {availableNow && <ActiveChip label="Available now" onClear={() => setAvailableNow(false)} />}
+                {experienceLevels.map(t => (
+                  <ActiveChip key={t} label={t} onClear={() => setExperienceLevels(experienceLevels.filter(x => x !== t))} />
+                ))}
+                <button onClick={clearAllFilters} className="text-xs font-medium text-orange-500 hover:text-orange-600 ml-auto self-center">
+                  Clear all filters
+                </button>
               </div>
             )}
-          </>
-        )}
 
-        {/* Bottom CTA */}
-        <div className="mt-10 rounded-2xl bg-gradient-to-r from-primary to-blue-700 p-6 text-white text-center">
-          <h2 className="text-xl font-bold mb-1">Can't find the right match?</h2>
-          <p className="text-white/80 mb-3 text-sm max-w-lg mx-auto">
-            Tell us your requirements and our team will find the perfect freelancer for you. Free consultation, zero commitment.
-          </p>
-          <Button variant="secondary" size="sm" className="font-semibold" onClick={() => {
-            const message = encodeURIComponent('Hi, I\'m interested in connecting with IT professionals on WorkSupport360. Please help me find the right match.');
-            window.open(`https://wa.me/+919441363687?text=${message}`, '_blank');
-          }}>
-            Talk to Our Team
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ─── Project Lifecycle Section ─── */
-const lifecycleSteps = [
-  { step: 1, title: 'User Registration', desc: 'User selects role (Freelancer or Client) and completes registration with required information', icon: UserPlus, color: 'from-blue-500 to-blue-600' },
-  { step: 2, title: 'Freelancer Profile Creation', desc: 'Freelancer adds skills, experience, work history, hourly rate, and portfolio', icon: FileText, color: 'from-cyan-500 to-cyan-600' },
-  { step: 3, title: 'Client Searches for Freelancers', desc: 'Client uses filters (skill, experience, rate, availability) to find suitable freelancers', icon: Search, color: 'from-indigo-500 to-indigo-600' },
-  { step: 4, title: 'Client Sends Hiring Request', desc: 'Client submits request with project details, budget, and timeline', icon: Mail, color: 'from-violet-500 to-violet-600' },
-  { step: 5, title: 'Admin Reviews Request', desc: "Admin verifies both parties' credentials and project feasibility", icon: ClipboardCheck, color: 'from-purple-500 to-purple-600' },
-  { step: 6, title: 'HR Schedules Demo Call', desc: 'HR team coordinates video call between client, freelancer, and HR representative', icon: CalendarCheck, color: 'from-pink-500 to-pink-600' },
-  { step: 7, title: 'Demo Call Conducted', desc: 'Skills verification, requirement discussion, and compatibility assessment', icon: Video, color: 'from-rose-500 to-rose-600' },
-  { step: 8, title: 'HR Decision', desc: 'HR approves/rejects based on demo call outcomes and documents notes', icon: UserCheck, color: 'from-orange-500 to-orange-600' },
-  { step: 9, title: 'Agreement Generation', desc: 'Two agreements created: Client-Platform and Freelancer-Platform', icon: FileSignature, color: 'from-amber-500 to-amber-600' },
-  { step: 10, title: 'Both Parties Sign Agreements', desc: 'Digital signatures collected from client and freelancer', icon: Handshake, color: 'from-yellow-500 to-yellow-600' },
-  { step: 11, title: '30-Day Advance Payment', desc: 'Client pays full project amount in advance', icon: Banknote, color: 'from-lime-500 to-lime-600' },
-  { step: 12, title: 'Platform Commission Deduction', desc: '15% commission automatically deducted and credited to WorkSupport360', icon: BadgeDollarSign, color: 'from-emerald-500 to-emerald-600' },
-  { step: 13, title: 'Work Allocation & Project Start', desc: 'Freelancer is officially assigned and project begins', icon: Play, color: 'from-teal-500 to-teal-600' },
-  { step: 14, title: 'Milestone-Based Payments', desc: 'Freelancer receives payment as milestones are completed and approved', icon: Target, color: 'from-sky-500 to-sky-600' },
-  { step: 15, title: 'Project Completion & Closure', desc: 'Final payment released, project marked complete, ratings collected', icon: Trophy, color: 'from-green-500 to-green-600' },
-];
-
-const ProjectLifecycle = () => {
-  return (
-    <div className="bg-muted/30 border-y border-border">
-      <div className="container py-12">
-        <div className="text-center mb-10">
-          <Badge className="mb-3 bg-primary/10 text-primary border-primary/20 text-sm px-4 py-1">Complete Project Lifecycle</Badge>
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">How WorkSupport360 Works</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
-            From registration to project completion — a transparent, secure, and fully managed process for both clients and freelancers.
-          </p>
-        </div>
-
-        {/* Timeline */}
-        <div className="relative">
-          {/* Center line - desktop */}
-          <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20 -translate-x-1/2" />
-
-          <div className="space-y-4 lg:space-y-0">
-            {lifecycleSteps.map((item, idx) => {
-              const Icon = item.icon;
-              const isLeft = idx % 2 === 0;
-
-              return (
-                <div key={item.step} className="relative lg:flex lg:items-center lg:min-h-[100px]">
-                  {/* Desktop: alternating left/right */}
-                  <div className={`lg:w-1/2 ${isLeft ? 'lg:pr-12 lg:text-right' : 'lg:pl-12 lg:ml-auto'}`}>
-                    <div className={`group flex items-start gap-3 p-4 rounded-xl bg-card border border-border/60 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 ${isLeft ? 'lg:flex-row-reverse lg:text-left' : ''}`}>
-                      {/* Icon */}
-                      <div className={`flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="h-5 w-5 text-white" />
-                      </div>
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-bold text-muted-foreground bg-muted rounded-full px-2 py-0.5">STEP {item.step}</span>
-                        </div>
-                        <h3 className="text-sm font-bold text-foreground leading-tight mb-1">{item.title}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Center dot - desktop */}
-                  <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card border-2 border-primary items-center justify-center shadow-md z-10">
-                    <span className="text-[10px] font-extrabold text-primary">{item.step}</span>
-                  </div>
+            {/* Results bar */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-slate-600">
+                <span className="font-bold text-slate-900">{total.toLocaleString()}</span> freelancers found
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
+                  <span>Sort:</span>
+                  <select
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                    className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs"
+                  >
+                    <option value="best">Best Match</option>
+                    <option value="rate-low">Rate: Low to High</option>
+                    <option value="rate-high">Rate: High to Low</option>
+                    <option value="rating">Top Rated</option>
+                  </select>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Bottom Summary */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { icon: Shield, title: '100% Free Demos', desc: 'No charges until you approve the freelancer after demo', color: 'text-emerald-600 bg-emerald-500/10' },
-            { icon: BadgeDollarSign, title: '15% Transparent Commission', desc: 'Only deducted after advance payment — no hidden fees', color: 'text-violet-600 bg-violet-500/10' },
-            { icon: Trophy, title: 'Milestone Payments', desc: 'Freelancers get paid per milestone — ensuring quality delivery', color: 'text-amber-600 bg-amber-500/10' },
-          ].map((card) => (
-            <div key={card.title} className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border/60">
-              <div className={`p-2.5 rounded-lg ${card.color}`}>
-                <card.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-foreground">{card.title}</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">{card.desc}</p>
+                <div className="flex items-center rounded-md border border-slate-200 bg-white p-0.5">
+                  <button
+                    onClick={() => setView('grid')}
+                    className={`p-1.5 rounded ${view === 'grid' ? 'bg-orange-50 text-orange-600' : 'text-slate-400'}`}
+                  >
+                    <Grid3x3 className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setView('list')}
+                    className={`p-1.5 rounded ${view === 'list' ? 'bg-orange-50 text-orange-600' : 'text-slate-400'}`}
+                  >
+                    <List className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          ))}
+
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+              </div>
+            ) : profiles.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+                <Users className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+                <h3 className="text-lg font-semibold text-slate-900 mb-1">No freelancers found</h3>
+                <p className="text-sm text-slate-500 mb-4">Try adjusting your filters</p>
+                <Button onClick={clearAllFilters} variant="outline">Clear filters</Button>
+              </div>
+            ) : (
+              <>
+                <div className={view === 'grid' ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3' : 'space-y-3'}>
+                  {profiles.map(p => (
+                    <FreelancerCard key={p.id} profile={p} onHire={handleHireNow} compact={view === 'list'} />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-8 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                        {getPageNumbers().map((pg, idx) =>
+                          pg === 'ellipsis' ? (
+                            <PaginationItem key={`e-${idx}`}><PaginationEllipsis /></PaginationItem>
+                          ) : (
+                            <PaginationItem key={pg}>
+                              <PaginationLink
+                                isActive={pg === currentPage}
+                                onClick={() => setCurrentPage(pg)}
+                                className={`cursor-pointer ${pg === currentPage ? 'bg-orange-500 text-white border-orange-500 hover:bg-orange-600 hover:text-white' : ''}`}
+                              >
+                                {pg}
+                              </PaginationLink>
+                            </PaginationItem>
+                          )
+                        )}
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
         </div>
       </div>
     </div>
   );
 };
 
-/* ─── Compact Freelancer Card ─── */
-const CompactFreelancerCard = ({ profile, onRequestDemo }: { profile: WorkerProfile; onRequestDemo: (p: WorkerProfile) => void }) => {
-  const statusColor = profile.availability === 'available'
-    ? 'bg-emerald-500' : profile.availability === 'busy'
-    ? 'bg-amber-500' : 'bg-gray-400';
+/* ─── Filter section wrapper ─── */
+const FilterSection = ({ title, children, last }: { title: string; children: React.ReactNode; last?: boolean }) => (
+  <div className={`py-4 ${last ? '' : 'border-b border-slate-100'}`}>
+    <h4 className="text-sm font-semibold text-slate-900 mb-3">{title}</h4>
+    {children}
+  </div>
+);
 
-  const statusLabel = profile.availability === 'available'
-    ? 'Online' : profile.availability === 'busy'
-    ? 'Busy' : 'Offline';
+/* ─── Active filter chip ─── */
+const ActiveChip = ({ label, onClear }: { label: string; onClear: () => void }) => (
+  <button
+    onClick={onClear}
+    className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+  >
+    {label}
+    <X className="h-3 w-3" />
+  </button>
+);
+
+/* ─── Freelancer Card (Hire Now style) ─── */
+const FreelancerCard = ({
+  profile,
+  onHire,
+  compact,
+}: {
+  profile: WorkerProfile;
+  onHire: (p: WorkerProfile) => void;
+  compact?: boolean;
+}) => {
+  const initials = profile.aliasName.replace(/[0-9]/g, '').slice(0, 2).toUpperCase();
+  const { rating, reviews } = getRating(profile.id);
+  const employmentType = getEmploymentType(profile.id);
+  const expLevel = getExperienceLevel(profile.experience);
+
+  // Deterministic avatar color
+  const colors = [
+    'bg-orange-500', 'bg-purple-500', 'bg-blue-500', 'bg-emerald-600',
+    'bg-rose-500', 'bg-teal-600', 'bg-indigo-500', 'bg-amber-600',
+  ];
+  const color = colors[parseInt(profile.id, 10) % colors.length];
+
+  const isOnline = profile.availability === 'available';
+  const isTopRated = rating >= 4.7;
+  const isNew = parseInt(profile.id, 10) % 11 === 0;
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 overflow-hidden border-border/60">
-      <CardContent className="p-3 space-y-2">
-        {/* Name + Status dot */}
-        <div className="flex items-start justify-between gap-1">
-          <h3 className="text-sm font-bold text-foreground truncate flex-1">{profile.aliasName}</h3>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span className={`w-2 h-2 rounded-full ${statusColor}`} />
-            <span className="text-[10px] text-muted-foreground">{statusLabel}</span>
+    <Card className="group bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-lg hover:border-orange-200 transition-all duration-200 overflow-hidden">
+      <CardContent className="p-5">
+        {/* Header: avatar + name */}
+        <div className="flex items-start gap-3 mb-3">
+          <div className={`relative flex-shrink-0 w-14 h-14 rounded-full ${color} flex items-center justify-center text-white font-bold text-lg shadow-sm`}>
+            {initials}
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-bold text-slate-900 truncate">{profile.aliasName}</h3>
+            <p className="text-xs text-slate-500 truncate">{profile.companyAlias}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <Star
+                    key={i}
+                    className={`h-3 w-3 ${i <= Math.round(rating) ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200'}`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs font-semibold text-slate-900 ml-1">{rating.toFixed(1)}</span>
+              <span className="text-[11px] text-slate-400">({reviews})</span>
+            </div>
           </div>
         </div>
 
-        {/* Company */}
-        <p className="text-[11px] text-muted-foreground truncate">{profile.companyAlias}</p>
-
-        {/* Skills — show 2 max */}
-        <div className="flex flex-wrap gap-1">
-          {profile.skills.slice(0, 2).map((skill) => (
-            <Badge key={skill} variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0">
-              {skill}
-            </Badge>
-          ))}
-          {profile.skills.length > 2 && (
-            <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">+{profile.skills.length - 2}</Badge>
+        {/* Status badges */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {isTopRated && (
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-orange-100 text-orange-700 tracking-wide">
+              Top Rated
+            </span>
           )}
+          {isNew && (
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-violet-100 text-violet-700 tracking-wide">
+              New
+            </span>
+          )}
+          {isOnline && (
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 tracking-wide">
+              Online
+            </span>
+          )}
+          <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 tracking-wide flex items-center gap-1">
+            <MapPin className="h-2.5 w-2.5" />
+            {profile.location}
+          </span>
         </div>
 
-        {/* Details */}
-        <div className="space-y-0.5 text-[11px]">
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Briefcase className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{profile.experience}</span>
+        {/* Skills */}
+        {!compact && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {profile.skills.slice(0, 3).map(s => (
+              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-medium">
+                {s}
+              </span>
+            ))}
+            {profile.skills.length > 3 && (
+              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-50 text-slate-500 font-medium">
+                +{profile.skills.length - 3}
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <MapPin className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{profile.location}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
-            <span className="font-semibold text-primary">{profile.hourlyRate}/hr</span>
-          </div>
-        </div>
+        )}
 
-        {/* Masked Contact */}
-        <div className="rounded bg-muted/50 px-2 py-1.5 space-y-0.5">
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Mail className="h-2.5 w-2.5" />{profile.email}
+        {/* Footer: rate + Hire Now */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div>
+            <p className="text-lg font-bold text-slate-900 leading-none">
+              {profile.hourlyRate}<span className="text-xs font-medium text-slate-500">/hr</span>
+            </p>
+            <p className="text-[11px] text-slate-500 mt-0.5 capitalize flex items-center gap-1">
+              <Briefcase className="h-2.5 w-2.5" />
+              {employmentType}
+            </p>
           </div>
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Phone className="h-2.5 w-2.5" />{profile.mobile}
-          </div>
+          <Button
+            onClick={() => onHire(profile)}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 h-9 rounded-lg shadow-sm"
+          >
+            Hire Now
+          </Button>
         </div>
-
-        {/* CTA */}
-        <Button
-          size="sm"
-          className="w-full text-xs h-7 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-          onClick={() => onRequestDemo(profile)}
-        >
-          Request Demo
-        </Button>
       </CardContent>
     </Card>
   );
