@@ -13,6 +13,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getFilteredFreelancers, FreelancerProfileDto } from '@/services/clientApi';
+import { decodeId } from '@/lib/idCipher';
 import HireRequestModal from '@/components/HireRequestModal';
 
 const getCurrencySymbol = (country?: string) => {
