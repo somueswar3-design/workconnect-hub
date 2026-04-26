@@ -79,13 +79,34 @@ const VerifyOtp = () => {
       toast.success('Email verified! Creating your account...');
       if (password) {
         try {
-          await authApi.register({ email, password, role });
+          await authApi.register({
+            email,
+            password,
+            role,
+            firstName: firstName || undefined,
+            lastName: lastName || undefined,
+            fullName: fullName || undefined,
+          });
         } catch (regErr: any) {
           // Ignore "already exists" so users can re-verify
           const msg = String(regErr?.message || '').toLowerCase();
           if (!msg.includes('exist') && !msg.includes('already')) {
             throw regErr;
           }
+        }
+
+        // Auto-login: skip the manual login screen and drop the user on the
+        // home page directly with their session ready.
+        try {
+          const result = await authApi.login({ email, password });
+          login(result.token, { email, fullName: fullName || undefined });
+          localStorage.removeItem('pending_otp_email');
+          toast.success(`Welcome${fullName ? `, ${fullName}` : ''}!`);
+          navigate('/', { replace: true });
+          return;
+        } catch (loginErr: any) {
+          // Auto-login failed → fall back to login page with prefilled email
+          toast.info('Account created. Please sign in to continue.');
         }
       }
       localStorage.removeItem('pending_otp_email');
