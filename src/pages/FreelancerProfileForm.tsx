@@ -176,6 +176,7 @@ const FreelancerProfileForm = () => {
   const navigate = useNavigate();
   const { token, user, updateUser } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
+  const [experienceExtra, setExperienceExtra] = useState({ startDate: '', endDate: '', currentlyWorking: false, description: '' });
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -423,7 +424,7 @@ const FreelancerProfileForm = () => {
   const fieldLabel = "block text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-1.5";
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 text-gray-900" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900" style={{ fontFamily: "'Inter', 'system-ui', sans-serif" }}>
       {/* Top Bar */}
       <header className="h-[52px] flex items-center justify-between px-8 border-b border-gray-200 bg-white shrink-0 sticky top-0 z-50">
         <div className="text-lg tracking-tight font-bold text-gray-900">
@@ -454,41 +455,40 @@ const FreelancerProfileForm = () => {
         </div>
       </header>
 
-      {/* 3-column layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Nav */}
-        <nav className="w-[260px] border-r border-gray-200 py-7 overflow-y-auto bg-white shrink-0 hidden lg:block" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d1d5db transparent' }}>
-          {NAV_SECTIONS.map(section => (
-            <div key={section.title} className="mb-7">
-              <div className="text-[9px] font-semibold uppercase tracking-[0.12em] text-orange-500 px-5 mb-1.5">
-                {section.title}
-              </div>
-              {section.items.map(item => {
-                const isActive = activePage === item.id;
-                const isDone = completedSections.has(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setActivePage(item.id)}
-                    className={`w-full flex items-center gap-2.5 px-5 py-2.5 text-[13px] border-l-2 transition-all text-left ${
-                      isActive
-                        ? 'text-orange-600 bg-orange-50 border-l-orange-500 font-medium'
-                        : 'text-gray-500 border-l-transparent hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="text-sm w-[18px] text-center">{item.icon}</span>
-                    <span className="flex-1">{item.label}</span>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isDone ? 'bg-green-500' : 'bg-gray-300'}`} />
-                  </button>
-                );
-              })}
-            </div>
-          ))}
-        </nav>
+      {/* Horizontal Tab Bar */}
+      <div className="border-b border-gray-200 bg-white sticky top-[52px] z-40">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {NAV_SECTIONS.flatMap(s => s.items).map((item, idx) => {
+              const isActive = activePage === item.id;
+              const isDone = completedSections.has(item.id);
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActivePage(item.id)}
+                  className={`shrink-0 flex items-center gap-2 px-4 py-3 text-[13px] border-b-2 transition-all whitespace-nowrap ${
+                    isActive
+                      ? 'text-orange-600 border-orange-500 font-semibold'
+                      : 'text-gray-500 border-transparent hover:text-gray-900'
+                  }`}
+                >
+                  <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
+                    isDone ? 'bg-green-500 text-white' : (isActive ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-500')
+                  }`}>
+                    {isDone ? '✓' : idx + 1}
+                  </span>
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto px-10 py-9" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d1d5db transparent' }}>
+      {/* Content area: form + side preview */}
+      <div className="flex-1 max-w-[1200px] w-full mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+        <main className="min-w-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
 
@@ -774,6 +774,49 @@ const FreelancerProfileForm = () => {
                           <FormMessage />
                         </FormItem>
                       )} />
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Start date</FormLabel>
+                        <FormControl>
+                          <input
+                            type="month"
+                            className={fieldInput}
+                            value={experienceExtra.startDate}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, startDate: e.target.value }))}
+                          />
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>End date</FormLabel>
+                        <FormControl>
+                          <input
+                            type="month"
+                            className={fieldInput}
+                            disabled={experienceExtra.currentlyWorking}
+                            value={experienceExtra.endDate}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, endDate: e.target.value }))}
+                          />
+                        </FormControl>
+                        <label className="inline-flex items-center gap-2 mt-2 text-xs text-gray-600 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="accent-orange-500"
+                            checked={experienceExtra.currentlyWorking}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, currentlyWorking: e.target.checked, endDate: e.target.checked ? '' : s.endDate }))}
+                          />
+                          I currently work here
+                        </label>
+                      </FormItem>
+                      <FormItem className="col-span-2">
+                        <FormLabel className={fieldLabel}>What did you do here?</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className={`${fieldInput} min-h-[100px] resize-y`}
+                            placeholder="Briefly describe your responsibilities, tech used, and key achievements..."
+                            value={experienceExtra.description}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, description: e.target.value }))}
+                          />
+                        </FormControl>
+                      </FormItem>
                     </div>
                   </div>
 
@@ -1068,7 +1111,7 @@ const FreelancerProfileForm = () => {
         </main>
 
         {/* Right Preview Pane */}
-        <aside className="w-[300px] border-l border-gray-200 py-7 px-5 overflow-y-auto bg-white shrink-0 hidden xl:block">
+        <aside className="hidden lg:block sticky top-[112px] self-start max-h-[calc(100vh-128px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl p-5">
           <div className="text-[9px] font-bold uppercase tracking-[0.14em] text-gray-400 mb-4 flex items-center gap-2">
             Live preview
             <span className="flex-1 h-px bg-gray-200" />
