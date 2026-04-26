@@ -275,7 +275,7 @@ const Home = () => {
   const handleHireTalentClick = () => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   const handleInterestClick = (req: ClientRequirementResponse) => {
-    if (!isAuthenticated) { navigate(`/register?t=${encryptRole('FreeLancer')}`); return; }
+    if (!isAuthenticated) { navigate(`/register?t=${freelancerToken}`); return; }
     setSelectedRequirement(req); setInterestComment(''); setInterestSuccess(false); setInterestOpen(true);
   };
 
