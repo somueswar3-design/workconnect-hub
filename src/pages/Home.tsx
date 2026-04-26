@@ -355,34 +355,6 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Mode tabs */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200">
-              <button
-                onClick={() => {
-                  setHeroMode('hire');
-                  setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-                }}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-                  heroMode === 'hire' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Hire a Freelancer
-              </button>
-              <button
-                onClick={() => {
-                  setHeroMode('work');
-                  setTimeout(() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-                }}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-                  heroMode === 'work' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Earn Money Freelancing
-              </button>
-            </div>
-          </div>
-
         </div>
       </section>
 
