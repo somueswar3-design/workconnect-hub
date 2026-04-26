@@ -47,6 +47,12 @@ const Login = () => {
       const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'FreeLancer');
       const userId = String(claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '');
 
+      const consumeRedirect = () => {
+        const target = redirectTo;
+        try { sessionStorage.removeItem('post_login_redirect'); } catch {}
+        return target;
+      };
+
       if (role.toLowerCase() === 'freelancer') {
         try {
           const statusRes = await fetch(
@@ -54,16 +60,18 @@ const Login = () => {
             { headers: { 'Authorization': `Bearer ${result.token}` } }
           );
           const statusData = await statusRes.json();
+          const target = consumeRedirect();
           if (!statusData.profileUpdated) {
             navigate('/freelancer-profile');
           } else {
-            navigate('/');
+            navigate(target || '/');
           }
         } catch {
           navigate('/freelancer-profile');
         }
       } else {
-        navigate('/');
+        const target = consumeRedirect();
+        navigate(target || '/');
       }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {
