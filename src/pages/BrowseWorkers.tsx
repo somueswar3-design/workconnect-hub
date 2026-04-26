@@ -115,7 +115,7 @@ const BrowseWorkers = () => {
     (availableNow ? 1 : 0) +
     experienceLevels.length;
 
-  const CurrentIcon = promoSlides[currentSlide].icon;
+  
 
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = [];
