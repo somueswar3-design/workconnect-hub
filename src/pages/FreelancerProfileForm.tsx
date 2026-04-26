@@ -39,6 +39,7 @@ const profileSchema = z.object({
   hoursAvailablePerDay: z.string().min(1, 'Hours per day is required'),
   hourRate: z.string().min(1, 'Hourly rate is required'),
   isAvailableInWeekends: z.boolean().optional(),
+  headline: z.string().max(120, 'Headline must be 120 chars or less').optional(),
   bioDescription: z.string().min(10, 'Bio must be at least 10 characters'),
   projectUrls: z.string().optional(),
   portfolioURL: z.string().optional(),
@@ -107,7 +108,8 @@ const NAV_SECTIONS = [
     title: 'Preferences',
     items: [
       { id: 'languages', icon: '◁', label: 'Languages' },
-      { id: 'links', icon: '▷', label: 'Links & portfolio' },
+      { id: 'portfolio', icon: '◆', label: 'Portfolio' },
+      { id: 'links', icon: '▷', label: 'Links & socials' },
     ],
   },
 ];
@@ -188,7 +190,7 @@ const FreelancerProfileForm = () => {
       engagementType: 'Part-time',
       languagesKnown: '', speakingLanguage: '',
       hoursAvailablePerDay: '', hourRate: '', isAvailableInWeekends: false,
-      bioDescription: '', projectUrls: '', portfolioURL: '',
+      bioDescription: '', headline: '', projectUrls: '', portfolioURL: '',
     },
   });
 
@@ -222,6 +224,7 @@ const FreelancerProfileForm = () => {
             hourRate: data.hourRate || '',
             isAvailableInWeekends: data.isAvailbleInweeknds || false,
             bioDescription: data.bioDescption || '',
+            headline: data.headline || '',
             projectUrls: data.projectUrls || data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
@@ -261,6 +264,7 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate,
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription,
+        headline: data.headline || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -312,6 +316,7 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate || '',
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription || '',
+        headline: data.headline || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -337,12 +342,13 @@ const FreelancerProfileForm = () => {
 
   const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
     identity: ['fullName', 'gender', 'country', 'phoneNumber'],
-    about: ['bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    about: ['headline', 'bioDescription', 'experienceYears', 'anyFreelancingExperience'],
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
     experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
     availability: ['engagementType'],
     languages: ['languagesKnown', 'speakingLanguage'],
+    portfolio: [],
     links: [],
   };
 
