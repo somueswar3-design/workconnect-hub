@@ -65,14 +65,6 @@ const Header = () => {
           </Link>
 
           <nav className="hidden md:flex items-center gap-2">
-            <button
-              onClick={() => setShowDemo(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-gray-800"
-            >
-              <Play className="h-4 w-4 fill-emerald-500 text-emerald-500" />
-              How It Works
-            </button>
-
             {!(isAuthenticated && user?.role?.toLowerCase() === 'freelancer') && (
               <button
                 onClick={() => {
@@ -85,23 +77,7 @@ const Header = () => {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-orange-400 transition-colors rounded-full hover:bg-gray-800"
               >
                 <Users className="h-4 w-4" />
-                Hire Talent
-              </button>
-            )}
-
-            {!(isAuthenticated && user?.role?.toLowerCase() === 'client') && (
-              <button
-                onClick={() => {
-                  if (location.pathname === '/') {
-                    (window as any).__scrollToWorks?.();
-                  } else {
-                    navigate('/', { state: { scrollToWorks: true } });
-                  }
-                }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-blue-400 transition-colors rounded-full hover:bg-gray-800"
-              >
-                <Search className="h-4 w-4" />
-                Find Work
+                Hire Freelancers
               </button>
             )}
 
