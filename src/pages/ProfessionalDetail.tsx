@@ -72,38 +72,7 @@ const ProfessionalDetail = () => {
     fn();
   };
 
-  const handlePlaceBid = () => requireLoginOr(async () => {
-    if (!bidAmount.trim() || !bidHours.trim() || !bidMessage.trim()) {
-      toast({ title: 'Validation', description: 'Hours, amount and message are required.', variant: 'destructive' });
-      return;
-    }
-    if (!profile) return;
-    setSubmitting(true);
-    try {
-      const interviewSchedule = interviewDate
-        ? `Preferred interview: ${interviewDate}${interviewTime ? ' at ' + interviewTime : ''}`
-        : '';
-      const fullDescription = `${bidMessage}\nHours: ${bidHours}\nProposed amount: ${symbol}${bidAmount}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
-      await requestDemo({
-        id: 0,
-        clientUserId: parseInt(user?.userId || '0', 10) || 0,
-        freelancerUserId: profile.userId || profile.freelancerId || profile.id || 0,
-        projectTitle: `Hire Request for ${profile.fullName}`,
-        clientBudget: Number(bidAmount) || 0,
-        contactEmail: user?.email || '',
-        contactPhone: '',
-        status: 'Pending',
-        adminDescription: fullDescription,
-        createdOn: new Date().toISOString(),
-      });
-      setShowThankYou(true);
-      setBidAmount(''); setBidHours(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
-    } catch {
-      toast({ title: 'Error', description: 'Failed to submit request.', variant: 'destructive' });
-    } finally {
-      setSubmitting(false);
-    }
-  });
+  const openHire = () => requireLoginOr(() => setHireOpen(true));
 
   if (loading) {
     return (
