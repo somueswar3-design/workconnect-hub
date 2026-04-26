@@ -773,6 +773,49 @@ const FreelancerProfileForm = () => {
                           <FormMessage />
                         </FormItem>
                       )} />
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>Start date</FormLabel>
+                        <FormControl>
+                          <input
+                            type="month"
+                            className={fieldInput}
+                            value={experienceExtra.startDate}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, startDate: e.target.value }))}
+                          />
+                        </FormControl>
+                      </FormItem>
+                      <FormItem>
+                        <FormLabel className={fieldLabel}>End date</FormLabel>
+                        <FormControl>
+                          <input
+                            type="month"
+                            className={fieldInput}
+                            disabled={experienceExtra.currentlyWorking}
+                            value={experienceExtra.endDate}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, endDate: e.target.value }))}
+                          />
+                        </FormControl>
+                        <label className="inline-flex items-center gap-2 mt-2 text-xs text-gray-600 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="accent-orange-500"
+                            checked={experienceExtra.currentlyWorking}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, currentlyWorking: e.target.checked, endDate: e.target.checked ? '' : s.endDate }))}
+                          />
+                          I currently work here
+                        </label>
+                      </FormItem>
+                      <FormItem className="col-span-2">
+                        <FormLabel className={fieldLabel}>What did you do here?</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className={`${fieldInput} min-h-[100px] resize-y`}
+                            placeholder="Briefly describe your responsibilities, tech used, and key achievements..."
+                            value={experienceExtra.description}
+                            onChange={(e) => setExperienceExtra(s => ({ ...s, description: e.target.value }))}
+                          />
+                        </FormControl>
+                      </FormItem>
                     </div>
                   </div>
 
