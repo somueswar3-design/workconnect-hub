@@ -33,8 +33,8 @@ const DashboardLayout = ({ children, userType, isActive }: DashboardLayoutProps)
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="WorkSupport360" className="h-8 w-8 rounded-lg" />
           <span className="text-lg font-black tracking-tight italic">
-            <span className="text-orange-500">Work</span>
-            <span className="text-orange-400">Support</span>
+            <span className="text-orange-500 mr-1">Work</span>
+            <span className="text-orange-400 mr-1">Support</span>
             <span className="text-white">360</span>
           </span>
         </Link>
