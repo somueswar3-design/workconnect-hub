@@ -266,6 +266,7 @@ const FreelancerProfileForm = () => {
         engagementType: data.engagementType || 'Part-time',
         projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
+        isProfileCompleted: true,
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
       };
@@ -316,6 +317,7 @@ const FreelancerProfileForm = () => {
         engagementType: data.engagementType || 'Part-time',
         projectUrls: data.projectUrls || '',
         portfolioURL: data.portfolioURL || '',
+        isProfileCompleted: false,
         createdOn: new Date().toISOString(),
         updatedOn: new Date().toISOString(),
       };
@@ -455,13 +457,15 @@ const FreelancerProfileForm = () => {
         </div>
       </header>
 
-      {/* Horizontal Tab Bar */}
+      {/* Horizontal Tab Bar — only previously completed steps + current step are visible. Future steps stay hidden until unlocked. */}
       <div className="border-b border-gray-200 bg-white sticky top-[52px] z-40">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV_SECTIONS.flatMap(s => s.items).map((item, idx) => {
               const isActive = activePage === item.id;
               const isDone = completedSections.has(item.id);
+              // Only render: completed sections, or the currently active section. Future locked steps are not shown.
+              if (!isDone && !isActive) return null;
               return (
                 <button
                   key={item.id}
