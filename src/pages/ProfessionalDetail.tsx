@@ -32,14 +32,7 @@ const ProfessionalDetail = () => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<FreelancerProfileDto | null>(null);
 
-  const [bidAmount, setBidAmount] = useState('');
-  const [bidHours, setBidHours] = useState('');
-  const [bidDays, setBidDays] = useState('');
-  const [bidMessage, setBidMessage] = useState('');
-  const [interviewDate, setInterviewDate] = useState('');
-  const [interviewTime, setInterviewTime] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [showThankYou, setShowThankYou] = useState(false);
+  const [hireOpen, setHireOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
