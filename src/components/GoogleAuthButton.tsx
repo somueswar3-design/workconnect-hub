@@ -13,6 +13,7 @@ import { authApi } from '@/services/authApi';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const GOOGLE_CLIENT_ID =
   (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) ||
@@ -29,6 +30,8 @@ interface GoogleAuthButtonProps {
   presetRole?: 'FreeLancer' | 'Client';
   /** Button label */
   label?: string;
+  /** Optional callback so the parent page can render an inline error UI instead of a toast. */
+  onError?: (err: FriendlyAuthError) => void;
 }
 
 const GoogleIcon = () => (
@@ -40,7 +43,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }: GoogleAuthButtonProps) => {
+export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google', onError }: GoogleAuthButtonProps) => {
   const [scriptReady, setScriptReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showRolePicker, setShowRolePicker] = useState(false);
@@ -74,7 +77,14 @@ export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }:
       toast.success('Signed in with Google!');
       navigate('/');
     } catch (e: any) {
-      toast.error(e.message || 'Google sign-in failed.');
+      const friendly = toFriendlyAuthError(e, 'google');
+      if (onError) {
+        onError(friendly);
+        // Close the role-picker dialog so the inline alert is visible behind it.
+        setShowRolePicker(false);
+      } else {
+        toast.error(friendly.description);
+      }
     } finally {
       setIsLoading(false);
       setShowRolePicker(false);
