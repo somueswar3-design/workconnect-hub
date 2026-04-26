@@ -383,18 +383,6 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
-            <Button
-              onClick={() =>
-                heroMode === 'hire'
-                  ? freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
-                  : worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
-              }
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 h-11 rounded-full shadow-md"
-            >
-              {heroMode === 'hire' ? 'Browse Freelancers' : 'Browse Projects'}
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -740,95 +728,6 @@ const Home = () => {
               )}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══════════════════ LIVE PROJECTS ══════════════════ */}
-      <section ref={worksSectionRef} className="py-16 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <p className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2">LIVE PROJECTS</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900">Explore Ongoing Projects</h2>
-            <p className="text-gray-500 mt-2 text-sm">Discover real projects you can work on right now.</p>
-          </div>
-
-          {reqLoading ? (
-            <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>
-          ) : (() => {
-            const filteredReqs = featuredFilter === 'All'
-              ? requirements
-              : requirements.filter(r => {
-                  const haystack = `${r.title || ''} ${r.description || ''} ${r.skillsRequired || ''}`.toLowerCase();
-                  return haystack.includes(featuredFilter.toLowerCase());
-                });
-            if (filteredReqs.length === 0) {
-              return (
-                <div className="text-center py-16">
-                  <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No projects match the selected filter.</p>
-                </div>
-              );
-            }
-            const reqTotalPages = Math.ceil(filteredReqs.length / REQ_PER_PAGE);
-            const reqPaginated = filteredReqs.slice((reqCurrentPage - 1) * REQ_PER_PAGE, reqCurrentPage * REQ_PER_PAGE);
-            return (
-              <>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-                  {reqPaginated.map((req) => {
-                    const skills = req.skillsRequired?.split(',').map(s => s.trim()).filter(Boolean) || [];
-                    return (
-                      <div key={req.id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="text-base font-bold text-gray-900 line-clamp-2">{req.title}</h3>
-                          <span className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${
-                            req.status?.toLowerCase() === 'open' || req.status?.toLowerCase() === 'pending'
-                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                              : 'bg-gray-100 text-gray-500 border border-gray-200'
-                          }`}>{req.status || 'Open'}</span>
-                        </div>
-
-                        {req.description && <p className="text-sm text-gray-500 mb-3 leading-relaxed line-clamp-2">{req.description}</p>}
-
-                        {skills.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mb-3">
-                            {skills.slice(0, 4).map((skill, si) => (
-                              <span key={si} className="text-[11px] px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-600 font-medium">{skill}</span>
-                            ))}
-                            {skills.length > 4 && <span className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 text-gray-400">+{skills.length - 4}</span>}
-                          </div>
-                        )}
-
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mb-4">
-                          {req.budget > 0 && <span className="flex items-center gap-1 font-semibold text-gray-700"><DollarSign className="h-3 w-3 text-emerald-500" />{req.budget.toLocaleString()}</span>}
-                          {req.minExperience > 0 && <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{req.minExperience}+ yrs</span>}
-                          {req.country && <span className="flex items-center gap-1"><Globe className="h-3 w-3" />{req.country}</span>}
-                        </div>
-
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <span className="text-[10px] text-gray-400 flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(req.createdOn).toLocaleDateString()}</span>
-                          <Button size="sm" onClick={() => handleInterestClick(req)} className="h-7 text-xs gap-1 bg-orange-500 hover:bg-orange-600 text-white border-0">
-                            <Heart className="h-3 w-3" /> I'm Interested
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {reqTotalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
-                    <Button variant="outline" size="sm" disabled={reqCurrentPage === 1} onClick={() => setReqCurrentPage(1)} className="h-8 px-2 text-xs border-gray-300 text-gray-600 hover:bg-gray-100">First</Button>
-                    <Button variant="outline" size="sm" disabled={reqCurrentPage === 1} onClick={() => setReqCurrentPage(p => p - 1)} className="h-8 px-2 border-gray-300 text-gray-600 hover:bg-gray-100"><ChevronLeft className="h-3 w-3" /></Button>
-                    {Array.from({ length: reqTotalPages }, (_, i) => i + 1).map(page => (
-                      <Button key={page} variant={reqCurrentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setReqCurrentPage(page)} className={`h-8 w-8 p-0 text-xs ${reqCurrentPage === page ? 'bg-orange-500 hover:bg-orange-600 border-orange-500 text-white' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}>{page}</Button>
-                    ))}
-                    <Button variant="outline" size="sm" disabled={reqCurrentPage === reqTotalPages} onClick={() => setReqCurrentPage(p => p + 1)} className="h-8 px-2 border-gray-300 text-gray-600 hover:bg-gray-100"><ChevronRight className="h-3 w-3" /></Button>
-                    <Button variant="outline" size="sm" disabled={reqCurrentPage === reqTotalPages} onClick={() => setReqCurrentPage(reqTotalPages)} className="h-8 px-2 text-xs border-gray-300 text-gray-600 hover:bg-gray-100">Last</Button>
-                  </div>
-                )}
-              </>
-            );
-          })()}
         </div>
       </section>
 
