@@ -221,3 +221,102 @@ export const getFreelancerDemoRequests = async (userId: string): Promise<Freelan
   if (!res.ok) throw new Error('Failed to fetch demo requests');
   return res.json();
 };
+
+// =====================================================
+// PORTFOLIO PROJECTS
+// =====================================================
+
+export interface PortfolioScreenshotDto {
+  id: number;
+  portfolioId: number;
+  url: string;
+  fileName?: string;
+}
+
+export interface PortfolioProjectDto {
+  id: number;
+  freelancerUserId: number;
+  title: string;
+  description: string;
+  projectUrl?: string;
+  techStack?: string;
+  screenshots: PortfolioScreenshotDto[];
+  createdOn?: string;
+}
+
+// Auth headers WITHOUT content-type (browser sets multipart boundary automatically)
+const getAuthHeadersMultipart = (): Record<string, string> => {
+  const token = localStorage.getItem('auth_token');
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return headers;
+};
+
+// GET all portfolio projects for a freelancer
+export const getPortfolioProjects = async (freelancerUserId: string | number): Promise<PortfolioProjectDto[]> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/portfolio?freelancerUserId=${freelancerUserId}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+// CREATE / UPDATE portfolio project (no files yet, returns saved with id)
+export const savePortfolioProject = async (payload: Partial<PortfolioProjectDto>): Promise<PortfolioProjectDto> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/portfolio`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`Failed to save portfolio (${res.status}): ${errText || res.statusText}`);
+  }
+  return res.json();
+};
+
+// DELETE portfolio project
+export const deletePortfolioProject = async (portfolioId: number, freelancerUserId: string | number): Promise<void> => {
+  const res = await fetch(`${API_BASE}/api/freelancer/portfolio/${portfolioId}?freelancerUserId=${freelancerUserId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to delete portfolio project');
+};
+
+// UPLOAD a screenshot file (multipart/form-data) — backend stores under /{freelancerUserId}/{portfolioId}/
+export const uploadPortfolioScreenshot = async (
+  freelancerUserId: string | number,
+  portfolioId: number,
+  file: File,
+): Promise<PortfolioScreenshotDto> => {
+  const formData = new FormData();
+  formData.append('file', file, file.name);
+  formData.append('freelancerUserId', String(freelancerUserId));
+  formData.append('portfolioId', String(portfolioId));
+
+  const res = await fetch(`${API_BASE}/api/freelancer/portfolio/upload`, {
+    method: 'POST',
+    headers: getAuthHeadersMultipart(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`Upload failed (${res.status}): ${errText || res.statusText}`);
+  }
+  return res.json();
+};
+
+// DELETE a screenshot
+export const deletePortfolioScreenshot = async (
+  portfolioId: number,
+  screenshotId: number,
+  freelancerUserId: string | number,
+): Promise<void> => {
+  const res = await fetch(
+    `${API_BASE}/api/freelancer/portfolio/${portfolioId}/screenshot/${screenshotId}?freelancerUserId=${freelancerUserId}`,
+    { method: 'DELETE', headers: getAuthHeaders() },
+  );
+  if (!res.ok) throw new Error('Failed to delete screenshot');
+};
