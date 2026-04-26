@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from 'sonner';
 import { countries, getCurrencySymbol } from '@/data/countries';
 import { useAuth } from '@/contexts/AuthContext';
+import PortfolioSection from '@/components/PortfolioSection';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
