@@ -176,6 +176,7 @@ const FreelancerProfileForm = () => {
   const navigate = useNavigate();
   const { token, user, updateUser } = useAuth();
   const [profileId, setProfileId] = useState<number>(0);
+  const [experienceExtra, setExperienceExtra] = useState({ startDate: '', endDate: '', currentlyWorking: false, description: '' });
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
