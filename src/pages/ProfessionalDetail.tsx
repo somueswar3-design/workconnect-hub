@@ -387,69 +387,6 @@ const ProfessionalDetail = () => {
                     </Button>
                   </div>
 
-                  {/* Hire form */}
-                  <div id="hire-form" className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm scroll-mt-24">
-                    <h3 className="font-black text-slate-900 mb-1 text-lg">Send Hire Request</h3>
-                    <p className="text-xs text-gray-500 mb-4">Submit your offer & preferred interview slot. Our team coordinates the rest.</p>
-
-                    {!isAuthenticated ? (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
-                        <Lock className="h-5 w-5 text-orange-500 mx-auto mb-1" />
-                        <p className="text-xs text-gray-700 mb-3">Login required to submit a hire request.</p>
-                        <Button
-                          onClick={() => navigate('/login', { state: { from: window.location.pathname } })}
-                          size="sm"
-                          className="bg-orange-500 hover:bg-orange-600 text-white w-full"
-                        >
-                          Login to Continue
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div>
-                          <Label htmlFor="bidHours" className="text-xs font-semibold text-gray-700">Select hours needed</Label>
-                          <Select value={bidHours} onValueChange={setBidHours}>
-                            <SelectTrigger id="bidHours" className="mt-1 h-10">
-                              <SelectValue placeholder="Choose hours" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {['10', '20', '40', '80', '160', '320'].map(h => (
-                                <SelectItem key={h} value={h}>{h} hours</SelectItem>
-                              ))}
-                              <SelectItem value="custom">Custom / Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Your offered amount ({symbol})</Label>
-                          <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`Enter amount in ${symbol}`} className="mt-1 h-10" />
-                          <p className="text-[11px] text-gray-500 mt-1">Enter the total amount you'd like to offer.</p>
-                        </div>
-                        <div>
-                          <Label htmlFor="bidDays" className="text-xs font-semibold text-gray-700">Engagement (days)</Label>
-                          <Input id="bidDays" type="number" value={bidDays} onChange={(e) => setBidDays(e.target.value)} placeholder="e.g. 30" className="mt-1 h-10" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label htmlFor="interviewDate" className="text-xs font-semibold text-gray-700">Interview date</Label>
-                            <Input id="interviewDate" type="date" value={interviewDate} onChange={(e) => setInterviewDate(e.target.value)} className="mt-1 h-10" />
-                          </div>
-                          <div>
-                            <Label htmlFor="interviewTime" className="text-xs font-semibold text-gray-700">Time</Label>
-                            <Input id="interviewTime" type="time" value={interviewTime} onChange={(e) => setInterviewTime(e.target.value)} className="mt-1 h-10" />
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="bidMessage" className="text-xs font-semibold text-gray-700">Project / message</Label>
-                          <Textarea id="bidMessage" rows={3} value={bidMessage} onChange={(e) => setBidMessage(e.target.value)} placeholder="Briefly describe your project & requirements..." className="mt-1" />
-                        </div>
-                        <Button onClick={handlePlaceBid} disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-semibold">
-                          {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                          Submit Hire Request
-                        </Button>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </aside>
             </div>
@@ -457,27 +394,16 @@ const ProfessionalDetail = () => {
         </Tabs>
       </div>
 
-      {/* Thank You Popup */}
-      <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="mx-auto h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
-              <CheckCircle className="h-8 w-8 text-emerald-600" />
-            </div>
-            <DialogTitle className="text-center text-2xl font-black text-slate-900">
-              Thanks for your submission!
-            </DialogTitle>
-            <DialogDescription className="text-center text-gray-600 pt-2">
-              Our team will get back to you once your proposal is reviewed and aligned with the client.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center pt-2">
-            <Button onClick={() => setShowThankYou(false)} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
-              Got it
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {profile && (
+        <HireRequestModal
+          open={hireOpen}
+          onOpenChange={setHireOpen}
+          profile={profile}
+          rating={rating}
+          reviews={reviews}
+          symbol={symbol}
+        />
+      )}
     </div>
   );
 };
