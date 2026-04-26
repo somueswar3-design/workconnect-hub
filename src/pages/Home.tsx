@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { countries } from '@/data/countries';
 import { Checkbox } from '@/components/ui/checkbox';
 import { encryptRole } from '@/lib/roleCipher';
+import { encodeId } from '@/lib/idCipher';
 import catWeb from '@/assets/cat-web.jpg';
 import catMobile from '@/assets/cat-mobile.jpg';
 import catDesign from '@/assets/cat-design.jpg';
