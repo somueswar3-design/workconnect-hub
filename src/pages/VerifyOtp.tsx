@@ -77,10 +77,12 @@ const VerifyOtp = () => {
       return;
     }
     setVerifying(true);
+    setAuthError(null);
     try {
       await authApi.verifyOtp(email, code);
       toast.success('Email verified! Creating your account...');
       if (password) {
+        let alreadyExisted = false;
         try {
           await authApi.register({
             email,
@@ -91,10 +93,14 @@ const VerifyOtp = () => {
             fullName: fullName || undefined,
           });
         } catch (regErr: any) {
-          // Ignore "already exists" so users can re-verify
           const msg = String(regErr?.message || '').toLowerCase();
-          if (!msg.includes('exist') && !msg.includes('already')) {
-            throw regErr;
+          if (msg.includes('exist') || msg.includes('already')) {
+            alreadyExisted = true;
+          } else {
+            // Surface the API error message inline on this page
+            setAuthError(toFriendlyAuthError(regErr, 'register'));
+            setVerifying(false);
+            return;
           }
         }
 
@@ -108,14 +114,16 @@ const VerifyOtp = () => {
           navigate('/', { replace: true });
           return;
         } catch (loginErr: any) {
-          // Auto-login failed → fall back to login page with prefilled email
-          toast.info('Account created. Please sign in to continue.');
+          // Show the actual API message inline so the user knows what went wrong
+          setAuthError(toFriendlyAuthError(loginErr, alreadyExisted ? 'login' : 'register'));
+          setVerifying(false);
+          return;
         }
       }
       localStorage.removeItem('pending_otp_email');
       navigate('/login', { state: { verified: true, email } });
     } catch (error: any) {
-      toast.error(error.message || 'Verification failed. Please try again.');
+      setAuthError(toFriendlyAuthError(error, 'register'));
     } finally {
       setVerifying(false);
     }
