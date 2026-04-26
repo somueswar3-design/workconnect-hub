@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from 'sonner';
 import { countries, getCurrencySymbol } from '@/data/countries';
 import { useAuth } from '@/contexts/AuthContext';
+import PortfolioSection from '@/components/PortfolioSection';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -39,6 +40,7 @@ const profileSchema = z.object({
   hoursAvailablePerDay: z.string().min(1, 'Hours per day is required'),
   hourRate: z.string().min(1, 'Hourly rate is required'),
   isAvailableInWeekends: z.boolean().optional(),
+  headline: z.string().max(120, 'Headline must be 120 chars or less').optional(),
   bioDescription: z.string().min(10, 'Bio must be at least 10 characters'),
   projectUrls: z.string().optional(),
   portfolioURL: z.string().optional(),
@@ -107,7 +109,8 @@ const NAV_SECTIONS = [
     title: 'Preferences',
     items: [
       { id: 'languages', icon: '◁', label: 'Languages' },
-      { id: 'links', icon: '▷', label: 'Links & portfolio' },
+      { id: 'portfolio', icon: '◆', label: 'Portfolio' },
+      { id: 'links', icon: '▷', label: 'Links & socials' },
     ],
   },
 ];
@@ -188,7 +191,7 @@ const FreelancerProfileForm = () => {
       engagementType: 'Part-time',
       languagesKnown: '', speakingLanguage: '',
       hoursAvailablePerDay: '', hourRate: '', isAvailableInWeekends: false,
-      bioDescription: '', projectUrls: '', portfolioURL: '',
+      bioDescription: '', headline: '', projectUrls: '', portfolioURL: '',
     },
   });
 
@@ -222,6 +225,7 @@ const FreelancerProfileForm = () => {
             hourRate: data.hourRate || '',
             isAvailableInWeekends: data.isAvailbleInweeknds || false,
             bioDescription: data.bioDescption || '',
+            headline: data.headline || '',
             projectUrls: data.projectUrls || data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
@@ -261,6 +265,7 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate,
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription,
+        headline: data.headline || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -312,6 +317,7 @@ const FreelancerProfileForm = () => {
         hourRate: data.hourRate || '',
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription || '',
+        headline: data.headline || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -337,12 +343,13 @@ const FreelancerProfileForm = () => {
 
   const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
     identity: ['fullName', 'gender', 'country', 'phoneNumber'],
-    about: ['bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    about: ['headline', 'bioDescription', 'experienceYears', 'anyFreelancingExperience'],
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
     experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
     availability: ['engagementType'],
     languages: ['languagesKnown', 'speakingLanguage'],
+    portfolio: [],
     links: [],
   };
 
@@ -608,15 +615,25 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">✦</span> Professional summary
+                      <span className="text-base">✦</span> About me
                     </div>
+                    <FormField control={form.control} name="headline" render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className={fieldLabel}>Headline / Tagline</FormLabel>
+                        <FormControl>
+                          <input className={fieldInput} placeholder="e.g. Senior Full-Stack Developer · React, Node, AWS" maxLength={120} {...field} />
+                        </FormControl>
+                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 120</div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
                     <FormField control={form.control} name="bioDescription" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={fieldLabel}>Bio (shown on profile) *</FormLabel>
+                        <FormLabel className={fieldLabel}>About me — long bio (shown on profile) *</FormLabel>
                         <FormControl>
-                          <textarea className={`${fieldInput} min-h-[120px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications..." {...field} />
+                          <textarea className={`${fieldInput} min-h-[140px] resize-y`} placeholder="I'm a full-stack developer with 6+ years building scalable web applications. I specialize in React, Node.js and AWS. I focus on clean architecture, performance, and shipping fast..." maxLength={2000} {...field} />
                         </FormControl>
-                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 600</div>
+                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 2000</div>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -1082,15 +1099,24 @@ const FreelancerProfileForm = () => {
                       className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
                       ← Back
                     </button>
-                    <button type="button" onClick={() => markDoneAndContinue('languages', 'links')}
+                    <button type="button" onClick={() => markDoneAndContinue('languages', 'portfolio')}
                       className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
-                      Continue → Links
+                      Continue → Portfolio
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* LINKS & PORTFOLIO */}
+              {/* PORTFOLIO PROJECTS */}
+              {activePage === 'portfolio' && (
+                <PortfolioSection
+                  freelancerUserId={user?.userId || ''}
+                  onBack={() => setActivePage('languages')}
+                  onContinue={() => markDoneAndContinue('portfolio', 'links')}
+                />
+              )}
+
+              {/* LINKS & SOCIALS */}
               {activePage === 'links' && (
                 <div>
                   <div className="mb-8">
