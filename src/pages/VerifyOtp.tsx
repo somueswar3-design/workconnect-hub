@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { authApi } from '@/services/authApi';
 import { useAuth } from '@/contexts/AuthContext';
 import wsLogo from '@/assets/worksupport360-logo.png';
+import { AuthErrorAlert } from '@/components/AuthErrorAlert';
+import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const OTP_LENGTH = 6;
 
@@ -27,6 +29,7 @@ const VerifyOtp = () => {
   const [resending, setResending] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(60);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const [authError, setAuthError] = useState<FriendlyAuthError | null>(null);
 
   useEffect(() => {
     if (!email) {
@@ -74,10 +77,12 @@ const VerifyOtp = () => {
       return;
     }
     setVerifying(true);
+    setAuthError(null);
     try {
       await authApi.verifyOtp(email, code);
       toast.success('Email verified! Creating your account...');
       if (password) {
+        let alreadyExisted = false;
         try {
           await authApi.register({
             email,
@@ -88,10 +93,14 @@ const VerifyOtp = () => {
             fullName: fullName || undefined,
           });
         } catch (regErr: any) {
-          // Ignore "already exists" so users can re-verify
           const msg = String(regErr?.message || '').toLowerCase();
-          if (!msg.includes('exist') && !msg.includes('already')) {
-            throw regErr;
+          if (msg.includes('exist') || msg.includes('already')) {
+            alreadyExisted = true;
+          } else {
+            // Surface the API error message inline on this page
+            setAuthError(toFriendlyAuthError(regErr, 'register'));
+            setVerifying(false);
+            return;
           }
         }
 
@@ -105,14 +114,16 @@ const VerifyOtp = () => {
           navigate('/', { replace: true });
           return;
         } catch (loginErr: any) {
-          // Auto-login failed → fall back to login page with prefilled email
-          toast.info('Account created. Please sign in to continue.');
+          // Show the actual API message inline so the user knows what went wrong
+          setAuthError(toFriendlyAuthError(loginErr, alreadyExisted ? 'login' : 'register'));
+          setVerifying(false);
+          return;
         }
       }
       localStorage.removeItem('pending_otp_email');
       navigate('/login', { state: { verified: true, email } });
     } catch (error: any) {
-      toast.error(error.message || 'Verification failed. Please try again.');
+      setAuthError(toFriendlyAuthError(error, 'register'));
     } finally {
       setVerifying(false);
     }
@@ -164,6 +175,8 @@ const VerifyOtp = () => {
           </CardHeader>
 
           <CardContent className="space-y-6 pt-4">
+            <AuthErrorAlert error={authError} onDismiss={() => setAuthError(null)} />
+
             {/* OTP boxes */}
             <div className="flex items-center justify-center gap-2 sm:gap-3">
               {digits.map((d, i) => (
