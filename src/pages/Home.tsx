@@ -356,10 +356,13 @@ const Home = () => {
           </div>
 
           {/* Mode tabs */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4">
             <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200">
               <button
-                onClick={() => setHeroMode('hire')}
+                onClick={() => {
+                  setHeroMode('hire');
+                  setTimeout(() => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+                }}
                 className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                   heroMode === 'hire' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -367,7 +370,10 @@ const Home = () => {
                 Hire a Freelancer
               </button>
               <button
-                onClick={() => setHeroMode('work')}
+                onClick={() => {
+                  setHeroMode('work');
+                  setTimeout(() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+                }}
                 className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                   heroMode === 'work' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
                 }`}
@@ -377,162 +383,17 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="max-w-6xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-12">
-              {/* Left options panel */}
-              <div className="lg:col-span-4 bg-gray-50 p-5 space-y-3 border-r border-gray-200">
-                {heroMode === 'hire' ? (
-                  <>
-                    <PanelOption icon={Code} title="By skill" desc="Looking for a freelancer with a specific skill? Start here." active={hirePanel === 'skill'} onClick={() => setHirePanel('skill')} />
-                    <PanelOption icon={MapPin} title="By location" desc="Search for freelancers based on their location and timezone." active={hirePanel === 'location'} onClick={() => setHirePanel('location')} />
-                  </>
-                ) : (
-                  <>
-                    <PanelOption icon={Code} title="By skill" desc="Search for work that requires a particular skill." active={workPanel === 'skill'} onClick={() => setWorkPanel('skill')} />
-                    <PanelOption icon={Languages} title="By language" desc="Find projects that are in your language." active={workPanel === 'language'} onClick={() => setWorkPanel('language')} />
-                    <PanelOption icon={Award} title="Featured jobs" desc="Explore our current list of top featured projects." active={workPanel === 'featured'} onClick={() => setWorkPanel('featured')} />
-                  </>
-                )}
-              </div>
-
-              {/* Right content — strictly panel-aware (mutually exclusive) */}
-              <div className="lg:col-span-8 p-5">
-
-                {/* ───── HIRE MODE ───── */}
-                {heroMode === 'hire' && hirePanel === 'skill' && (
-                  <>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a skill</p>
-                    <div className="flex flex-wrap gap-2">
-                      {SKILL_TAGS.map(skill => (
-                        <button
-                          key={skill}
-                          onClick={() => handleSkillTagClick(skill)}
-                          className="px-4 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
-                        >
-                          {skill}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-
-                {heroMode === 'hire' && hirePanel === 'location' && (
-                  <>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a country</p>
-                    <div className="flex flex-wrap gap-2 max-h-[420px] overflow-y-auto pr-1">
-                      {countries.map(c => {
-                        const active = filterCountry === c.name;
-                        return (
-                          <button
-                            key={c.code}
-                            onClick={() => {
-                              setFilterCountry(c.name);
-                              setCurrentPage(1);
-                              freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                              active
-                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
-                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
-                            }`}
-                          >
-                            <MapPin className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />
-                            {c.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
-
-
-
-
-                {/* ───── WORK MODE ───── */}
-                {heroMode === 'work' && workPanel === 'skill' && (
-                  <>
-                    <div className="flex items-stretch bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                      <div className="flex items-center px-3 border-r border-gray-200">
-                        <Search className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search project keywords…"
-                        value={heroSearchInput}
-                        onChange={e => setHeroSearchInput(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                        className="flex-1 bg-transparent text-gray-900 px-3 outline-none placeholder:text-gray-400 text-sm py-3"
-                      />
-                      <Button
-                        onClick={() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                        className="m-1.5 px-5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg border-0"
-                      >
-                        Search
-                      </Button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-3">Type a project keyword and press Search to browse matching projects below.</p>
-                  </>
-                )}
-
-                {heroMode === 'work' && workPanel === 'language' && (
-                  <>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a language</p>
-                    <div className="flex flex-wrap gap-2">
-                      {LANGUAGES.map(l => {
-                        const active = heroSearchInput === l;
-                        return (
-                          <button
-                            key={l}
-                            onClick={() => { setHeroSearchInput(l); worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' }); }}
-                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                              active
-                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
-                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
-                            }`}
-                          >
-                            <Languages className="inline h-3.5 w-3.5 mr-1 -mt-0.5" />
-                            {l}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
-
-                {heroMode === 'work' && workPanel === 'featured' && (
-                  <>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Filter featured jobs</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {FEATURED_JOB_FILTERS.map(f => {
-                        const active = featuredFilter === f;
-                        return (
-                          <button
-                            key={f}
-                            onClick={() => {
-                              setFeaturedFilter(f);
-                              worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className={`px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                              active
-                                ? 'bg-orange-500 border-orange-500 text-white shadow-md'
-                                : 'bg-white border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
-                            }`}
-                          >
-                            {f}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <Button
-                      onClick={() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                      className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5"
-                    >
-                      <Award className="h-4 w-4" /> View featured projects
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
+          <div className="flex justify-center">
+            <Button
+              onClick={() =>
+                heroMode === 'hire'
+                  ? freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+                  : worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })
+              }
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 h-11 rounded-full shadow-md"
+            >
+              {heroMode === 'hire' ? 'Browse Freelancers' : 'Browse Projects'}
+            </Button>
           </div>
         </div>
       </section>
