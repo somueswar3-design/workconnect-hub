@@ -1098,15 +1098,24 @@ const FreelancerProfileForm = () => {
                       className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
                       ← Back
                     </button>
-                    <button type="button" onClick={() => markDoneAndContinue('languages', 'links')}
+                    <button type="button" onClick={() => markDoneAndContinue('languages', 'portfolio')}
                       className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
-                      Continue → Links
+                      Continue → Portfolio
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* LINKS & PORTFOLIO */}
+              {/* PORTFOLIO PROJECTS */}
+              {activePage === 'portfolio' && (
+                <PortfolioSection
+                  freelancerUserId={user?.userId || ''}
+                  onBack={() => setActivePage('languages')}
+                  onContinue={() => markDoneAndContinue('portfolio', 'links')}
+                />
+              )}
+
+              {/* LINKS & SOCIALS */}
               {activePage === 'links' && (
                 <div>
                   <div className="mb-8">
