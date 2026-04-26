@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  User, Lock, Briefcase, Clock, Receipt, Building2, DollarSign, 
-  LayoutDashboard, Search, FileText, ChevronRight, Settings
+  User, Lock, Briefcase, Clock, Receipt, Building2,
+  LayoutDashboard, ChevronRight, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -23,24 +23,17 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
     {
       title: 'MY WORK',
       items: [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer' },
-        { icon: Briefcase, label: 'My projects', path: '/freelancer/my-requests' },
-        { icon: Clock, label: 'Timesheets', path: '/freelancer/timesheets' },
-        { icon: Receipt, label: 'My invoices', path: '/freelancer/invoices' },
-      ],
-    },
-    {
-      title: 'FIND WORK',
-      items: [
-        { icon: Search, label: 'Browse projects', path: '/' },
-        { icon: FileText, label: 'My applications', path: '/freelancer/payments' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer', color: 'text-cyan-500' },
+        { icon: Briefcase, label: 'My projects', path: '/freelancer/my-requests', color: 'text-orange-500' },
+        { icon: Clock, label: 'Timesheets', path: '/freelancer/timesheets', color: 'text-emerald-500' },
+        { icon: Receipt, label: 'My invoices', path: '/freelancer/invoices', color: 'text-violet-500' },
       ],
     },
     {
       title: 'ACCOUNT',
       items: [
-        { icon: User, label: 'My profile', path: '/freelancer/profile' },
-        { icon: Building2, label: 'Bank details', path: '/freelancer/bank-details' },
+        { icon: User, label: 'My profile', path: '/freelancer/profile', color: 'text-pink-500' },
+        { icon: Building2, label: 'Bank details', path: '/freelancer/bank-details', color: 'text-blue-500' },
       ],
     },
   ];
@@ -49,22 +42,16 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
     {
       title: 'MY WORK',
       items: [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/client' },
-        { icon: Briefcase, label: 'My projects', path: '/client/post-requirement' },
-        { icon: Clock, label: 'Timesheets', path: '/client/timesheets' },
-        { icon: Receipt, label: 'My invoices', path: '/client/invoices' },
-      ],
-    },
-    {
-      title: 'FIND WORK',
-      items: [
-        { icon: Search, label: 'Browse professionals', path: '/' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/client', color: 'text-cyan-500' },
+        { icon: Briefcase, label: 'My projects', path: '/client/post-requirement', color: 'text-orange-500' },
+        { icon: Clock, label: 'Timesheets', path: '/client/timesheets', color: 'text-emerald-500' },
+        { icon: Receipt, label: 'My invoices', path: '/client/invoices', color: 'text-violet-500' },
       ],
     },
     {
       title: 'ACCOUNT',
       items: [
-        { icon: User, label: 'My profile', path: '/client/profile' },
+        { icon: User, label: 'My profile', path: '/client/profile', color: 'text-pink-500' },
       ],
     },
   ];
@@ -76,12 +63,12 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
   ];
 
   return (
-    <aside className="w-60 min-h-screen bg-[#0D1B2E] border-r border-slate-700/40 flex flex-col shrink-0">
+    <aside className="w-60 min-h-screen bg-white border-r border-slate-200 flex flex-col shrink-0">
       {/* Navigation Sections */}
       <nav className="flex-1 py-4">
         {sections.map((section, idx) => (
           <div key={section.title} className={cn(idx > 0 && 'mt-6')}>
-            <p className="px-5 mb-2 text-[11px] font-bold tracking-widest text-orange-500/80 uppercase">
+            <p className="px-5 mb-2 text-[11px] font-bold tracking-widest text-orange-500 uppercase">
               {section.title}
             </p>
             <div className="space-y-0.5">
@@ -93,13 +80,13 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
                     key={item.path + item.label}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all duration-150',
+                      'flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all duration-150 border-l-[3px]',
                       isActivePath
-                        ? 'bg-orange-500/15 text-orange-400 border-l-3 border-orange-500'
-                        : 'text-slate-400 hover:bg-slate-700/30 hover:text-slate-200 border-l-3 border-transparent'
+                        ? 'bg-orange-50 text-orange-600 border-orange-500'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-transparent'
                     )}
                   >
-                    <item.icon className="h-4 w-4 shrink-0" />
+                    <item.icon className={cn('h-4 w-4 shrink-0', isActivePath ? 'text-orange-500' : item.color)} />
                     {item.label}
                   </NavLink>
                 );
@@ -111,9 +98,9 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
         {/* Settings */}
         <div className="mt-6">
           <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-5 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-700/30 hover:text-slate-200 transition-all border-l-3 border-transparent">
+            <CollapsibleTrigger className="flex items-center justify-between w-full px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all border-l-[3px] border-transparent">
               <div className="flex items-center gap-3">
-                <Settings className="h-4 w-4" />
+                <Settings className="h-4 w-4 text-slate-500" />
                 Settings
               </div>
               <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', settingsOpen && 'rotate-90')} />
@@ -126,10 +113,10 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
                     key={item.path}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-3 pl-8 pr-5 py-2 text-sm transition-all border-l-3',
+                      'flex items-center gap-3 pl-8 pr-5 py-2 text-sm transition-all border-l-[3px]',
                       isActivePath
-                        ? 'bg-orange-500/15 text-orange-400 border-orange-500'
-                        : 'text-slate-400 hover:bg-slate-700/30 hover:text-slate-200 border-transparent'
+                        ? 'bg-orange-50 text-orange-600 border-orange-500'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-transparent'
                     )}
                   >
                     <item.icon className="h-3.5 w-3.5" />
