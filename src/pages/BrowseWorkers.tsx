@@ -46,7 +46,7 @@ const BrowseWorkers = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<'grid' | 'list'>('grid');
 
