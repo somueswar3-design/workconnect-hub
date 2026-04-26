@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Users, Loader2, Star, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,7 @@ const BrowseWorkers = () => {
   const [sortBy, setSortBy] = useState('best');
 
   const { toast } = useToast();
+  const navigate = useNavigate();
   const allSkills = useMemo(() => getAllSkills(), []);
 
   useEffect(() => {
@@ -89,10 +91,7 @@ const BrowseWorkers = () => {
   }, [searchQuery, skillFilter, rateRange, employmentTypes, availableNow, experienceLevels, currentPage, isLoading]);
 
   const handleHireNow = (profile: WorkerProfile) => {
-    toast({
-      title: '🎉 Request received!',
-      description: `We've noted your interest in ${profile.aliasName}. Our team will arrange a free demo and contact you shortly.`,
-    });
+    navigate(`/professional/${profile.id}`);
   };
 
   const toggleArr = (arr: string[], v: string) =>

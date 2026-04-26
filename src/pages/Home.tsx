@@ -706,7 +706,7 @@ const Home = () => {
 
                             {/* Hire Now */}
                             <Button
-                              onClick={() => handleDemoClick(f)}
+                              onClick={() => navigate(`/professional/${f.freelancerId || f.userId || f.id}`)}
                               variant="outline"
                               className="w-full border-gray-300 text-gray-800 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-semibold text-sm h-10 rounded-xl"
                             >

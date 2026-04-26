@@ -36,6 +36,8 @@ const ProfessionalDetail = () => {
   const [bidAmount, setBidAmount] = useState('');
   const [bidDays, setBidDays] = useState('');
   const [bidMessage, setBidMessage] = useState('');
+  const [interviewDate, setInterviewDate] = useState('');
+  const [interviewTime, setInterviewTime] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -76,28 +78,32 @@ const ProfessionalDetail = () => {
 
   const handlePlaceBid = () => requireLoginOr(async () => {
     if (!bidAmount.trim() || !bidMessage.trim()) {
-      toast({ title: 'Validation', description: 'Bid amount and message required.', variant: 'destructive' });
+      toast({ title: 'Validation', description: 'Bid amount and message are required.', variant: 'destructive' });
       return;
     }
     if (!profile) return;
     setSubmitting(true);
     try {
+      const interviewSchedule = interviewDate
+        ? `Preferred interview: ${interviewDate}${interviewTime ? ' at ' + interviewTime : ''}`
+        : '';
+      const fullDescription = `${bidMessage}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
       await requestDemo({
         id: 0,
         clientUserId: parseInt(user?.userId || '0', 10) || 0,
         freelancerUserId: profile.userId || profile.freelancerId || profile.id || 0,
-        projectTitle: `Bid for ${profile.fullName}`,
+        projectTitle: `Hire Request for ${profile.fullName}`,
         clientBudget: Number(bidAmount) || 0,
         contactEmail: user?.email || '',
         contactPhone: '',
         status: 'Pending',
-        adminDescription: bidMessage,
+        adminDescription: fullDescription,
         createdOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Bid placed!', description: 'Your offer has been submitted.' });
-      setBidAmount(''); setBidDays(''); setBidMessage('');
+      toast({ title: '🎉 Request submitted!', description: 'Our team will arrange the interview shortly.' });
+      setBidAmount(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
     } catch {
-      toast({ title: 'Error', description: 'Failed to submit bid.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to submit request.', variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
@@ -312,7 +318,56 @@ const ProfessionalDetail = () => {
           {/* RIGHT (1/3) — Bid + Contact */}
           <aside className="lg:col-span-1">
             <div className="lg:sticky lg:top-24 space-y-4">
-              {/* Contact card only (Place a Bid removed) */}
+              {/* Hire / Bid card */}
+              <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+                <h3 className="font-black text-gray-900 mb-1 text-lg">Hire {profile.fullName.split(' ')[0]}</h3>
+                <p className="text-xs text-gray-500 mb-4">Submit your offer & preferred interview slot. Our team coordinates the rest.</p>
+
+                {!isAuthenticated ? (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center mb-3">
+                    <Lock className="h-5 w-5 text-orange-500 mx-auto mb-1" />
+                    <p className="text-xs text-gray-700 mb-2">Login required to submit a hire request.</p>
+                    <Button
+                      onClick={() => navigate('/login', { state: { from: window.location.pathname } })}
+                      size="sm"
+                      className="bg-orange-500 hover:bg-orange-600 text-white w-full"
+                    >
+                      Login to Continue
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="bidAmount" className="text-xs font-semibold text-gray-700">Bid amount ({symbol}/hr)</Label>
+                      <Input id="bidAmount" type="number" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} placeholder={`${symbol}${profile.hourRate || 50}`} className="mt-1 h-10" />
+                    </div>
+                    <div>
+                      <Label htmlFor="bidDays" className="text-xs font-semibold text-gray-700">Engagement (days)</Label>
+                      <Input id="bidDays" type="number" value={bidDays} onChange={(e) => setBidDays(e.target.value)} placeholder="e.g. 30" className="mt-1 h-10" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label htmlFor="interviewDate" className="text-xs font-semibold text-gray-700">Interview date</Label>
+                        <Input id="interviewDate" type="date" value={interviewDate} onChange={(e) => setInterviewDate(e.target.value)} className="mt-1 h-10" />
+                      </div>
+                      <div>
+                        <Label htmlFor="interviewTime" className="text-xs font-semibold text-gray-700">Time</Label>
+                        <Input id="interviewTime" type="time" value={interviewTime} onChange={(e) => setInterviewTime(e.target.value)} className="mt-1 h-10" />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="bidMessage" className="text-xs font-semibold text-gray-700">Project / message</Label>
+                      <Textarea id="bidMessage" rows={3} value={bidMessage} onChange={(e) => setBidMessage(e.target.value)} placeholder="Briefly describe your project & requirements..." className="mt-1" />
+                    </div>
+                    <Button onClick={handlePlaceBid} disabled={submitting} className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-semibold">
+                      {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                      Submit Hire Request
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Contact card */}
               <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
                 <h3 className="font-black text-gray-900 mb-4 text-lg">Contact</h3>
                 <div className="space-y-2.5">
