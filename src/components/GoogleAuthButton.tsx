@@ -15,7 +15,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 const GOOGLE_CLIENT_ID =
-  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || '';
+  (import.meta.env.VITE_GOOGLE_CLIENT_ID as string) ||
+  '517143632383-dfsqhm0t6kv1fh92m6rt4o6baejq5i46.apps.googleusercontent.com';
 
 declare global {
   interface Window {
