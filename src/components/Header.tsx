@@ -223,7 +223,7 @@ const Header = () => {
           </DialogHeader>
           <div className="grid gap-4 mt-2">
             <button
-              onClick={() => { setShowJoinChoice(false); navigate('/register?role=FreeLancer'); }}
+              onClick={() => { setShowJoinChoice(false); navigate(`/register?t=${encryptRole('FreeLancer')}`); }}
               className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-orange-500 hover:bg-orange-50 transition-all text-left"
             >
               <div className="h-12 w-12 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
