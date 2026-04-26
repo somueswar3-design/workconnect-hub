@@ -3,7 +3,7 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users, CheckCircle2, Sparkles, Star, Globe2 } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, UserPlus, Users, CheckCircle2, Sparkles, Star, Globe2, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,6 +19,8 @@ import { AuthErrorAlert } from '@/components/AuthErrorAlert';
 import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const registerSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required').max(50, 'First name must be less than 50 characters'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50, 'Last name must be less than 50 characters'),
   email: z.string().trim().email('Please enter a valid email address').max(255),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
@@ -51,17 +53,27 @@ const Register = () => {
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { firstName: '', lastName: '', email: '', password: '' },
   });
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
     setAuthError(null);
     const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
+    const fullName = `${data.firstName} ${data.lastName}`.trim();
     try {
       await authApi.sendOtp(data.email);
       toast.success('OTP sent! Please check your email.');
-      navigate('/verify-otp', { state: { email: data.email, password: data.password, role: apiRole } });
+      navigate('/verify-otp', {
+        state: {
+          email: data.email,
+          password: data.password,
+          role: apiRole,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          fullName,
+        },
+      });
     } catch (error: any) {
       setAuthError(toFriendlyAuthError(error, 'register'));
     } finally {
@@ -114,6 +126,42 @@ const Register = () => {
           {/* Email form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={form.control} name="firstName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">First name</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Jane"
+                          className="pl-10 h-11 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="lastName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Last name</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Doe"
+                          className="pl-10 h-11 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">Email Address</FormLabel>
