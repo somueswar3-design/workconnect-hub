@@ -204,8 +204,21 @@ const HireRequestModal = ({ open, onOpenChange, profile, rating, reviews, symbol
     );
   };
 
-  // Not authenticated
+  // Not authenticated — prompt login/register, return to this profile after auth
   if (!isAuthenticated) {
+    const returnPath = typeof window !== 'undefined'
+      ? window.location.pathname + window.location.search
+      : '/';
+    const goLogin = () => {
+      handleClose(false);
+      try { sessionStorage.setItem('post_login_redirect', returnPath); } catch {}
+      window.location.href = `/login?redirect=${encodeURIComponent(returnPath)}`;
+    };
+    const goRegister = () => {
+      handleClose(false);
+      try { sessionStorage.setItem('post_login_redirect', returnPath); } catch {}
+      window.location.href = `/register?role=Client&redirect=${encodeURIComponent(returnPath)}`;
+    };
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
@@ -214,13 +227,55 @@ const HireRequestModal = ({ open, onOpenChange, profile, rating, reviews, symbol
             <div className="mx-auto h-14 w-14 rounded-full bg-orange-100 flex items-center justify-center mb-3">
               <Lock className="h-6 w-6 text-orange-500" />
             </div>
-            <h3 className="text-xl font-black text-slate-900 mb-1">Login required</h3>
-            <p className="text-sm text-gray-600 mb-5">Please log in to submit a hire request.</p>
+            <h3 className="text-xl font-black text-slate-900 mb-1">Login required to hire</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              Please log in or register as a <span className="font-bold text-slate-900">Client</span> to send a hire request to <span className="font-bold text-slate-900">{profile.fullName}</span>. We'll bring you right back to this profile.
+            </p>
             <Button
-              onClick={() => { handleClose(false); window.location.href = '/login'; }}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold"
+              onClick={goLogin}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold mb-2"
             >
               Login to Continue
+            </Button>
+            <Button
+              onClick={goRegister}
+              variant="outline"
+              className="w-full h-11 font-bold border-orange-300 text-orange-600 hover:bg-orange-50"
+            >
+              Register as Client
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Authenticated as Freelancer — block hiring
+  if (user?.role?.toLowerCase() === 'freelancer') {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <Header />
+          <div className="p-6 text-center">
+            <div className="mx-auto h-14 w-14 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+              <Info className="h-6 w-6 text-amber-600" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-1">Freelancers can't hire</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              You're currently signed in as a <span className="font-bold text-slate-900">Freelancer</span>, so you cannot send a hire request. To hire <span className="font-bold text-slate-900">{profile.fullName}</span>, please log out and sign in or register with a <span className="font-bold text-slate-900">Client</span> account.
+            </p>
+            <Button
+              onClick={() => { handleClose(false); window.location.href = '/register?role=Client'; }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold mb-2"
+            >
+              Register as Client
+            </Button>
+            <Button
+              onClick={() => handleClose(false)}
+              variant="outline"
+              className="w-full h-11 font-bold"
+            >
+              Close
             </Button>
           </div>
         </DialogContent>
