@@ -25,6 +25,7 @@ export interface LoginResponse {
 
 export interface GoogleLoginRequest {
   idToken: string;
+  role?: string;
 }
 
 export interface ForgotPasswordRequest {
