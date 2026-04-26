@@ -152,13 +152,6 @@ const Header = () => {
           </nav>
 
           <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={() => setShowDemo(true)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-full border border-emerald-200"
-            >
-              <Play className="h-3 w-3 fill-emerald-500" />
-              Demo
-            </button>
             {isAuthenticated ? (
               <button onClick={handleLogout} className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
                 Logout
