@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { authApi } from '@/services/authApi';
+import { useAuth } from '@/contexts/AuthContext';
 import wsLogo from '@/assets/worksupport360-logo.png';
 
 const OTP_LENGTH = 6;
@@ -13,9 +14,13 @@ const OTP_LENGTH = 6;
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const email = (location.state as any)?.email || localStorage.getItem('pending_otp_email') || '';
   const password = (location.state as any)?.password || '';
   const role = (location.state as any)?.role || 'FreeLancer';
+  const firstName = (location.state as any)?.firstName || '';
+  const lastName = (location.state as any)?.lastName || '';
+  const fullName = (location.state as any)?.fullName || `${firstName} ${lastName}`.trim();
 
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [verifying, setVerifying] = useState(false);
