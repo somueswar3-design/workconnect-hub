@@ -757,6 +757,37 @@ const FreelancerProfileForm = () => {
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
+                      <span className="text-base">◉</span> Years of experience
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="experienceYears" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Total IT Experience (Years) *</FormLabel>
+                          <FormControl><input type="number" className={fieldInput} placeholder="e.g. 5" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                      <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={fieldLabel}>Freelancing Experience *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
+                            <SelectContent>
+                              <SelectItem value="new">New to Freelancing</SelectItem>
+                              <SelectItem value="0-1">Less than 1 Year</SelectItem>
+                              <SelectItem value="1-3">1 - 3 Years</SelectItem>
+                              <SelectItem value="3-5">3 - 5 Years</SelectItem>
+                              <SelectItem value="5+">5+ Years</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )} />
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
+                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">◈</span> Current position
                     </div>
                     <div className="grid grid-cols-2 gap-4">
