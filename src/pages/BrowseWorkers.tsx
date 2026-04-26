@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Users, Loader2, Star, ChevronLeft, ChevronRight, Shield, Zap, CheckCircle2, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
+import { Search, Filter, Users, Loader2, Star, MapPin, Briefcase, X, Grid3x3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,29 +28,6 @@ import {
 
 const PAGE_SIZE = 12;
 
-const promoSlides = [
-  {
-    title: 'Find Your Perfect IT Professional',
-    subtitle: 'Browse skilled freelancers, request a FREE demo, and hire with confidence',
-    description: "Our team coordinates everything — from demo scheduling to project kick-off. You focus on your business, we handle the rest.",
-    gradient: 'from-primary to-blue-700',
-    icon: Users,
-  },
-  {
-    title: '100% Free Demo Sessions',
-    subtitle: "Try before you commit — no charges until you're satisfied",
-    description: 'Request a demo with any freelancer. Our team arranges a free session so you can evaluate skills, communication, and fit before any commitment.',
-    gradient: 'from-emerald-600 to-teal-700',
-    icon: CheckCircle2,
-  },
-  {
-    title: 'Only 15% Service Commission',
-    subtitle: 'Transparent pricing with no hidden fees',
-    description: 'We charge only 15% commission on the agreed project amount. Payment starts only after admin approval and assignment.',
-    gradient: 'from-violet-600 to-purple-700',
-    icon: Shield,
-  },
-];
 
 const EMPLOYMENT_OPTIONS = [
   { id: 'full-time', label: 'Full-time' },
@@ -69,7 +46,7 @@ const BrowseWorkers = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<'grid' | 'list'>('grid');
 
@@ -88,12 +65,8 @@ const BrowseWorkers = () => {
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % promoSlides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
+
+
 
   // Reset page when filters change
   useEffect(() => {
@@ -142,7 +115,7 @@ const BrowseWorkers = () => {
     (availableNow ? 1 : 0) +
     experienceLevels.length;
 
-  const CurrentIcon = promoSlides[currentSlide].icon;
+  
 
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = [];
@@ -162,41 +135,13 @@ const BrowseWorkers = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Hero Slider */}
-      <div className="relative overflow-hidden">
-        <div className={`bg-gradient-to-r ${promoSlides[currentSlide].gradient} text-white transition-all duration-700`}>
-          <div className="container py-8 md:py-12">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                    <CurrentIcon className="h-6 w-6" />
-                  </div>
-                  <Badge className="bg-white/20 text-white border-white/30">WorkSupport360</Badge>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight">{promoSlides[currentSlide].title}</h1>
-                <p className="text-base text-white/90 font-medium">{promoSlides[currentSlide].subtitle}</p>
-                <p className="text-white/75 text-sm max-w-xl">{promoSlides[currentSlide].description}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 mt-5">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p - 1 + promoSlides.length) % promoSlides.length)}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex gap-1.5">
-                {promoSlides.map((_, i) => (
-                  <button key={i} onClick={() => setCurrentSlide(i)} className={`h-1.5 rounded-full transition-all ${i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
-                ))}
-              </div>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-7 w-7" onClick={() => setCurrentSlide(p => (p + 1) % promoSlides.length)}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container py-6">
+        {/* Page heading */}
+        <div className="mb-5">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Browse Freelancers</h1>
+          <p className="text-sm text-slate-500 mt-1">Find the right professional and request a free demo — our team handles the rest.</p>
+        </div>
+
         {/* Search bar */}
         <div className="mb-5 flex gap-3">
           <div className="relative flex-1">
