@@ -137,68 +137,95 @@ const ProfessionalDetail = () => {
     { title: 'Mobile-first redesign', summary: 'Led the UX overhaul, improving conversion by 28% across key flows.', tag: skills[2] || 'Design', budget: `${symbol}2,400` },
   ];
 
+  const jobsCompleted = 100 + idx * 17;
+  const repeatPct = 75 + (idx % 20);
+  const tagline = profile.bioDescption?.split('.')[0] || `${skills.slice(0, 3).join(', ') || 'IT'} Specialist`;
+
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Top bar */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-gray-600">
+      {/* DARK HERO */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(249,115,22,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(249,115,22,0.2) 0%, transparent 50%)' }} />
+        <div className="container mx-auto px-4 pt-4 pb-8 relative">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1.5 text-white/70 hover:text-white hover:bg-white/10 mb-4">
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
-          <Link to="/" className="text-xs text-gray-500 hover:text-orange-500">Home / Professionals / {profile.fullName}</Link>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEFT (2/3) — Profile detail */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Header card — gradient banner + green circle avatar (Eswar style) */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm relative">
-              <div className="h-24 bg-gradient-to-r from-orange-500 via-amber-500 to-rose-500" />
-              <div className="px-6 pb-6 pt-4 relative">
-                {/* Green avatar overlapping banner */}
-                <div className="absolute -top-12 left-6">
-                  <div className="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-3xl ring-4 ring-white shadow-lg">
-                    {initials.charAt(0)}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-8">
+            {/* Big orange avatar */}
+            <div className="relative shrink-0">
+              <div className="h-32 w-32 lg:h-40 lg:w-40 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-5xl lg:text-6xl shadow-2xl ring-4 ring-orange-300/30">
+                {initials}
+              </div>
+              <span className="absolute bottom-2 right-2 h-5 w-5 rounded-full bg-emerald-500 ring-4 ring-slate-900" />
+            </div>
+
+            {/* Identity block */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap mb-2">
+                <h1 className="text-4xl lg:text-5xl font-black tracking-tight">{profile.fullName}</h1>
+                <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-blue-300 bg-blue-500/20 border border-blue-400/40 rounded-md px-2.5 py-1">
+                  <CheckCircle className="h-3.5 w-3.5" /> Verified
+                </span>
+              </div>
+              <p className="text-base lg:text-lg text-white/70 mb-3">{tagline}</p>
+
+              <div className="flex items-center gap-5 flex-wrap text-sm text-white/80">
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
                   </div>
+                  <span className="font-bold text-white">{rating}</span>
+                  <span className="text-white/60">({reviews} reviews)</span>
                 </div>
+                {profile.country && (
+                  <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 text-orange-400" />{profile.country}</span>
+                )}
+                <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-orange-400" />{profile.timeZone || 'IST (UTC+5:30)'}</span>
+                <span className="flex items-center gap-1.5"><Briefcase className="h-4 w-4 text-orange-400" />{exp || 6} years experience</span>
+              </div>
 
-                {/* Rate floating right */}
-                <div className="absolute right-6 top-6 text-right">
-                  <p className="text-3xl font-black text-gray-900">{symbol}{profile.hourRate || '—'}</p>
-                  <p className="text-xs text-gray-400">per hour</p>
-                </div>
-
-                <div className="ml-28 pr-32">
-                  <h1 className="text-2xl font-black text-gray-900">{profile.fullName}</h1>
-                  <p className="text-sm text-gray-500 mt-1 flex items-center gap-3 flex-wrap">
-                    <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" />{skills[0] || 'IT Professional'}</span>
-                    {profile.country && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{profile.country}</span>}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: 5 }).map((_, si) => <Star key={si} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
-                    </div>
-                    <span className="text-sm font-semibold text-gray-900">{rating}</span>
-                    <span className="text-xs text-gray-500">({reviews} reviews)</span>
-                    <span className="ml-1 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
-                      <CheckCircle className="h-3 w-3" /> Verified
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-5 mt-3 text-sm text-white/80 flex-wrap">
+                <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-emerald-400" /><strong className="text-white">{jobsCompleted}</strong> jobs completed</span>
+                <span className="flex items-center gap-1.5"><Award className="h-4 w-4 text-blue-400" /><strong className="text-white">{repeatPct}%</strong> repeat clients</span>
               </div>
             </div>
 
-            {/* Tabs */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <Tabs defaultValue="about">
-                <TabsList className="bg-gray-100">
-                  <TabsTrigger value="about">About</TabsTrigger>
-                  <TabsTrigger value="experience">Experience</TabsTrigger>
-                  <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-                  <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                </TabsList>
+            {/* Rate + actions */}
+            <div className="shrink-0 flex flex-col items-end gap-3">
+              <div className="text-right">
+                <p className="text-5xl font-black text-orange-400 leading-none">{symbol}{profile.hourRate || '55'}<span className="text-xl text-orange-300/80">/hr</span></p>
+                <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 rounded-md px-2 py-0.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Available now
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button onClick={() => requireLoginOr(() => toast({ title: 'Saved!', description: 'Added to shortlist.' }))} variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 gap-1.5">
+                  <Heart className="h-4 w-4" /> Save
+                </Button>
+                <Button onClick={() => document.getElementById('hire-form')?.scrollIntoView({ behavior: 'smooth' })} className="bg-orange-500 hover:bg-orange-600 text-white font-bold gap-1.5">
+                  Hire Now →
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs in dark hero */}
+          <div className="mt-8 border-b border-white/10">
+            <Tabs defaultValue="about">
+              <TabsList className="bg-transparent gap-2 p-0 h-auto">
+                <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:text-white data-[state=active]:bg-transparent text-white/60 px-4 py-3 font-bold text-base data-[state=active]:shadow-none">Overview</TabsTrigger>
+                <TabsTrigger value="portfolio" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:text-white data-[state=active]:bg-transparent text-white/60 px-4 py-3 font-bold text-base data-[state=active]:shadow-none">Portfolio (12)</TabsTrigger>
+                <TabsTrigger value="reviews" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:text-white data-[state=active]:bg-transparent text-white/60 px-4 py-3 font-bold text-base data-[state=active]:shadow-none">Reviews ({reviews})</TabsTrigger>
+                <TabsTrigger value="experience" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:text-white data-[state=active]:bg-transparent text-white/60 px-4 py-3 font-bold text-base data-[state=active]:shadow-none">Skills</TabsTrigger>
+              </TabsList>
+
+              {/* Light content body */}
+              <div className="bg-gray-50 -mx-4 px-4 mt-0">
+                <div className="container mx-auto px-0 py-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 space-y-6 text-gray-900">
+                      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
 
                 <TabsContent value="about" className="pt-5 space-y-5">
                   <div>
