@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
+import { encryptRole } from '@/lib/roleCipher';
 
 const Footer = () => {
   const { isAuthenticated, user } = useAuth();
@@ -40,8 +41,8 @@ const Footer = () => {
                 <li><Link to={getDashboardPath()} className="hover:text-orange-400 transition-colors">My Works</Link></li>
               ) : (
                 <>
-                  <li><Link to="/register?role=FreeLancer" className="hover:text-orange-400 transition-colors">Become a Freelancer</Link></li>
-                  <li><Link to="/register?role=Client" className="hover:text-orange-400 transition-colors">Need Work Support</Link></li>
+                  <li><Link to={`/register?t=${encryptRole('FreeLancer')}`} className="hover:text-orange-400 transition-colors">Become a Freelancer</Link></li>
+                  <li><Link to={`/register?t=${encryptRole('Client')}`} className="hover:text-orange-400 transition-colors">Need Work Support</Link></li>
                 </>
               )}
             </ul>

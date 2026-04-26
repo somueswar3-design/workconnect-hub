@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
 import logo from '@/assets/worksupport360-logo.png';
+import { encryptRole } from '@/lib/roleCipher';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -222,7 +223,7 @@ const Header = () => {
           </DialogHeader>
           <div className="grid gap-4 mt-2">
             <button
-              onClick={() => { setShowJoinChoice(false); navigate('/register?role=FreeLancer'); }}
+              onClick={() => { setShowJoinChoice(false); navigate(`/register?t=${encryptRole('FreeLancer')}`); }}
               className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-orange-500 hover:bg-orange-50 transition-all text-left"
             >
               <div className="h-12 w-12 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
@@ -236,7 +237,7 @@ const Header = () => {
             </button>
 
             <button
-              onClick={() => { setShowJoinChoice(false); navigate('/register?role=Client'); }}
+              onClick={() => { setShowJoinChoice(false); navigate(`/register?t=${encryptRole('Client')}`); }}
               className="group flex items-start gap-4 p-5 rounded-xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
             >
               <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">

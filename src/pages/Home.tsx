@@ -24,6 +24,7 @@ import { submitFreelancerInterest } from '@/services/freelancerApi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { countries } from '@/data/countries';
 import { Checkbox } from '@/components/ui/checkbox';
+import { encryptRole } from '@/lib/roleCipher';
 import catWeb from '@/assets/cat-web.jpg';
 import catMobile from '@/assets/cat-mobile.jpg';
 import catDesign from '@/assets/cat-design.jpg';
@@ -136,6 +137,8 @@ const PanelOption = ({ icon: Icon, title, desc, active, onClick }: { icon: any; 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const freelancerToken = useMemo(() => encryptRole('FreeLancer'), []);
+  const clientToken = useMemo(() => encryptRole('Client'), []);
   const locationState = useLocation();
   const { toast } = useToast();
   const freelancerSectionRef = useRef<HTMLDivElement>(null);
@@ -272,7 +275,7 @@ const Home = () => {
   const handleHireTalentClick = () => freelancerSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   const handleInterestClick = (req: ClientRequirementResponse) => {
-    if (!isAuthenticated) { navigate('/register?role=FreeLancer'); return; }
+    if (!isAuthenticated) { navigate(`/register?t=${freelancerToken}`); return; }
     setSelectedRequirement(req); setInterestComment(''); setInterestSuccess(false); setInterestOpen(true);
   };
 
@@ -285,7 +288,7 @@ const Home = () => {
   };
 
   const openPostRequirement = () => {
-    if (!isAuthenticated) { navigate('/register?role=Client'); return; }
+    if (!isAuthenticated) { navigate(`/register?t=${clientToken}`); return; }
     setPostReqForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     setPostReqOpen(true);
   };
@@ -708,7 +711,7 @@ const Home = () => {
                   ))}
                 </div>
                 <Button asChild size="lg" className="gap-2 px-8 h-12 bg-gray-900 text-white hover:bg-gray-800 font-bold rounded-full">
-                  <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> Join as Professional</Link>
+                  <Link to={`/register?t=${freelancerToken}`}><Briefcase className="h-5 w-5" /> Join as Professional</Link>
                 </Button>
               </div>
               <div className="hidden md:grid grid-cols-2 gap-4">
@@ -768,9 +771,9 @@ const Home = () => {
             <p className="text-gray-400 mb-8 max-w-lg mx-auto">Join WorkSupport360 today and connect with the right opportunities.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild size="lg" className="gap-2 px-8 h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full">
-                <Link to="/register?role=FreeLancer"><Briefcase className="h-5 w-5" /> I'm a Freelancer</Link>
+                <Link to={`/register?t=${freelancerToken}`}><Briefcase className="h-5 w-5" /> I'm a Freelancer</Link>
               </Button>
-              <Link to="/register?role=Client" className="inline-flex items-center justify-center gap-2 px-8 h-12 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-full border border-gray-600 transition-colors">
+              <Link to={`/register?t=${clientToken}`} className="inline-flex items-center justify-center gap-2 px-8 h-12 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-full border border-gray-600 transition-colors">
                 <Building2 className="h-5 w-5" /> Hire Talent
               </Link>
             </div>

@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { requestDemo, FreelancerProfileDto } from '@/services/clientApi';
+import { encryptRole } from '@/lib/roleCipher';
 
 interface HireRequestModalProps {
   open: boolean;
@@ -217,7 +218,7 @@ const HireRequestModal = ({ open, onOpenChange, profile, rating, reviews, symbol
     const goRegister = () => {
       handleClose(false);
       try { sessionStorage.setItem('post_login_redirect', returnPath); } catch {}
-      window.location.href = `/register?role=Client&redirect=${encodeURIComponent(returnPath)}`;
+      window.location.href = `/register?t=${encryptRole('Client')}&redirect=${encodeURIComponent(returnPath)}`;
     };
     return (
       <Dialog open={open} onOpenChange={handleClose}>
@@ -265,7 +266,7 @@ const HireRequestModal = ({ open, onOpenChange, profile, rating, reviews, symbol
               You're currently signed in as a <span className="font-bold text-slate-900">Freelancer</span>, so you cannot send a hire request. To hire <span className="font-bold text-slate-900">{profile.fullName}</span>, please log out and sign in or register with a <span className="font-bold text-slate-900">Client</span> account.
             </p>
             <Button
-              onClick={() => { handleClose(false); window.location.href = '/register?role=Client'; }}
+              onClick={() => { handleClose(false); window.location.href = `/register?t=${encryptRole('Client')}`; }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold mb-2"
             >
               Register as Client

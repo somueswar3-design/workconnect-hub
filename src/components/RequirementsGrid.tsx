@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getClientRequirements, ClientRequirementResponse } from '@/services/clientApi';
 import { submitFreelancerInterest } from '@/services/freelancerApi';
+import { encryptRole } from '@/lib/roleCipher';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -94,7 +95,7 @@ const RequirementsGrid = ({ variant = 'public', maxItems, theme = 'dark', extern
   const handleInterestClick = (req: ClientRequirementResponse) => {
     if (!isAuthenticated) {
       toast({ title: 'Login Required', description: 'Please create an account or login to express interest.' });
-      navigate('/register?role=FreeLancer');
+      navigate(`/register?t=${encryptRole('FreeLancer')}`);
       return;
     }
     setInterestDialog(req);
