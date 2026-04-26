@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useNavigate, Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,10 @@ import wsLogo from '@/assets/worksupport360-logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
+  const storedRedirect = (() => { try { return sessionStorage.getItem('post_login_redirect'); } catch { return null; } })();
+  const redirectTo = redirectParam || storedRedirect || '';
   const { login, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +28,7 @@ const Login = () => {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={redirectTo || '/'} replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,6 +47,12 @@ const Login = () => {
       const role = String(claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'FreeLancer');
       const userId = String(claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '');
 
+      const consumeRedirect = () => {
+        const target = redirectTo;
+        try { sessionStorage.removeItem('post_login_redirect'); } catch {}
+        return target;
+      };
+
       if (role.toLowerCase() === 'freelancer') {
         try {
           const statusRes = await fetch(
@@ -50,16 +60,18 @@ const Login = () => {
             { headers: { 'Authorization': `Bearer ${result.token}` } }
           );
           const statusData = await statusRes.json();
+          const target = consumeRedirect();
           if (!statusData.profileUpdated) {
             navigate('/freelancer-profile');
           } else {
-            navigate('/');
+            navigate(target || '/');
           }
         } catch {
           navigate('/freelancer-profile');
         }
       } else {
-        navigate('/');
+        const target = consumeRedirect();
+        navigate(target || '/');
       }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('two-factor') || error.message?.toLowerCase().includes('2fa')) {
