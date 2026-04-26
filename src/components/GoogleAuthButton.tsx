@@ -140,28 +140,39 @@ export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }:
     icon: Icon,
     title,
     desc,
-    color,
+    variant,
   }: {
     role: 'FreeLancer' | 'Client';
     icon: typeof Briefcase;
     title: string;
     desc: string;
-    color: 'emerald' | 'blue';
-  }) => (
-    <button
-      onClick={() => idTokenRef.current && completeLogin(idTokenRef.current, role)}
-      disabled={isLoading}
-      className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 hover:border-${color}-500 hover:bg-${color}-50 transition-all group text-left disabled:opacity-50`}
-    >
-      <div className={`h-12 w-12 rounded-xl bg-${color}-100 group-hover:bg-${color}-200 flex items-center justify-center transition-colors`}>
-        <Icon className={`h-6 w-6 text-${color}-600`} />
-      </div>
-      <div className="flex-1">
-        <p className="font-semibold text-gray-900">{title}</p>
-        <p className="text-xs text-gray-500">{desc}</p>
-      </div>
-    </button>
-  );
+    variant: 'emerald' | 'blue';
+  }) => {
+    const styles =
+      variant === 'emerald'
+        ? 'hover:border-emerald-500 hover:bg-emerald-50'
+        : 'hover:border-blue-500 hover:bg-blue-50';
+    const iconWrap =
+      variant === 'emerald'
+        ? 'bg-emerald-100 group-hover:bg-emerald-200'
+        : 'bg-blue-100 group-hover:bg-blue-200';
+    const iconColor = variant === 'emerald' ? 'text-emerald-600' : 'text-blue-600';
+    return (
+      <button
+        onClick={() => idTokenRef.current && completeLogin(idTokenRef.current, role)}
+        disabled={isLoading}
+        className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 ${styles} transition-all group text-left disabled:opacity-50`}
+      >
+        <div className={`h-12 w-12 rounded-xl ${iconWrap} flex items-center justify-center transition-colors`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} />
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-gray-900">{title}</p>
+          <p className="text-xs text-gray-500">{desc}</p>
+        </div>
+      </button>
+    );
+  };
 
   return (
     <>
