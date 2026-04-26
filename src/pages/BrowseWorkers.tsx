@@ -17,6 +17,7 @@ import {
   getExperienceLevel,
 } from '@/services/mockFreelancerData';
 import { useToast } from '@/hooks/use-toast';
+import { encodeId } from '@/lib/idCipher';
 import {
   Pagination,
   PaginationContent,
@@ -91,7 +92,7 @@ const BrowseWorkers = () => {
   }, [searchQuery, skillFilter, rateRange, employmentTypes, availableNow, experienceLevels, currentPage, isLoading]);
 
   const handleHireNow = (profile: WorkerProfile) => {
-    navigate(`/professional/${profile.id}`);
+    navigate(`/professional/${encodeId(profile.id)}`);
   };
 
   const toggleArr = (arr: string[], v: string) =>
