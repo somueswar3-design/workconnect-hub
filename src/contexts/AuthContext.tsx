@@ -57,11 +57,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const claims = decodeJwt(newToken);
     const role = claims?.[ROLE_CLAIM] || userOverrides?.role || 'FreeLancer';
     const userId = claims?.[USERID_CLAIM] || userOverrides?.userId || '';
+    // Prefer the `name` claim from the token (full name set at registration),
+    // then any explicit override, then common fallback claims.
+    const nameFromToken =
+      claims?.[NAME_CLAIM] ||
+      claims?.name ||
+      claims?.unique_name ||
+      claims?.given_name ||
+      '';
 
     const newUser: AuthUser = {
-      email: userOverrides?.email || '',
+      email: userOverrides?.email || claims?.email || '',
       role: String(role),
-      fullName: userOverrides?.fullName,
+      fullName: userOverrides?.fullName || (nameFromToken ? String(nameFromToken) : undefined),
       avatarUrl: userOverrides?.avatarUrl,
       userId,
       profilePercentage: userOverrides?.profilePercentage,
