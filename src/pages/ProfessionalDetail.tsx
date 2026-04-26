@@ -494,6 +494,28 @@ const ProfessionalDetail = () => {
           </div>
         </Tabs>
       </div>
+
+      {/* Thank You Popup */}
+      <Dialog open={showThankYou} onOpenChange={setShowThankYou}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+              <CheckCircle className="h-8 w-8 text-emerald-600" />
+            </div>
+            <DialogTitle className="text-center text-2xl font-black text-slate-900">
+              Thanks for your submission!
+            </DialogTitle>
+            <DialogDescription className="text-center text-gray-600 pt-2">
+              Our team will get back to you once your proposal is reviewed and aligned with the client.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center pt-2">
+            <Button onClick={() => setShowThankYou(false)} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
+              Got it
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
