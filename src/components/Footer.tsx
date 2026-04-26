@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import logo from '@/assets/worksupport360-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
+import { encryptRole } from '@/lib/roleCipher';
 
 const Footer = () => {
   const { isAuthenticated, user } = useAuth();
