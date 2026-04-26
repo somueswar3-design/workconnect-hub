@@ -12,6 +12,8 @@ import { motion } from 'framer-motion';
 import wsLogo from '@/assets/worksupport360-logo.png';
 import heroFreelancer from '@/assets/hero-freelancer.jpg';
 import { GoogleAuthButton } from '@/components/GoogleAuthButton';
+import { AuthErrorAlert } from '@/components/AuthErrorAlert';
+import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [show2FA, setShow2FA] = useState(false);
+  const [authError, setAuthError] = useState<FriendlyAuthError | null>(null);
 
   if (isAuthenticated) {
     return <Navigate to={redirectTo || '/'} replace />;
@@ -34,6 +37,7 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setAuthError(null);
     try {
       const result = await authApi.login({ email, password, twoFactorCode: twoFactorCode || undefined });
       login(result.token, { email });
@@ -71,7 +75,7 @@ const Login = () => {
         setShow2FA(true);
         toast.info('Please enter your 2FA code.');
       } else {
-        toast.error(error.message || 'Invalid credentials.');
+        setAuthError(toFriendlyAuthError(error, 'login'));
       }
     } finally {
       setIsLoading(false);
@@ -100,7 +104,12 @@ const Login = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
           <p className="text-gray-500 mb-6">Sign in to continue to your dashboard.</p>
 
-          <GoogleAuthButton label="Sign in with Google" />
+          <AuthErrorAlert error={authError} onDismiss={() => setAuthError(null)} />
+
+          <GoogleAuthButton
+            label="Sign in with Google"
+            onError={(err) => setAuthError(err)}
+          />
 
           <div className="flex items-center gap-3 my-5">
             <div className="h-px bg-gray-200 flex-1" />

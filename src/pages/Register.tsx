@@ -15,6 +15,8 @@ import wsLogo from '@/assets/worksupport360-logo.png';
 import heroFreelancer from '@/assets/hero-freelancer.jpg';
 import { GoogleAuthButton } from '@/components/GoogleAuthButton';
 import { decryptRole } from '@/lib/roleCipher';
+import { AuthErrorAlert } from '@/components/AuthErrorAlert';
+import { toFriendlyAuthError, type FriendlyAuthError } from '@/lib/authErrors';
 
 const registerSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').max(255),
@@ -31,6 +33,7 @@ const Register = () => {
   const roleFromToken = decryptRole(token);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState<FriendlyAuthError | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -53,13 +56,14 @@ const Register = () => {
 
   const handleRegister = async (data: RegisterFormData) => {
     setIsLoading(true);
+    setAuthError(null);
     const apiRole = isFreelancer ? 'FreeLancer' : 'Client';
     try {
       await authApi.sendOtp(data.email);
       toast.success('OTP sent! Please check your email.');
       navigate('/verify-otp', { state: { email: data.email, password: data.password, role: apiRole } });
     } catch (error: any) {
-      toast.error(error.message || 'Failed to send OTP. Please try again.');
+      setAuthError(toFriendlyAuthError(error, 'register'));
     } finally {
       setIsLoading(false);
     }
@@ -92,10 +96,13 @@ const Register = () => {
               : 'Join as a Client — hire vetted talent and get work done faster.'}
           </p>
 
+          <AuthErrorAlert error={authError} onDismiss={() => setAuthError(null)} />
+
           {/* Google — role already chosen on previous step, skip the picker */}
           <GoogleAuthButton
             label="Sign up with Google"
             presetRole={isFreelancer ? 'FreeLancer' : 'Client'}
+            onError={(err) => setAuthError(err)}
           />
 
           <div className="flex items-center gap-3 my-5">
