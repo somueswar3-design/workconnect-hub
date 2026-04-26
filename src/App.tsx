@@ -29,6 +29,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProfessionalDetail from "./pages/ProfessionalDetail";
 import VerifyOtp from "./pages/VerifyOtp";
+import GoogleAuthCallback from "./pages/GoogleAuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
           <ScrollToTop />
           <Routes>
             {/* Protected dashboard routes - no header/footer */}
+            <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
             <Route path="/gis-complaints" element={<ProtectedRoute><GISComplaints /></ProtectedRoute>} />
             <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/freelancer/*" element={<ProtectedRoute><FreelancerDashboard /></ProtectedRoute>} />

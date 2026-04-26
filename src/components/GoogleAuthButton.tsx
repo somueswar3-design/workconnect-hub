@@ -96,6 +96,53 @@ export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }:
     }
   };
 
+  const openOAuthPopup = () => {
+    // Fallback: open a centered popup using OAuth 2.0 implicit flow to get an id_token directly.
+    const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const redirectUri = `${window.location.origin}/auth/google/callback`;
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      response_type: 'id_token',
+      scope: 'openid email profile',
+      redirect_uri: redirectUri,
+      nonce,
+      prompt: 'select_account',
+    });
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    const w = 480;
+    const h = 600;
+    const left = window.screenX + (window.outerWidth - w) / 2;
+    const top = window.screenY + (window.outerHeight - h) / 2;
+    const popup = window.open(
+      url,
+      'google-oauth',
+      `width=${w},height=${h},left=${left},top=${top}`,
+    );
+    if (!popup) {
+      toast.error('Popup blocked. Please allow popups for this site.');
+      return;
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'google-oauth-id-token') return;
+      const idToken = event.data.idToken as string | undefined;
+      window.removeEventListener('message', handleMessage);
+      try { popup.close(); } catch {}
+      if (!idToken) {
+        toast.error('Google did not return a credential.');
+        return;
+      }
+      idTokenRef.current = idToken;
+      if (presetRole) {
+        completeLogin(idToken, presetRole);
+      } else {
+        setShowRolePicker(true);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+  };
+
   const handleClick = () => {
     if (!GOOGLE_CLIENT_ID) {
       toast.error('Google Sign-In is not configured. Please set VITE_GOOGLE_CLIENT_ID.');
@@ -110,29 +157,17 @@ export const GoogleAuthButton = ({ presetRole, label = 'Continue with Google' }:
         client_id: GOOGLE_CLIENT_ID,
         callback: handleCredential,
         ux_mode: 'popup',
+        auto_select: false,
       });
       window.google.accounts.id.prompt((notification: any) => {
-        // If One Tap is suppressed, fall back to a hidden button click via OAuth code flow popup
         if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
-          // Use OAuth2 token flow as fallback
-          const tokenClient = window.google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: 'openid email profile',
-            callback: async (resp: any) => {
-              // We need an id_token; request it explicitly by using id-token endpoint
-              if (resp?.access_token) {
-                // Fetch userinfo + sign in via access token (backend may accept both)
-                // Prefer requesting id_token via prompt=consent + response_type=id_token
-                toast.info('Please complete Google sign-in.');
-              }
-            },
-          });
-          tokenClient.requestAccessToken();
+          // One Tap suppressed (common in dev/preview). Use redirect-based popup that returns an id_token.
+          openOAuthPopup();
         }
       });
     } catch (e) {
       console.error(e);
-      toast.error('Failed to start Google Sign-In.');
+      openOAuthPopup();
     }
   };
 
