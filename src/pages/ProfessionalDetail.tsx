@@ -80,8 +80,8 @@ const ProfessionalDetail = () => {
   };
 
   const handlePlaceBid = () => requireLoginOr(async () => {
-    if (!bidAmount.trim() || !bidMessage.trim()) {
-      toast({ title: 'Validation', description: 'Bid amount and message are required.', variant: 'destructive' });
+    if (!bidAmount.trim() || !bidHours.trim() || !bidMessage.trim()) {
+      toast({ title: 'Validation', description: 'Hours, amount and message are required.', variant: 'destructive' });
       return;
     }
     if (!profile) return;
@@ -90,7 +90,7 @@ const ProfessionalDetail = () => {
       const interviewSchedule = interviewDate
         ? `Preferred interview: ${interviewDate}${interviewTime ? ' at ' + interviewTime : ''}`
         : '';
-      const fullDescription = `${bidMessage}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
+      const fullDescription = `${bidMessage}\nHours: ${bidHours}\nProposed amount: ${symbol}${bidAmount}${bidDays ? `\nDuration: ${bidDays} days` : ''}${interviewSchedule ? `\n${interviewSchedule}` : ''}`;
       await requestDemo({
         id: 0,
         clientUserId: parseInt(user?.userId || '0', 10) || 0,
@@ -103,8 +103,8 @@ const ProfessionalDetail = () => {
         adminDescription: fullDescription,
         createdOn: new Date().toISOString(),
       });
-      toast({ title: '🎉 Request submitted!', description: 'Our team will arrange the interview shortly.' });
-      setBidAmount(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
+      setShowThankYou(true);
+      setBidAmount(''); setBidHours(''); setBidDays(''); setBidMessage(''); setInterviewDate(''); setInterviewTime('');
     } catch {
       toast({ title: 'Error', description: 'Failed to submit request.', variant: 'destructive' });
     } finally {
