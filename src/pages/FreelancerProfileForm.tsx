@@ -457,30 +457,33 @@ const FreelancerProfileForm = () => {
         </div>
       </header>
 
-      {/* Horizontal Tab Bar — only previously completed steps + current step are visible. Future steps stay hidden until unlocked. */}
+      {/* Horizontal Tab Bar — all tabs visible. Completed + current are enabled; future locked tabs are disabled until prior step is saved. */}
       <div className="border-b border-gray-200 bg-white sticky top-[52px] z-40">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV_SECTIONS.flatMap(s => s.items).map((item, idx) => {
               const isActive = activePage === item.id;
               const isDone = completedSections.has(item.id);
-              // Only render: completed sections, or the currently active section. Future locked steps are not shown.
-              if (!isDone && !isActive) return null;
+              const isLocked = !isDone && !isActive;
               return (
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setActivePage(item.id)}
+                  disabled={isLocked}
+                  onClick={() => { if (!isLocked) setActivePage(item.id); }}
+                  title={isLocked ? 'Complete the previous step to unlock' : undefined}
                   className={`shrink-0 flex items-center gap-2 px-4 py-3 text-[13px] border-b-2 transition-all whitespace-nowrap ${
                     isActive
                       ? 'text-orange-600 border-orange-500 font-semibold'
-                      : 'text-gray-500 border-transparent hover:text-gray-900'
+                      : isLocked
+                        ? 'text-gray-300 border-transparent cursor-not-allowed'
+                        : 'text-gray-500 border-transparent hover:text-gray-900'
                   }`}
                 >
                   <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${
-                    isDone ? 'bg-green-500 text-white' : (isActive ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-500')
+                    isDone ? 'bg-green-500 text-white' : (isActive ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-300')
                   }`}>
-                    {isDone ? '✓' : idx + 1}
+                    {isDone ? '✓' : (isLocked ? '🔒' : idx + 1)}
                   </span>
                   <span>{item.label}</span>
                 </button>
