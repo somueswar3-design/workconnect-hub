@@ -288,7 +288,7 @@ const Home = () => {
   };
 
   const openPostRequirement = () => {
-    if (!isAuthenticated) { navigate(`/register?t=${encryptRole('Client')}`); return; }
+    if (!isAuthenticated) { navigate(`/register?t=${clientToken}`); return; }
     setPostReqForm({ projectTitle: '', description: '', requiredSkills: '', budget: '', experienceLevel: '', language: '', country: '', contactEmail: user?.email || '', countryCode: '+91', contactPhone: '' });
     setPostReqOpen(true);
   };
