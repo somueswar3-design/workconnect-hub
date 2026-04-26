@@ -53,7 +53,7 @@ const Register = () => {
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { firstName: '', lastName: '', email: '', password: '' },
   });
 
   const handleRegister = async (data: RegisterFormData) => {
