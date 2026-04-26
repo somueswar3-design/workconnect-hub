@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { getFreelancerProfile, calculateProfilePercentage } from '@/services/freelancerApi';
 import logo from '@/assets/worksupport360-logo.png';
+import { encryptRole } from '@/lib/roleCipher';
 import {
   DropdownMenu,
   DropdownMenuContent,
