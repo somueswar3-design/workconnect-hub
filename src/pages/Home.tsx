@@ -589,39 +589,7 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className="relative group/carousel">
-                      {/* Scroll arrows */}
-                      <button
-                        type="button"
-                        aria-label="Scroll left"
-                        onClick={() => {
-                          const el = document.getElementById('freelancer-scroller');
-                          el?.scrollBy({ left: -el.clientWidth * 0.9, behavior: 'smooth' });
-                        }}
-                        className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-700 hover:text-orange-600 hover:border-orange-400 hover:shadow-lg transition opacity-0 group-hover/carousel:opacity-100"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Scroll right"
-                        onClick={() => {
-                          const el = document.getElementById('freelancer-scroller');
-                          el?.scrollBy({ left: el.clientWidth * 0.9, behavior: 'smooth' });
-                        }}
-                        className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-700 hover:text-orange-600 hover:border-orange-400 hover:shadow-lg transition opacity-0 group-hover/carousel:opacity-100"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-
-                      {/* Edge fades */}
-                      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-gray-50 to-transparent z-10" />
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-50 to-transparent z-10" />
-
-                      <div
-                        id="freelancer-scroller"
-                        className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 -mx-1 px-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-orange-300 [&::-webkit-scrollbar-thumb]:rounded-full"
-                      >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
@@ -629,53 +597,76 @@ const Home = () => {
                         const initials = f.fullName ? f.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??';
                         const role = skills[0] || 'IT Professional';
                         const reviewCount = 40 + ((idx * 17) % 200);
-                        const badge = idx % 5 === 0 ? 'TOP RATED' : (idx % 5 === 1 ? 'NEW' : null);
+                        const rating = (4 + ((idx * 7) % 11) / 10).toFixed(1);
+                        const isTopRated = idx % 3 === 0;
+                        const isOnline = idx % 2 === 0;
+                        const country = f.country || 'INDIA';
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className="snap-start shrink-0 w-[220px] sm:w-[230px] relative bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-orange-400 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group flex flex-col items-center text-center"
+                            className="relative bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-400 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group"
                           >
-                            {badge && (
-                              <span className={`absolute top-3 right-3 text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md ${badge === 'TOP RATED' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-700'}`}>
-                                {badge}
-                              </span>
-                            )}
+                            <div className="flex items-start gap-4">
+                              {/* Avatar with status dot */}
+                              <div className="relative shrink-0">
+                                <div className={`h-16 w-16 rounded-full ${avatarColor} flex items-center justify-center text-white font-extrabold text-xl ring-4 ring-white shadow-md`}>
+                                  {initials}
+                                </div>
+                                {isOnline && (
+                                  <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white" />
+                                )}
+                              </div>
 
-                            {/* Avatar with initials */}
-                            <div className={`h-20 w-20 rounded-full ${avatarColor} flex items-center justify-center text-white font-extrabold text-2xl mb-3 ring-4 ring-white shadow-md`}>
-                              {initials}
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-gray-900 text-base truncate group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
+                                <p className="text-sm text-gray-500 truncate mb-1.5">{role}</p>
+
+                                {/* Rating */}
+                                <div className="flex items-center gap-1 mb-2">
+                                  {Array.from({ length: 5 }).map((_, si) => (
+                                    <Star key={si} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                                  ))}
+                                  <span className="text-xs font-semibold text-gray-700 ml-1">{rating}</span>
+                                  <span className="text-xs text-gray-500">({reviewCount})</span>
+                                </div>
+
+                                {/* Status badges */}
+                                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                                  {isTopRated && (
+                                    <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md bg-orange-100 text-orange-600">TOP RATED</span>
+                                  )}
+                                  {isOnline && (
+                                    <span className="text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700">ONLINE</span>
+                                  )}
+                                  <span className="text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 uppercase">IN {country}</span>
+                                </div>
+
+                                {/* Skill chips */}
+                                <div className="flex flex-wrap gap-1.5 mb-3">
+                                  {skills.slice(0, 3).map((s, si) => (
+                                    <span key={si} className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">{s}</span>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
 
-                            {/* Name + role */}
-                            <h3 className="font-bold text-gray-900 text-base truncate w-full group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
-                            <p className="text-sm text-gray-500 truncate w-full mb-2">{role}</p>
-
-                            {/* Stars + count */}
-                            <div className="flex items-center gap-1 mb-3">
-                              {Array.from({ length: 5 }).map((_, si) => (
-                                <Star key={si} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                              ))}
-                              <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
+                            {/* Footer: rate + Hire Now */}
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                              <div>
+                                <span className="text-xl font-extrabold text-gray-900">{symbol}{f.hourRate || (45 + (idx % 6) * 5)}</span>
+                                <span className="text-sm text-gray-500">/hr</span>
+                              </div>
+                              <Button
+                                onClick={() => navigate(`/professional/${f.freelancerId || f.userId || f.id}`)}
+                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 px-5 rounded-lg shadow-sm"
+                              >
+                                Hire Now
+                              </Button>
                             </div>
-
-                            {/* Rate */}
-                            <div className="mb-4">
-                              <span className="text-xl font-extrabold text-orange-500">{symbol}{f.hourRate || (45 + (idx % 6) * 5)}</span>
-                              <span className="text-sm text-gray-500">/hr</span>
-                            </div>
-
-                            {/* Hire Now */}
-                            <Button
-                              onClick={() => navigate(`/professional/${f.freelancerId || f.userId || f.id}`)}
-                              variant="outline"
-                              className="w-full border-gray-300 text-gray-800 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-semibold text-sm h-10 rounded-xl"
-                            >
-                              Hire Now
-                            </Button>
                           </div>
                         );
                       })}
-                      </div>
                     </div>
                   )}
 
