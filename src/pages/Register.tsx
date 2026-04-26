@@ -126,6 +126,42 @@ const Register = () => {
           {/* Email form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <FormField control={form.control} name="firstName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">First name</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Jane"
+                          className="pl-10 h-11 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="lastName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Last name</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          type="text"
+                          placeholder="Doe"
+                          className="pl-10 h-11 border-gray-200 focus-visible:ring-orange-500 focus-visible:border-orange-500"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
               <FormField control={form.control} name="email" render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">Email Address</FormLabel>
