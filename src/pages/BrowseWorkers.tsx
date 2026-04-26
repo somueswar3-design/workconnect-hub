@@ -28,29 +28,6 @@ import {
 
 const PAGE_SIZE = 12;
 
-const promoSlides = [
-  {
-    title: 'Find Your Perfect IT Professional',
-    subtitle: 'Browse skilled freelancers, request a FREE demo, and hire with confidence',
-    description: "Our team coordinates everything — from demo scheduling to project kick-off. You focus on your business, we handle the rest.",
-    gradient: 'from-primary to-blue-700',
-    icon: Users,
-  },
-  {
-    title: '100% Free Demo Sessions',
-    subtitle: "Try before you commit — no charges until you're satisfied",
-    description: 'Request a demo with any freelancer. Our team arranges a free session so you can evaluate skills, communication, and fit before any commitment.',
-    gradient: 'from-emerald-600 to-teal-700',
-    icon: CheckCircle2,
-  },
-  {
-    title: 'Only 15% Service Commission',
-    subtitle: 'Transparent pricing with no hidden fees',
-    description: 'We charge only 15% commission on the agreed project amount. Payment starts only after admin approval and assignment.',
-    gradient: 'from-violet-600 to-purple-700',
-    icon: Shield,
-  },
-];
 
 const EMPLOYMENT_OPTIONS = [
   { id: 'full-time', label: 'Full-time' },
