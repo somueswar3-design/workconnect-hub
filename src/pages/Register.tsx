@@ -24,8 +24,11 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const [searchParams] = useSearchParams();
-  const roleParam = searchParams.get('role') || '';
-  const [role, setRole] = useState(roleParam || 'FreeLancer');
+  // Role is passed as a short opaque token (r=fl|cl) so it isn't human-readable in the URL.
+  // Backend re-validates role independently, so this is presentation-only obfuscation.
+  const roleToken = (searchParams.get('r') || '').toLowerCase();
+  const roleFromToken = roleToken === 'cl' ? 'Client' : roleToken === 'fl' ? 'FreeLancer' : '';
+  const [role, setRole] = useState(roleFromToken || 'FreeLancer');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -107,8 +110,11 @@ const Register = () => {
             </button>
           </div>
 
-          {/* Google */}
-          <GoogleAuthButton label="Sign up with Google" />
+          {/* Google — role already chosen on this page, skip the picker */}
+          <GoogleAuthButton
+            label="Sign up with Google"
+            presetRole={isFreelancer ? 'FreeLancer' : 'Client'}
+          />
 
           <div className="flex items-center gap-3 my-5">
             <div className="h-px bg-gray-200 flex-1" />
