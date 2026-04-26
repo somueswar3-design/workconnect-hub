@@ -793,71 +793,57 @@ const Home = () => {
                       <p className="text-gray-500">No professionals found. Try different filters.</p>
                     </div>
                   ) : (
-                    <div className={filtered.length > 20 ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {paginated.map((f, idx) => {
                         const skills = f.primarySkills ? f.primarySkills.split(',').map(s => s.trim()).filter(Boolean) : [];
                         const symbol = getCurrencySymbol(f.country);
                         const avatarColor = avatarColors[idx % avatarColors.length];
                         const initials = f.fullName ? f.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??';
-                        const isAvailable = idx % 4 !== 3;
+                        const role = skills[0] || 'IT Professional';
+                        const reviewCount = 40 + ((idx * 17) % 200);
+                        const badge = idx % 5 === 0 ? 'TOP RATED' : (idx % 5 === 1 ? 'NEW' : null);
                         return (
                           <div
                             key={f.freelancerId || f.id || idx}
-                            className={`bg-white border border-gray-200 rounded-2xl ${filtered.length > 20 ? 'p-3' : 'p-5'} hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all group`}
+                            className="relative bg-white border border-gray-200 rounded-2xl p-5 hover:border-orange-400 hover:shadow-lg hover:shadow-orange-500/10 transition-all group flex flex-col items-center text-center"
                           >
-                            {/* Header */}
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className={`h-12 w-12 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-white shadow`}>
-                                {initials}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <h3 className="font-bold text-gray-900 text-sm truncate group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
-                                <p className="text-xs text-gray-500 truncate">{skills[0] || 'IT Professional'} developer</p>
-                              </div>
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <span className={`h-2 w-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-gray-400'}`} />
-                                <span className={`text-[10px] font-medium ${isAvailable ? 'text-emerald-600' : 'text-gray-400'}`}>{isAvailable ? 'Available' : 'Busy'}</span>
-                              </div>
+                            {badge && (
+                              <span className={`absolute top-3 right-3 text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-md ${badge === 'TOP RATED' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-700'}`}>
+                                {badge}
+                              </span>
+                            )}
+
+                            {/* Avatar with initials */}
+                            <div className={`h-20 w-20 rounded-full ${avatarColor} flex items-center justify-center text-white font-extrabold text-2xl mb-3 ring-4 ring-white shadow-md`}>
+                              {initials}
                             </div>
 
-                            {/* Rating */}
+                            {/* Name + role */}
+                            <h3 className="font-bold text-gray-900 text-base truncate w-full group-hover:text-orange-500 transition-colors">{f.fullName}</h3>
+                            <p className="text-sm text-gray-500 truncate w-full mb-2">{role}</p>
+
+                            {/* Stars + count */}
                             <div className="flex items-center gap-1 mb-3">
                               {Array.from({ length: 5 }).map((_, si) => (
                                 <Star key={si} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                               ))}
-                              <span className="text-xs text-gray-500 ml-1.5">{(4.7 + (idx % 4) * 0.1).toFixed(1)} ({50 + idx * 13})</span>
+                              <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
                             </div>
 
-                            {/* Skill Tags */}
-                            <div className="flex flex-wrap gap-1.5 mb-3">
-                              {skills.slice(0, 3).map((skill, si) => (
-                                <span key={si} className="text-[11px] px-2.5 py-1 rounded-lg bg-gray-100 border border-gray-200 text-gray-700 font-medium">{skill}</span>
-                              ))}
-                              {skills.length > 3 && <span className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 text-gray-400">+{skills.length - 3}</span>}
+                            {/* Rate */}
+                            <div className="mb-4">
+                              <span className="text-xl font-extrabold text-orange-500">{symbol}{f.hourRate || (45 + (idx % 6) * 5)}</span>
+                              <span className="text-sm text-gray-500">/hr</span>
                             </div>
 
-                            {/* Rate + Country */}
-                            <div className="flex items-center justify-between mb-4 text-sm">
-                              <span className="text-lg font-black text-gray-900">{symbol}{f.hourRate || '—'}<span className="text-xs font-normal text-gray-400">/hr</span></span>
-                              {f.country && <span className="text-xs text-gray-500 flex items-center gap-1"><Globe className="h-3 w-3" />{f.country}</span>}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="grid grid-cols-2 gap-2">
-                              <Button
-                                onClick={() => navigate(`/professional/${f.freelancerId || f.id || f.userId || idx}`)}
-                                variant="outline"
-                                className="border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold text-sm h-9 rounded-xl"
-                              >
-                                <User className="h-3.5 w-3.5 mr-1.5" /> View Profile
-                              </Button>
-                              <Button
-                                onClick={() => handleDemoClick(f)}
-                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm h-9 rounded-xl border-0"
-                              >
-                                <Phone className="h-3.5 w-3.5 mr-1.5" /> Connect
-                              </Button>
-                            </div>
+                            {/* Hire Now */}
+                            <Button
+                              onClick={() => handleDemoClick(f)}
+                              variant="outline"
+                              className="w-full border-gray-300 text-gray-800 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-semibold text-sm h-10 rounded-xl"
+                            >
+                              Hire Now
+                            </Button>
                           </div>
                         );
                       })}
