@@ -385,7 +385,6 @@ const Home = () => {
                   <>
                     <PanelOption icon={Code} title="By skill" desc="Looking for a freelancer with a specific skill? Start here." active={hirePanel === 'skill'} onClick={() => setHirePanel('skill')} />
                     <PanelOption icon={MapPin} title="By location" desc="Search for freelancers based on their location and timezone." active={hirePanel === 'location'} onClick={() => setHirePanel('location')} />
-                    <PanelOption icon={Briefcase} title="By category" desc="Find freelancers that suit a certain project category." active={hirePanel === 'category'} onClick={() => setHirePanel('category')} />
                   </>
                 ) : (
                   <>
@@ -446,32 +445,8 @@ const Home = () => {
                   </>
                 )}
 
-                {heroMode === 'hire' && hirePanel === 'category' && (
-                  <>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Pick a category</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {CATEGORIES.map(cat => (
-                        <button
-                          key={cat.label}
-                          onClick={() => { setDrilldownCategory(cat.label); setSelectedTechs([]); }}
-                          className="relative h-24 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg hover:scale-[1.03] transition-all group"
-                        >
-                          <img
-                            src={cat.image}
-                            alt={cat.label}
-                            loading="lazy"
-                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                          <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-70 group-hover:opacity-60 transition-opacity`} />
-                          <div className="relative h-full flex flex-col items-center justify-center gap-1 p-2">
-                            <cat.icon className="h-5 w-5 text-white drop-shadow-md" />
-                            <span className="text-xs font-bold text-white text-center leading-tight drop-shadow-md">{cat.label}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
+
+
 
                 {/* ───── WORK MODE ───── */}
                 {heroMode === 'work' && workPanel === 'skill' && (
