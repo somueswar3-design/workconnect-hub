@@ -137,6 +137,8 @@ const PanelOption = ({ icon: Icon, title, desc, active, onClick }: { icon: any; 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const freelancerToken = useMemo(() => encryptRole('FreeLancer'), []);
+  const clientToken = useMemo(() => encryptRole('Client'), []);
   const locationState = useLocation();
   const { toast } = useToast();
   const freelancerSectionRef = useRef<HTMLDivElement>(null);
