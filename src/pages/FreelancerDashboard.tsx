@@ -142,45 +142,45 @@ const FreelancerOverview = () => {
     <div className="p-6 space-y-5">
       {/* Compact Stats Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Card className="border border-slate-700/50 shadow-sm bg-gradient-to-br from-cyan-500/10 to-transparent bg-[#0D1B2E]">
+        <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-cyan-500/15 flex items-center justify-center shrink-0">
-              <DollarSign className="h-6 w-6 text-cyan-400" />
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-cyan-100 to-cyan-50 flex items-center justify-center shrink-0">
+              <DollarSign className="h-6 w-6 text-cyan-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-slate-400 font-medium">Total Earnings</p>
-              <p className="text-xl font-extrabold text-slate-100 truncate">
+              <p className="text-xs text-slate-500 font-medium">Total Earnings</p>
+              <p className="text-xl font-extrabold text-slate-900 truncate">
                 {earnings ? `${getCurrencySymbol(earnings.currency)}${earnings.earnedAmount.toLocaleString()}` : '—'}
               </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-700/50 shadow-sm bg-[#0D1B2E]">
+        <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-orange-500/15 flex items-center justify-center shrink-0">
-              <Briefcase className="h-6 w-6 text-orange-400" />
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center shrink-0">
+              <Briefcase className="h-6 w-6 text-orange-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-slate-400 font-medium">Active Projects</p>
-              <p className="text-xl font-extrabold text-slate-100">{activeAssignments.length}</p>
+              <p className="text-xs text-slate-500 font-medium">Active Projects</p>
+              <p className="text-xl font-extrabold text-slate-900">{activeAssignments.length}</p>
             </div>
             {activeAssignments.length > 0 && (
-              <Button variant="ghost" size="sm" className="ml-auto text-xs text-cyan-400 hover:text-cyan-300 hover:bg-slate-700/50" onClick={() => setActiveTab('assignments')}>
+              <Button variant="ghost" size="sm" className="ml-auto text-xs text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50" onClick={() => setActiveTab('assignments')}>
                 View <ArrowRight className="h-3 w-3 ml-1" />
               </Button>
             )}
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-700/50 shadow-sm bg-[#0D1B2E]">
+        <Card className="border border-slate-200 shadow-sm bg-white hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-11 w-11 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="h-6 w-6 text-slate-400" />
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-6 w-6 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-slate-400 font-medium">Completed</p>
-              <p className="text-xl font-extrabold text-slate-100">{completedAssignments.length}</p>
+              <p className="text-xs text-slate-500 font-medium">Completed</p>
+              <p className="text-xl font-extrabold text-slate-900">{completedAssignments.length}</p>
             </div>
           </CardContent>
         </Card>
@@ -188,38 +188,38 @@ const FreelancerOverview = () => {
 
       {/* Job Openings */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Briefcase className="h-5 w-5 text-cyan-400" /> Job Openings
+        <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+          <Briefcase className="h-5 w-5 text-cyan-600" /> Job Openings
         </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                <Input placeholder="Search by skill, title, or keyword..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 bg-[#0D1B2E] border-slate-700/50 text-slate-200 placeholder:text-slate-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input placeholder="Search by skill, title, or keyword..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400" />
               </div>
-              <Badge variant="outline" className="px-3 py-2 text-xs shrink-0 border-slate-700/50 text-slate-400">{filteredOpenings.length} openings</Badge>
+              <Badge variant="outline" className="px-3 py-2 text-xs shrink-0 border-slate-200 text-slate-600 bg-white">{filteredOpenings.length} openings</Badge>
             </div>
 
             {openingsLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map(i => (
-                  <Card key={i} className="border border-slate-700/50 shadow-sm animate-pulse bg-[#0D1B2E]">
-                    <CardContent className="p-5"><div className="h-5 bg-slate-700 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-700 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-700 rounded w-full mb-2" /><div className="h-3 bg-slate-700 rounded w-3/4" /></CardContent>
+                  <Card key={i} className="border border-slate-200 shadow-sm animate-pulse bg-white">
+                    <CardContent className="p-5"><div className="h-5 bg-slate-200 rounded w-2/3 mb-3" /><div className="h-4 bg-slate-200 rounded w-1/3 mb-4" /><div className="h-3 bg-slate-200 rounded w-full mb-2" /><div className="h-3 bg-slate-200 rounded w-3/4" /></CardContent>
                   </Card>
                 ))}
               </div>
             ) : filteredOpenings.length === 0 ? (
-              <Card className="border-0 shadow-lg overflow-hidden bg-[#0D1B2E]">
+              <Card className="border border-slate-200 shadow-sm overflow-hidden bg-white">
                 <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
                 <CardContent className="py-16 text-center space-y-6">
-                  <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 flex items-center justify-center mb-4">
-                    <Search className="h-12 w-12 text-cyan-400" />
+                  <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-cyan-100 to-indigo-100 flex items-center justify-center mb-4">
+                    <Search className="h-12 w-12 text-cyan-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-100 mb-2">No Openings Available Right Now</h3>
-                    <p className="text-slate-400 max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">No Openings Available Right Now</h3>
+                    <p className="text-slate-500 max-w-md mx-auto leading-relaxed">New freelancing requirements are posted regularly by clients. Keep your profile updated and stay online to get matched!</p>
                   </div>
-                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-500/10 text-cyan-400 text-sm font-medium">
+                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cyan-50 text-cyan-700 text-sm font-medium border border-cyan-200">
                     <Bell className="h-4 w-4" /> We'll notify you when new openings match your skills!
                   </div>
                 </CardContent>
@@ -228,38 +228,38 @@ const FreelancerOverview = () => {
               <div className="space-y-3">
                 {filteredOpenings.map((job, idx) => (
                   <motion.div key={job.id || idx} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-                    <Card className="border border-slate-700/50 shadow-sm hover:shadow-md hover:border-cyan-500/30 transition-all group cursor-pointer bg-[#0D1B2E]">
+                    <Card className="border border-slate-200 shadow-sm hover:shadow-md hover:border-cyan-300 transition-all group cursor-pointer bg-white">
                       <CardContent className="p-5">
                         <div className="flex items-start justify-between gap-3 mb-3">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-slate-100 text-base group-hover:text-cyan-400 transition-colors truncate">{job.title}</h3>
+                            <h3 className="font-semibold text-slate-900 text-base group-hover:text-cyan-600 transition-colors truncate">{job.title}</h3>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm text-slate-400 flex items-center gap-1"><Building2 className="h-3.5 w-3.5" /> {job.clientName}</span>
-                              {job.location && <span className="text-sm text-slate-400 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {job.location}</span>}
+                              <span className="text-sm text-slate-500 flex items-center gap-1"><Building2 className="h-3.5 w-3.5" /> {job.clientName}</span>
+                              {job.location && <span className="text-sm text-slate-500 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {job.location}</span>}
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            {job.postedDate && <span className="text-xs text-slate-500">{getTimeAgo(job.postedDate)}</span>}
-                            <Badge className={`block mt-1 text-[10px] ${job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-slate-700 text-slate-400'}`}>{job.status || 'Open'}</Badge>
+                            {job.postedDate && <span className="text-xs text-slate-400">{getTimeAgo(job.postedDate)}</span>}
+                            <Badge className={`block mt-1 text-[10px] ${job.status?.toLowerCase() === 'open' || job.status?.toLowerCase() === 'active' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>{job.status || 'Open'}</Badge>
                           </div>
                         </div>
-                        {job.description && <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-2">{job.description}</p>}
+                        {job.description && <p className="text-sm text-slate-600 leading-relaxed mb-3 line-clamp-2">{job.description}</p>}
                         {job.skills && job.skills.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mb-3">
-                            {job.skills.map((skill, si) => <Badge key={si} className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>)}
+                            {job.skills.map((skill, si) => <Badge key={si} className="bg-indigo-50 text-indigo-700 border-indigo-200 text-[11px] px-2 py-0.5 font-normal">{skill}</Badge>)}
                           </div>
                         )}
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-slate-700/50">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-slate-100">
                           {job.budget && (
-                            <span className="text-sm font-semibold text-slate-100 flex items-center gap-1">
-                              {getCurrencySymbol(job.currency) === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-cyan-400" /> : <DollarSign className="h-3.5 w-3.5 text-cyan-400" />}
+                            <span className="text-sm font-semibold text-slate-900 flex items-center gap-1">
+                              {getCurrencySymbol(job.currency) === '₹' ? <IndianRupee className="h-3.5 w-3.5 text-cyan-600" /> : <DollarSign className="h-3.5 w-3.5 text-cyan-600" />}
                               {job.budget}
                             </span>
                           )}
-                          {job.duration && <span className="text-xs text-slate-400 flex items-center gap-1"><Timer className="h-3.5 w-3.5" /> {job.duration}</span>}
-                          {job.deadline && <span className="text-xs text-slate-400 flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}</span>}
-                          {job.applicants !== undefined && job.applicants > 0 && <span className="text-xs text-slate-400 flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {job.applicants} applicants</span>}
-                          {job.postedDate && <span className="text-xs text-slate-500 flex items-center gap-1 ml-auto"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
+                          {job.duration && <span className="text-xs text-slate-500 flex items-center gap-1"><Timer className="h-3.5 w-3.5" /> {job.duration}</span>}
+                          {job.deadline && <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> Deadline: {new Date(job.deadline).toLocaleDateString()}</span>}
+                          {job.applicants !== undefined && job.applicants > 0 && <span className="text-xs text-slate-500 flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {job.applicants} applicants</span>}
+                          {job.postedDate && <span className="text-xs text-slate-400 flex items-center gap-1 ml-auto"><Clock className="h-3.5 w-3.5" /> Posted: {new Date(job.postedDate).toLocaleDateString()} {new Date(job.postedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
                         </div>
                       </CardContent>
                     </Card>
@@ -272,17 +272,17 @@ const FreelancerOverview = () => {
 
       {/* My Requests - Tabbed Section */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Target className="h-5 w-5 text-indigo-400" /> My Requests
+        <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+          <Target className="h-5 w-5 text-indigo-600" /> My Requests
         </h2>
 
         <Tabs value={requestsTab} onValueChange={setRequestsTab} className="w-full">
-          <TabsList className="bg-slate-800/50 border border-slate-700/50">
-            <TabsTrigger value="interests" className="data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-300 text-slate-400">
-              My Interests <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-[10px] px-1.5">{interests.length}</Badge>
+          <TabsList className="bg-white border border-slate-200">
+            <TabsTrigger value="interests" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 text-slate-600">
+              My Interests <Badge variant="outline" className="ml-2 border-slate-200 text-slate-500 text-[10px] px-1.5">{interests.length}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="demos" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-300 text-slate-400">
-              Scheduled Demos <Badge variant="outline" className="ml-2 border-slate-700/50 text-slate-400 text-[10px] px-1.5">{demoRequests.length}</Badge>
+            <TabsTrigger value="demos" className="data-[state=active]:bg-cyan-50 data-[state=active]:text-cyan-700 text-slate-600">
+              Scheduled Demos <Badge variant="outline" className="ml-2 border-slate-200 text-slate-500 text-[10px] px-1.5">{demoRequests.length}</Badge>
             </TabsTrigger>
           </TabsList>
 
