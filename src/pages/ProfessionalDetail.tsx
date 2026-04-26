@@ -10,10 +10,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { getFilteredFreelancers, FreelancerProfileDto, requestDemo } from '@/services/clientApi';
+import { getFilteredFreelancers, FreelancerProfileDto } from '@/services/clientApi';
+import HireRequestModal from '@/components/HireRequestModal';
 
 const getCurrencySymbol = (country?: string) => {
   if (!country) return '$';
