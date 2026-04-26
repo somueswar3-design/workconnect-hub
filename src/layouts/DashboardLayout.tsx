@@ -26,16 +26,16 @@ const DashboardLayout = ({ children, userType, isActive }: DashboardLayoutProps)
     : user?.email?.[0]?.toUpperCase() || 'U';
 
   return (
-    <div className="flex flex-col h-screen bg-[#0A1628] text-slate-100">
+    <div className="flex flex-col h-screen bg-slate-50 text-slate-900">
       {/* Top Header Bar */}
-      <header className="h-14 bg-[#0D1B2E] border-b border-slate-700/40 flex items-center justify-between px-6 shrink-0">
+      <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 shadow-sm">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="WorkSupport360" className="h-8 w-8 rounded-lg" />
           <span className="text-lg font-black tracking-tight italic">
             <span className="text-orange-500 mr-1">Work</span>
             <span className="text-orange-400 mr-1">Support</span>
-            <span className="text-white">360</span>
+            <span className="text-slate-900">360</span>
           </span>
         </Link>
 
@@ -45,16 +45,16 @@ const DashboardLayout = ({ children, userType, isActive }: DashboardLayoutProps)
             {userType === 'freelancer' ? 'Freelancer' : 'Client'}
           </Badge>
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-orange-700 flex items-center justify-center text-white text-sm font-bold">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-sm font-bold">
               {initials}
             </div>
-            <span className="text-sm font-medium text-slate-200">
+            <span className="text-sm font-medium text-slate-700">
               {user?.fullName || user?.email || 'User'}
             </span>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors ml-1"
+            className="flex items-center gap-1 text-slate-500 hover:text-red-500 transition-colors ml-1"
           >
             <X className="h-4 w-4" />
             <span className="text-xs">logout</span>
@@ -65,7 +65,7 @@ const DashboardLayout = ({ children, userType, isActive }: DashboardLayoutProps)
       {/* Sidebar + Content */}
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar userType={userType} isActive={isActive} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-slate-50">
           {children}
         </main>
       </div>
