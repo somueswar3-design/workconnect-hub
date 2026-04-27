@@ -74,7 +74,7 @@ const Header = () => {
                     navigate('/', { state: { scrollToFreelancers: true } });
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-orange-400 transition-colors rounded-full hover:bg-gray-800"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors rounded-full hover:bg-gray-100"
               >
                 <Users className="h-4 w-4" />
                 Hire Freelancers
