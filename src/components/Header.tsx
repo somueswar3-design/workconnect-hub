@@ -53,14 +53,14 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800 shadow-lg">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
             <span className="text-xl font-black tracking-tight italic">
   <span className="text-orange-500 mr-1">Work</span>
   <span className="text-orange-400 mr-1">Support</span>
-  <span className="text-white">360</span>
+  <span className="text-gray-900">360</span>
 </span>
           </Link>
 
@@ -74,7 +74,7 @@ const Header = () => {
                     navigate('/', { state: { scrollToFreelancers: true } });
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-orange-400 transition-colors rounded-full hover:bg-gray-800"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors rounded-full hover:bg-gray-100"
               >
                 <Users className="h-4 w-4" />
                 Hire Freelancers
@@ -85,7 +85,7 @@ const Header = () => {
               <>
                 <Link
                   to={getDashboardPath()}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-blue-400 transition-colors rounded-full hover:bg-gray-800"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-500 transition-colors rounded-full hover:bg-gray-100"
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   My Works
@@ -107,11 +107,11 @@ const Header = () => {
                 )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-200 border border-gray-700">
+                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 border border-gray-200">
                       <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white text-sm font-bold">
                         {user?.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                       </div>
-                      <span className="text-sm font-medium text-gray-200 max-w-[120px] truncate">
+                      <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
                         {user?.fullName || user?.email || 'User'}
                       </span>
                     </button>
@@ -137,7 +137,7 @@ const Header = () => {
               <>
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-gray-200 hover:text-white border border-gray-700 hover:bg-gray-800 bg-transparent transition-all duration-200"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-300 hover:bg-gray-100 bg-transparent transition-all duration-200"
                 >
                   Log in
                 </Link>
