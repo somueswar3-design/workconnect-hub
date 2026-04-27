@@ -129,9 +129,9 @@ const HeroSlider = () => {
           >
             <source src={slide.video} type="video/mp4" />
           </video>
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
+          {/* Gradient overlay - lighter and brighter */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-transparent to-white/20" />
         </motion.div>
       </AnimatePresence>
 

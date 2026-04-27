@@ -53,7 +53,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-xl border-b border-gray-800 shadow-lg">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <img src={logo} alt="WorkSupport360" className="h-9 w-9 rounded-xl" />
