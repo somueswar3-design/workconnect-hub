@@ -60,7 +60,7 @@ const Header = () => {
             <span className="text-xl font-black tracking-tight italic">
   <span className="text-orange-500 mr-1">Work</span>
   <span className="text-orange-400 mr-1">Support</span>
-  <span className="text-white">360</span>
+  <span className="text-gray-900">360</span>
 </span>
           </Link>
 
