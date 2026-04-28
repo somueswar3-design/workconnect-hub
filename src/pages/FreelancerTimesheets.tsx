@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { 
-  Clock, Calendar, Send, Save, ChevronLeft, ChevronRight, 
+import {
+  Clock, Calendar, Send, Save, ChevronLeft, ChevronRight,
   Loader2, CheckCircle2, XCircle, FileText, Briefcase, Filter, Lock, AlertCircle, Plus
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,11 +18,11 @@ import { toast } from 'sonner';
 import { Timesheet, TimesheetEntry } from '@/types/timesheet';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend, parseISO, isBefore, isAfter, isEqual } from 'date-fns';
 import { cn } from '@/lib/utils';
-
+ 
 const FreelancerTimesheets = () => {
   const { user } = useAuth();
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
-
+ 
   // Current month/year for the editor
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -31,24 +31,24 @@ const FreelancerTimesheets = () => {
   const [submitting, setSubmitting] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingTimesheetId, setEditingTimesheetId] = useState<string | null>(null);
-
+ 
   // Bulk fill state
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulkFromDate, setBulkFromDate] = useState<Date | undefined>();
   const [bulkToDate, setBulkToDate] = useState<Date | undefined>();
   const [bulkHours, setBulkHours] = useState('8');
   const [bulkSkipWeekends, setBulkSkipWeekends] = useState(true);
-
+ 
   // From/To date filter
   const [filterFromDate, setFilterFromDate] = useState<Date | undefined>();
   const [filterToDate, setFilterToDate] = useState<Date | undefined>();
-
+ 
   const daysInMonth = useMemo(() => {
     const start = startOfMonth(new Date(currentYear, currentMonth - 1));
     const end = endOfMonth(start);
     return eachDayOfInterval({ start, end });
   }, [currentMonth, currentYear]);
-
+ 
   const filteredDays = useMemo(() => {
     return daysInMonth.filter(day => {
       if (filterFromDate && isBefore(day, filterFromDate)) return false;
@@ -56,7 +56,7 @@ const FreelancerTimesheets = () => {
       return true;
     });
   }, [daysInMonth, filterFromDate, filterToDate]);
-
+ 
   const openNewTimesheet = () => {
     setEditingTimesheetId(null);
     setFreelancerNotes('');
@@ -69,7 +69,7 @@ const FreelancerTimesheets = () => {
     })));
     setEditorOpen(true);
   };
-
+ 
   const openExistingTimesheet = (ts: Timesheet) => {
     setEditingTimesheetId(ts.id);
     setCurrentMonth(ts.month);
@@ -77,7 +77,7 @@ const FreelancerTimesheets = () => {
     setFreelancerNotes(ts.freelancerNotes || '');
     setFilterFromDate(undefined);
     setFilterToDate(undefined);
-
+ 
     const start = startOfMonth(new Date(ts.year, ts.month - 1));
     const end = endOfMonth(start);
     const allDays = eachDayOfInterval({ start, end });
@@ -88,7 +88,7 @@ const FreelancerTimesheets = () => {
     }));
     setEditorOpen(true);
   };
-
+ 
   const updateEntry = (date: string, value: string) => {
     const cleaned = value.replace(/[^0-9.]/g, '');
     const parts = cleaned.split('.');
@@ -96,7 +96,7 @@ const FreelancerTimesheets = () => {
     const num = sanitized === '' ? 0 : Math.min(24, Math.max(0, parseFloat(sanitized) || 0));
     setEntries(prev => prev.map(e => e.date === date ? { ...e, hours: num } : e));
   };
-
+ 
   const handleBulkFill = () => {
     if (!bulkFromDate || !bulkToDate) {
       toast.error('Please select both From and To dates');
@@ -118,15 +118,15 @@ const FreelancerTimesheets = () => {
     setBulkOpen(false);
     toast.success(`${hours}h applied to selected date range`);
   };
-
+ 
   const totalHours = entries.reduce((sum, e) => sum + (e.hours || 0), 0);
-
+ 
   const existingTimesheet = editingTimesheetId ? timesheets.find(t => t.id === editingTimesheetId) : null;
   const isLocked = existingTimesheet?.status === 'approved';
   const isSubmitted = existingTimesheet?.status === 'submitted';
   const isEditable = !isLocked && !isSubmitted;
   const isRejected = existingTimesheet?.status === 'rejected';
-
+ 
   const buildTimesheet = (status: 'draft' | 'submitted'): Timesheet => ({
     id: editingTimesheetId || `ts-${Date.now()}`,
     assignmentId: 0,
@@ -143,7 +143,7 @@ const FreelancerTimesheets = () => {
     submittedOn: status === 'submitted' ? new Date().toISOString() : undefined,
     freelancerNotes,
   });
-
+ 
   const handleSaveDraft = () => {
     const ts = buildTimesheet('draft');
     setTimesheets(prev => {
@@ -153,7 +153,7 @@ const FreelancerTimesheets = () => {
     setEditingTimesheetId(ts.id);
     toast.success('Draft saved successfully');
   };
-
+ 
   const handleSubmitTimesheet = () => {
     if (totalHours === 0) {
       toast.error('Please fill in hours before submitting');
@@ -174,7 +174,7 @@ const FreelancerTimesheets = () => {
       setSubmitting(false);
     }, 800);
   };
-
+ 
   const changeMonth = (delta: number) => {
     let m = currentMonth + delta;
     let y = currentYear;
@@ -188,7 +188,7 @@ const FreelancerTimesheets = () => {
     const allDays = eachDayOfInterval({ start, end });
     setEntries(allDays.map(d => ({ date: format(d, 'yyyy-MM-dd'), hours: 0, notes: '' })));
   };
-
+ 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
       draft: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
@@ -198,7 +198,7 @@ const FreelancerTimesheets = () => {
     };
     return map[status] || '';
   };
-
+ 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -212,7 +212,7 @@ const FreelancerTimesheets = () => {
           <Plus className="h-4 w-4" /> New Timesheet
         </Button>
       </div>
-
+ 
       {timesheets.length > 0 && (
         <div className="space-y-3">
           <p className="text-xs text-slate-500 uppercase tracking-wider">Your Timesheets</p>
@@ -238,7 +238,7 @@ const FreelancerTimesheets = () => {
           ))}
         </div>
       )}
-
+ 
       {timesheets.length === 0 && (
         <Card className="border border-slate-700/50 bg-[#0D1B2E]">
           <CardContent className="py-16 text-center text-slate-400">
@@ -248,7 +248,7 @@ const FreelancerTimesheets = () => {
           </CardContent>
         </Card>
       )}
-
+ 
       <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
         <DialogContent className="sm:max-w-4xl bg-[#0D1B2E] border-slate-700/50 text-slate-100 max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
@@ -262,43 +262,43 @@ const FreelancerTimesheets = () => {
               {isRejected && <Badge className="ml-2 bg-red-500/10 text-red-400">Rejected — Please Resubmit</Badge>}
             </DialogDescription>
           </DialogHeader>
-
+ 
           {isLocked && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-emerald-300 text-sm">
               <Lock className="h-4 w-4 shrink-0" />
               This timesheet has been approved and cannot be modified.
             </div>
           )}
-
+ 
           {isSubmitted && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-amber-300 text-sm">
               <AlertCircle className="h-4 w-4 shrink-0" />
               This timesheet is pending client approval. You cannot edit it until the client responds.
             </div>
           )}
-
+ 
           <div className="flex flex-wrap items-center justify-between gap-3 py-2">
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(-1)} disabled={!isEditable}>
+              <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600" onClick={() => changeMonth(-1)} disabled={!isEditable}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm font-semibold text-slate-200 w-32 text-center">
                 {format(new Date(currentYear, currentMonth - 1), 'MMMM yyyy')}
               </span>
-              <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-slate-700/50 text-slate-300" onClick={() => changeMonth(1)} disabled={!isEditable}>
+              <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600" onClick={() => changeMonth(1)} disabled={!isEditable}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-
+ 
             <div className="flex items-center gap-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-7 gap-1 text-xs border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                  <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600">
                     <Calendar className="h-3 w-3" />
                     {filterFromDate ? format(filterFromDate, 'dd MMM') : 'From'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-[#0D1B2E] border-slate-700/50" align="start">
+             <PopoverContent className="w-auto p-0 bg-[#0D1B2E] border-slate-700/50" align="start">
                   <CalendarWidget
                     mode="single"
                     selected={filterFromDate}
@@ -310,7 +310,7 @@ const FreelancerTimesheets = () => {
               </Popover>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-7 gap-1 text-xs border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                  <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600">
                     <Calendar className="h-3 w-3" />
                     {filterToDate ? format(filterToDate, 'dd MMM') : 'To'}
                   </Button>
@@ -331,21 +331,22 @@ const FreelancerTimesheets = () => {
                 </Button>
               )}
             </div>
-
+ 
             <div className="flex items-center gap-2">
               <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">Total: {totalHours}h</Badge>
               {isEditable && (
-                <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-700/50 text-slate-300 hover:bg-slate-700/50" onClick={() => {
+                <Button size="sm" variant="outline" className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600" onClick={() => {
                   setBulkFromDate(daysInMonth[0]);
                   setBulkToDate(daysInMonth[daysInMonth.length - 1]);
                   setBulkOpen(true);
                 }}>
-                  <Filter className="h-3 w-3" /> Bulk Fill
+                  <Filter className="h-3 w-3" />
+                  Bulk Fill
                 </Button>
               )}
             </div>
           </div>
-
+ 
           <div className="flex-1 overflow-y-auto border border-slate-700/50 rounded-lg">
             <Table>
               <TableHeader>
@@ -393,14 +394,14 @@ const FreelancerTimesheets = () => {
               </TableBody>
             </Table>
           </div>
-
+ 
           {isRejected && existingTimesheet?.clientComments && (
             <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20">
               <p className="text-[10px] text-red-400 uppercase tracking-wider mb-1">Client Feedback — Please fix and resubmit</p>
               <p className="text-sm text-red-300">{existingTimesheet.clientComments}</p>
             </div>
           )}
-
+ 
           <div>
             <Label className="text-sm font-medium text-slate-300">Notes</Label>
             <Textarea
@@ -412,15 +413,15 @@ const FreelancerTimesheets = () => {
               disabled={!isEditable}
             />
           </div>
-
+ 
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setEditorOpen(false)} className="border-slate-700/50 text-slate-300 hover:bg-slate-700/50">Close</Button>
+            <Button variant="outline" onClick={() => setEditorOpen(false)} className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600">Close</Button>
             {isEditable && (
               <>
-                <Button variant="outline" onClick={handleSaveDraft} className="gap-1.5 border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                <Button variant="outline" onClick={handleSaveDraft} className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600">
                   <Save className="h-4 w-4" /> Save Draft
                 </Button>
-                <Button onClick={handleSubmitTimesheet} disabled={submitting} className="gap-1.5 bg-cyan-600 hover:bg-cyan-700">
+                <Button onClick={handleSubmitTimesheet} disabled={submitting} className="gap-1.5 h-7 text-xs px-2 bg-cyan-600 hover:bg-cyan-700">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   {submitting ? 'Submitting...' : 'Submit for Approval'}
                 </Button>
@@ -429,7 +430,7 @@ const FreelancerTimesheets = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+ 
       <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
         <DialogContent className="sm:max-w-sm bg-[#0D1B2E] border-slate-700/50 text-slate-100">
           <DialogHeader>
@@ -497,5 +498,7 @@ const FreelancerTimesheets = () => {
     </div>
   );
 };
-
+ 
 export default FreelancerTimesheets;
+ 
+ 

@@ -217,7 +217,7 @@ const InvoiceGeneration = () => {
                     <span className="text-amber-400">Platform Fee (10%): {inv.currencySymbol}{inv.platformFee.toLocaleString()}</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openPreview(inv)} className="h-7 text-xs border-slate-700/50 text-slate-300 hover:bg-slate-700/50">
+                    <Button size="sm" variant="outline" onClick={() => openPreview(inv)} className="gap-1 text-xs h-7 border-slate-400 text-white bg-slate-700 hover:bg-slate-600">
                       <FileText className="h-3 w-3 mr-1" /> View
                     </Button>
                     {inv.status === 'draft' && (
