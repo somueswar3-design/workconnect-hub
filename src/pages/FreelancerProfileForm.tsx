@@ -205,7 +205,7 @@ const FreelancerProfileForm = () => {
         if (data && data.id) {
           setProfileId(data.id);
           form.reset({
-            fullName: data.fullName || '',
+            fullName: data.fullName || user.fullName || '',
             gender: reverseGenderMap[data.gender] || '',
             country: data.country || '',
             phoneNumber: data.phoneNumber || '',
@@ -245,6 +245,9 @@ const FreelancerProfileForm = () => {
           if (data.portfolioURL) done.add('portfolio');
           if (data.linkedInProfile || data.projectUrls) done.add('links');
           setCompletedSections(done);
+        } else if (user.fullName) {
+          // No profile yet — prefill name from token so user doesn't retype it
+          form.setValue('fullName', user.fullName);
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
@@ -355,8 +358,8 @@ const FreelancerProfileForm = () => {
   };
 
   const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
-    identity: ['fullName', 'gender', 'country', 'phoneNumber'],
-    about: ['headline', 'bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    identity: ['fullName', 'gender', 'country', 'phoneNumber', 'headline', 'bioDescription'],
+    about: ['experienceYears', 'anyFreelancingExperience'],
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
     experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
@@ -602,24 +605,6 @@ const FreelancerProfileForm = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-end mt-4">
-                    <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
-                      className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
-                      Continue → About & bio
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* ABOUT */}
-              {activePage === 'about' && (
-                <div>
-                  <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
-                    <p className="text-sm text-gray-400 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
-                  </div>
-
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
                     <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
                       <span className="text-base">✦</span> About me
@@ -644,6 +629,24 @@ const FreelancerProfileForm = () => {
                         <FormMessage />
                       </FormItem>
                     )} />
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
+                      className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
+                      Continue → About & bio
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ABOUT */}
+              {activePage === 'about' && (
+                <div>
+                  <div className="mb-8">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 8</div>
+                    <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
+                    <p className="text-sm text-gray-400 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
                   </div>
 
                   <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
