@@ -99,15 +99,6 @@ const FreelancerOverview = () => {
     load();
   }, [user?.userId]);
 
-  useEffect(() => {
-    if (!loading) {
-      const valid = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
-      if (valid.length === 0) {
-        const timer = setTimeout(() => setShowNotifyPopup(true), 800);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [loading, assignments]);
 
   const validAssignments = Array.isArray(assignments) ? assignments.filter(a => a.projectId !== 0) : [];
   const activeAssignments = validAssignments.filter(a => a.status?.toLowerCase() === 'active');
