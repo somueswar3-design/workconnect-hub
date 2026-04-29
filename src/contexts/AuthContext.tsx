@@ -37,23 +37,31 @@ const ROLE_CLAIM = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role
 const USERID_CLAIM = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
 const NAME_CLAIM = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
+// Read auth from localStorage SYNCHRONOUSLY so the very first render already
+// has the correct authenticated state. Doing this in useEffect causes a brief
+// render where isAuthenticated=false, which makes ProtectedRoute redirect to
+// /login on every page refresh.
+const readInitialAuth = (): { token: string | null; user: AuthUser | null } => {
+  try {
     const savedToken = localStorage.getItem('auth_token');
     const savedUser = localStorage.getItem('auth_user');
     if (savedToken && savedUser) {
-      try {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
-      }
+      return { token: savedToken, user: JSON.parse(savedUser) as AuthUser };
     }
-  }, []);
+  } catch {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+  }
+  return { token: null, user: null };
+};
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const initial = readInitialAuth();
+  const [user, setUser] = useState<AuthUser | null>(initial.user);
+  const [token, setToken] = useState<string | null>(initial.token);
+  // Auth is ready immediately because we hydrate synchronously above.
+  const [ready] = useState(true);
+
 
   const login = (newToken: string, userOverrides?: Partial<AuthUser>) => {
     const claims = decodeJwt(newToken);
