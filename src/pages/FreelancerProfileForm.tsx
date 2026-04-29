@@ -526,7 +526,7 @@ const FreelancerProfileForm = () => {
                   Please finish all steps and click <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[11px] font-bold mx-0.5">Publish profile ✓</span> on the last tab.
                 </div>
                 <div className="text-[12px] text-orange-600/90 mt-1 leading-relaxed">
-                  Your profile will <span className="font-semibold">not be visible to clients</span> until you reach the final <span className="font-medium">Links &amp; portfolio</span> step and publish it.
+                  Your profile will <span className="font-semibold">not be visible to clients</span> until you reach the final <span className="font-medium">Languages</span> step and publish it.
                 </div>
               </div>
               <span className="hidden sm:inline-flex shrink-0 self-center text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white text-orange-600 border border-orange-200">
