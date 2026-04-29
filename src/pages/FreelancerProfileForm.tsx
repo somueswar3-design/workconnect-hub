@@ -232,6 +232,19 @@ const FreelancerProfileForm = () => {
           // Update profile percentage in context
           const pct = calculateProfilePercentage(data);
           updateUser({ profilePercentage: pct, fullName: data.fullName || user.fullName });
+
+          // Pre-mark sections as complete if their fields are already filled (from prior save)
+          const done = new Set<string>();
+          if (data.fullName && data.country && data.phoneNumber) done.add('identity');
+          if (data.bioDescption || data.headline) done.add('about');
+          if (data.primarySkills || data.skillCategory) done.add('skills');
+          if (data.experienceYears || data.currentCompany || data.currentCompanyRole) done.add('experience');
+          if (data.hourRate) done.add('rates');
+          if (data.hoursAvailablePerDay) done.add('availability');
+          if (data.languagesKnown || data.speakingLanguage) done.add('languages');
+          if (data.portfolioURL) done.add('portfolio');
+          if (data.linkedInProfile || data.projectUrls) done.add('links');
+          setCompletedSections(done);
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
