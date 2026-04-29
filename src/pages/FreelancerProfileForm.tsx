@@ -88,7 +88,6 @@ const NAV_SECTIONS = [
     title: 'Profile',
     items: [
       { id: 'identity', icon: '◉', label: 'Identity & details' },
-      { id: 'about', icon: '✦', label: 'About & bio' },
     ],
   },
   {
@@ -236,7 +235,7 @@ const FreelancerProfileForm = () => {
           // Pre-mark sections as complete if their fields are already filled (from prior save)
           const done = new Set<string>();
           if (data.fullName && data.country && data.phoneNumber && data.bioDescption) done.add('identity');
-          if (data.experienceYears || data.anyFreelnacingExperience) done.add('about');
+          
           if (data.primarySkills || data.skillCategory) done.add('skills');
           if (data.experienceYears || data.currentCompany || data.currentCompanyRole) done.add('experience');
           if (data.hourRate) done.add('rates');
@@ -359,7 +358,7 @@ const FreelancerProfileForm = () => {
 
   const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
     identity: ['fullName', 'gender', 'country', 'phoneNumber', 'headline', 'bioDescription'],
-    about: ['experienceYears', 'anyFreelancingExperience'],
+    
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
     experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
@@ -542,7 +541,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'identity' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Identity & details</h1>
                     <p className="text-sm text-gray-400 mt-1">Set up your personal information and how you appear to clients.</p>
                   </div>
@@ -632,60 +631,7 @@ const FreelancerProfileForm = () => {
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button type="button" onClick={() => markDoneAndContinue('identity', 'about')}
-                      className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
-                      Continue → About & bio
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* ABOUT */}
-              {activePage === 'about' && (
-                <div>
-                  <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 8</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>About & bio</h1>
-                    <p className="text-sm text-gray-400 mt-1">Write a compelling bio that tells clients who you are and what you do best.</p>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
-                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">◉</span> Years of experience
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField control={form.control} name="experienceYears" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabel}>Total IT Experience (Years) *</FormLabel>
-                          <FormControl><input type="number" className={fieldInput} placeholder="e.g. 5" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                      <FormField control={form.control} name="anyFreelancingExperience" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabel}>Freelancing Experience *</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl><SelectTrigger className={fieldInput}><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                            <SelectContent>
-                              <SelectItem value="new">New to Freelancing</SelectItem>
-                              <SelectItem value="0-1">Less than 1 Year</SelectItem>
-                              <SelectItem value="1-3">1 - 3 Years</SelectItem>
-                              <SelectItem value="3-5">3 - 5 Years</SelectItem>
-                              <SelectItem value="5+">5+ Years</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between mt-4">
-                    <button type="button" onClick={() => setActivePage('identity')}
-                      className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
-                      ← Back
-                    </button>
-                    <button type="button" onClick={() => markDoneAndContinue('about', 'skills')}
+                    <button type="button" onClick={() => markDoneAndContinue('identity', 'skills')}
                       className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
                       Continue → Skills
                     </button>
@@ -697,7 +643,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'skills' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Skills & tools</h1>
                     <p className="text-sm text-gray-400 mt-1">Add the skills clients search for. Be specific — "React 18" beats "JavaScript".</p>
                   </div>
@@ -790,7 +736,7 @@ const FreelancerProfileForm = () => {
                   </div>
 
                   <div className="flex justify-between mt-4">
-                    <button type="button" onClick={() => setActivePage('about')}
+                    <button type="button" onClick={() => setActivePage('identity')}
                       className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
                       ← Back
                     </button>
@@ -806,7 +752,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'experience' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Work experience</h1>
                     <p className="text-sm text-gray-400 mt-1">Add your employment and freelance history.</p>
                   </div>
@@ -924,7 +870,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'rates' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Rates & hours</h1>
                     <p className="text-sm text-gray-400 mt-1">Set your hourly rate and daily availability.</p>
                   </div>
@@ -1000,7 +946,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'availability' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Availability</h1>
                     <p className="text-sm text-gray-400 mt-1">Tell clients exactly when and how much you can work.</p>
                   </div>
@@ -1051,7 +997,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'languages' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 7 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Languages</h1>
                     <p className="text-sm text-gray-400 mt-1">List languages you can work in. Clients filter by this.</p>
                   </div>
