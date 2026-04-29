@@ -109,8 +109,6 @@ const NAV_SECTIONS = [
     title: 'Preferences',
     items: [
       { id: 'languages', icon: '◁', label: 'Languages' },
-      { id: 'portfolio', icon: '◆', label: 'Portfolio' },
-      { id: 'links', icon: '▷', label: 'Links & socials' },
     ],
   },
 ];
