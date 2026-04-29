@@ -519,45 +519,6 @@ const FreelancerOverview = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showNotifyPopup} onOpenChange={setShowNotifyPopup}>
-        <DialogContent className="sm:max-w-md border-slate-200 shadow-2xl overflow-hidden p-0 bg-white" aria-describedby={undefined}>
-          <DialogTitle className="sr-only">Profile Under Review</DialogTitle>
-          <div className="h-2 bg-gradient-to-r from-cyan-500 via-indigo-500 to-orange-500" />
-          <div className="p-8 text-center space-y-6">
-            <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
-              <div className="h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center relative">
-                <Bell className="h-10 w-10 text-primary" />
-                <motion.div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary flex items-center justify-center" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                  <Sparkles className="h-3 w-3 text-secondary-foreground" />
-                </motion.div>
-              </div>
-            </motion.div>
-            <div>
-              <h2 className="text-xl font-bold text-foreground mb-2">🎉 Profile Under Review!</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">Your profile is being reviewed. Once shortlisted for a matching project, we'll notify you immediately!</p>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20">
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
-                <span className="text-xs font-medium text-primary">Email</span>
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/20 border border-secondary/30">
-                <div className="h-10 w-10 rounded-full bg-secondary/30 flex items-center justify-center"><Phone className="h-5 w-5 text-secondary-foreground" /></div>
-                <span className="text-xs font-medium text-secondary-foreground">Phone</span>
-              </motion.div>
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-col items-center gap-2 p-3 rounded-xl bg-accent/20 border border-accent/30">
-                <div className="h-10 w-10 rounded-full bg-accent/30 flex items-center justify-center"><MessageCircle className="h-5 w-5 text-accent-foreground" /></div>
-                <span className="text-xs font-medium text-accent-foreground">Chat</span>
-              </motion.div>
-            </div>
-            <p className="text-xs text-muted-foreground">💡 Tip: Complete your profile and stay <strong>Available</strong> to get matched faster!</p>
-            <div className="flex gap-3">
-              <Button onClick={() => { setShowNotifyPopup(false); navigate('/freelancer-profile'); }} className="flex-1 gap-2"><User className="h-4 w-4" /> Update Profile</Button>
-              <Button variant="outline" onClick={() => setShowNotifyPopup(false)} className="flex-1">Got It!</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
