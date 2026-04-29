@@ -41,6 +41,7 @@ const profileSchema = z.object({
   hourRate: z.string().min(1, 'Hourly rate is required'),
   isAvailableInWeekends: z.boolean().optional(),
   headline: z.string().max(120, 'Headline must be 120 chars or less').optional(),
+  about: z.string().max(500, 'About must be 500 chars or less').optional(),
   bioDescription: z.string().min(10, 'Bio must be at least 10 characters'),
   projectUrls: z.string().optional(),
   portfolioURL: z.string().optional(),
@@ -190,7 +191,7 @@ const FreelancerProfileForm = () => {
       engagementType: 'Part-time',
       languagesKnown: '', speakingLanguage: '',
       hoursAvailablePerDay: '', hourRate: '', isAvailableInWeekends: false,
-      bioDescription: '', headline: '', projectUrls: '', portfolioURL: '',
+      bioDescription: '', headline: '', about: '', projectUrls: '', portfolioURL: '',
     },
   });
 
@@ -225,6 +226,7 @@ const FreelancerProfileForm = () => {
             isAvailableInWeekends: data.isAvailbleInweeknds || false,
             bioDescription: data.bioDescption || '',
             headline: data.headline || '',
+            about: data.about || '',
             projectUrls: data.projectUrls || data.linkedInProfile || '',
             portfolioURL: data.portfolioURL || '',
           });
@@ -281,6 +283,7 @@ const FreelancerProfileForm = () => {
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription,
         headline: data.headline || '',
+        about: data.about || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -333,6 +336,7 @@ const FreelancerProfileForm = () => {
         isAvailbleInweeknds: data.isAvailableInWeekends || false,
         bioDescption: data.bioDescription || '',
         headline: data.headline || '',
+        about: data.about || '',
         linkedInProfile: data.projectUrls || '',
         skillCategory: data.skillCategory || '',
         engagementType: data.engagementType || 'Part-time',
@@ -557,6 +561,16 @@ const FreelancerProfileForm = () => {
                           <input className={fieldInput} placeholder="e.g. Senior Full-Stack Developer · React, Node, AWS" maxLength={120} {...field} />
                         </FormControl>
                         <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 120</div>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="about" render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className={fieldLabel}>About (short summary)</FormLabel>
+                        <FormControl>
+                          <textarea className={`${fieldInput} min-h-[80px] resize-y`} placeholder="A short summary about you — 1-2 sentences clients see first." maxLength={500} {...field} />
+                        </FormControl>
+                        <div className="text-[11px] text-gray-400 text-right mt-1">{field.value?.length || 0} / 500</div>
                         <FormMessage />
                       </FormItem>
                     )} />
