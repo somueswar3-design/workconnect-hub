@@ -13,6 +13,8 @@ interface AuthContextType {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
+  /** True once the provider has finished restoring auth from localStorage. */
+  ready: boolean;
   login: (token: string, user?: Partial<AuthUser>) => void;
   logout: () => void;
   updateUser: (user: Partial<AuthUser>) => void;
