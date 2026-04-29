@@ -48,7 +48,7 @@ const FreelancerOverview = () => {
   const [interestsLoading, setInterestsLoading] = useState(true);
   const [demosLoading, setDemosLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showNotifyPopup, setShowNotifyPopup] = useState(false);
+  
   const [selectedInterest, setSelectedInterest] = useState<FreelancerInterestResponseDto | null>(null);
   const [requestsTab, setRequestsTab] = useState('interests');
 
