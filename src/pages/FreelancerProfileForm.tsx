@@ -245,6 +245,9 @@ const FreelancerProfileForm = () => {
           if (data.portfolioURL) done.add('portfolio');
           if (data.linkedInProfile || data.projectUrls) done.add('links');
           setCompletedSections(done);
+        } else if (user.fullName) {
+          // No profile yet — prefill name from token so user doesn't retype it
+          form.setValue('fullName', user.fullName);
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
