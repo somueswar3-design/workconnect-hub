@@ -541,7 +541,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'identity' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 1 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Identity & details</h1>
                     <p className="text-sm text-gray-400 mt-1">Set up your personal information and how you appear to clients.</p>
                   </div>
@@ -643,7 +643,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'skills' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 2 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Skills & tools</h1>
                     <p className="text-sm text-gray-400 mt-1">Add the skills clients search for. Be specific — "React 18" beats "JavaScript".</p>
                   </div>
@@ -752,7 +752,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'experience' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 3 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Work experience</h1>
                     <p className="text-sm text-gray-400 mt-1">Add your employment and freelance history.</p>
                   </div>
@@ -870,7 +870,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'rates' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 4 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Rates & hours</h1>
                     <p className="text-sm text-gray-400 mt-1">Set your hourly rate and daily availability.</p>
                   </div>
@@ -946,7 +946,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'availability' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 5 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Availability</h1>
                     <p className="text-sm text-gray-400 mt-1">Tell clients exactly when and how much you can work.</p>
                   </div>
@@ -997,7 +997,7 @@ const FreelancerProfileForm = () => {
               {activePage === 'languages' && (
                 <div>
                   <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 7 of 8</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Step 6 of 7</div>
                     <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Languages</h1>
                     <p className="text-sm text-gray-400 mt-1">List languages you can work in. Clients filter by this.</p>
                   </div>
