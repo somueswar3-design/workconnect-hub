@@ -358,8 +358,8 @@ const FreelancerProfileForm = () => {
   };
 
   const SECTION_FIELDS: Record<string, (keyof ProfileFormData)[]> = {
-    identity: ['fullName', 'gender', 'country', 'phoneNumber'],
-    about: ['headline', 'bioDescription', 'experienceYears', 'anyFreelancingExperience'],
+    identity: ['fullName', 'gender', 'country', 'phoneNumber', 'headline', 'bioDescription'],
+    about: ['experienceYears', 'anyFreelancingExperience'],
     skills: ['skillCategory', 'primarySkills', 'skillSetDesc'],
     experience: ['currentCompany', 'currentCompanyRole'],
     rates: ['hourRate', 'hoursAvailablePerDay'],
