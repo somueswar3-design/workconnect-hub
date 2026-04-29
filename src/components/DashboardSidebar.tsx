@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  User, Lock, Briefcase, Clock, Receipt, Building2,
+  User, Lock, Briefcase, Clock, Receipt, Building2, Home,
   LayoutDashboard, ChevronRight, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,8 +23,8 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
     {
       title: 'MY WORK',
       items: [
+        { icon: Home, label: 'Home', path: '/', color: 'text-orange-500' },
         { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer', color: 'text-cyan-500' },
-        { icon: Briefcase, label: 'My projects', path: '/freelancer/my-requests', color: 'text-orange-500' },
         { icon: Clock, label: 'Timesheets', path: '/freelancer/timesheets', color: 'text-emerald-500' },
         { icon: Receipt, label: 'My invoices', path: '/freelancer/invoices', color: 'text-violet-500' },
       ],
@@ -32,7 +32,6 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
     {
       title: 'ACCOUNT',
       items: [
-        { icon: User, label: 'My profile', path: '/freelancer/profile', color: 'text-pink-500' },
         { icon: Building2, label: 'Bank details', path: '/freelancer/bank-details', color: 'text-blue-500' },
       ],
     },
