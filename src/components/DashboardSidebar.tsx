@@ -26,7 +26,6 @@ const DashboardSidebar = ({ userType }: DashboardSidebarProps) => {
         { icon: Home, label: 'Home', path: '/', color: 'text-orange-500' },
         { icon: LayoutDashboard, label: 'Dashboard', path: '/freelancer', color: 'text-cyan-500' },
         { icon: Clock, label: 'Timesheets', path: '/freelancer/timesheets', color: 'text-emerald-500' },
-        { icon: Receipt, label: 'My invoices', path: '/freelancer/invoices', color: 'text-violet-500' },
       ],
     },
     {
