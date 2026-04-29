@@ -455,12 +455,6 @@ const FreelancerProfileForm = () => {
           >
             {isLoading ? 'Saving…' : (activePage === 'links' ? 'Publish ✓' : 'Continue →')}
           </button>
-          <div className="flex items-center gap-2 px-3 py-1 border border-gray-200 rounded-full cursor-pointer hover:border-orange-300 transition-colors">
-            <div className="w-[26px] h-[26px] rounded-full bg-orange-50 border border-orange-200 text-orange-500 text-[11px] font-semibold flex items-center justify-center">
-              {initials}
-            </div>
-            <span className="text-xs text-gray-600">{watchedValues.fullName || user?.fullName || 'User'}</span>
-          </div>
         </div>
       </header>
 
