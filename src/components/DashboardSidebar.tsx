@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  User, Lock, Briefcase, Clock, Receipt, Building2,
+  User, Lock, Briefcase, Clock, Receipt, Building2, Home,
   LayoutDashboard, ChevronRight, Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
