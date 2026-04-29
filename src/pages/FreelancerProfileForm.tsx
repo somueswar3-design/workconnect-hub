@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { toast } from 'sonner';
 import { countries, getCurrencySymbol } from '@/data/countries';
 import { useAuth } from '@/contexts/AuthContext';
-import PortfolioSection from '@/components/PortfolioSection';
+
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -109,8 +109,6 @@ const NAV_SECTIONS = [
     title: 'Preferences',
     items: [
       { id: 'languages', icon: '◁', label: 'Languages' },
-      { id: 'portfolio', icon: '◆', label: 'Portfolio' },
-      { id: 'links', icon: '▷', label: 'Links & socials' },
     ],
   },
 ];
@@ -528,7 +526,7 @@ const FreelancerProfileForm = () => {
                   Please finish all steps and click <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[11px] font-bold mx-0.5">Publish profile ✓</span> on the last tab.
                 </div>
                 <div className="text-[12px] text-orange-600/90 mt-1 leading-relaxed">
-                  Your profile will <span className="font-semibold">not be visible to clients</span> until you reach the final <span className="font-medium">Links &amp; portfolio</span> step and publish it.
+                  Your profile will <span className="font-semibold">not be visible to clients</span> until you reach the final <span className="font-medium">Languages</span> step and publish it.
                 </div>
               </div>
               <span className="hidden sm:inline-flex shrink-0 self-center text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white text-orange-600 border border-orange-200">
@@ -1064,79 +1062,7 @@ const FreelancerProfileForm = () => {
                     )} />
                   </div>
 
-                  <div className="flex justify-between mt-4">
-                    <button type="button" onClick={() => setActivePage('availability')}
-                      className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
-                      ← Back
-                    </button>
-                    <button type="button" onClick={() => markDoneAndContinue('languages', 'portfolio')}
-                      className="bg-orange-500 text-gray-900 border-none rounded-lg px-5 py-2 text-xs font-semibold hover:bg-orange-600 transition-colors">
-                      Continue → Portfolio
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* PORTFOLIO PROJECTS */}
-              {activePage === 'portfolio' && (
-                <PortfolioSection
-                  freelancerUserId={user?.userId || ''}
-                  onBack={() => setActivePage('languages')}
-                  onContinue={() => markDoneAndContinue('portfolio', 'links')}
-                />
-              )}
-
-              {/* LINKS & SOCIALS */}
-              {activePage === 'links' && (
-                <div>
-                  <div className="mb-8">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-orange-500 mb-1">Final step</div>
-                    <h1 className="text-[30px] font-serif leading-tight text-gray-900" style={{ fontFamily: "'Georgia', serif" }}>Links & portfolio</h1>
-                    <p className="text-sm text-gray-400 mt-1">Add your online presence so clients can learn more about you.</p>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 hover:border-gray-300 transition-colors">
-                    <div className="text-[13px] font-semibold mb-4 flex items-center gap-2">
-                      <span className="text-base">▷</span> Project URLs & portfolio
-                    </div>
-                    <FormField control={form.control} name="projectUrls" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={fieldLabel}>Project URLs (GitHub, live demos, case studies)</FormLabel>
-                        <FormControl>
-                          <SkillTagInput value={field.value || ''} onChange={field.onChange} placeholder="Paste a project URL and press Add..." />
-                        </FormControl>
-                        <FormMessage />
-                        <div className="mt-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">Sample GitHub projects — click to add</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {SAMPLE_PROJECT_URLS.map(url => {
-                              const tags = field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : [];
-                              const already = tags.includes(url);
-                              return (
-                                <button key={url} type="button"
-                                  disabled={already}
-                                  onClick={() => field.onChange([...tags, url].join(', '))}
-                                  className="px-3 py-1 rounded-full text-[11px] border border-gray-200 bg-gray-50 text-gray-600 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                                  {url.replace('https://github.com/', '')}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </FormItem>
-                    )} />
-                    <div className="mt-4">
-                      <FormField control={form.control} name="portfolioURL" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className={fieldLabel}>Portfolio / Website (optional)</FormLabel>
-                          <FormControl><input className={fieldInput} placeholder="https://yoursite.com" {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4">
+                  <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-4 mt-4">
                     <div className="flex items-center gap-4">
                       <span className="text-3xl">🎉</span>
                       <div>
@@ -1154,7 +1080,7 @@ const FreelancerProfileForm = () => {
                   </div>
 
                   <div className="flex justify-between mt-4">
-                    <button type="button" onClick={() => setActivePage('languages')}
+                    <button type="button" onClick={() => setActivePage('availability')}
                       className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
                       ← Back
                     </button>
