@@ -736,7 +736,7 @@ const FreelancerProfileForm = () => {
                   </div>
 
                   <div className="flex justify-between mt-4">
-                    <button type="button" onClick={() => setActivePage('about')}
+                    <button type="button" onClick={() => setActivePage('identity')}
                       className="bg-transparent border border-gray-200 rounded-lg px-4 py-2 text-[13px] text-gray-500 hover:border-gray-400 transition-colors">
                       ← Back
                     </button>
