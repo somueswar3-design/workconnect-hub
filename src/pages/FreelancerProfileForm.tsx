@@ -235,8 +235,8 @@ const FreelancerProfileForm = () => {
 
           // Pre-mark sections as complete if their fields are already filled (from prior save)
           const done = new Set<string>();
-          if (data.fullName && data.country && data.phoneNumber) done.add('identity');
-          if (data.bioDescption || data.headline) done.add('about');
+          if (data.fullName && data.country && data.phoneNumber && data.bioDescption) done.add('identity');
+          if (data.experienceYears || data.anyFreelnacingExperience) done.add('about');
           if (data.primarySkills || data.skillCategory) done.add('skills');
           if (data.experienceYears || data.currentCompany || data.currentCompanyRole) done.add('experience');
           if (data.hourRate) done.add('rates');
