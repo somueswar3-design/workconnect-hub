@@ -205,7 +205,7 @@ const FreelancerProfileForm = () => {
         if (data && data.id) {
           setProfileId(data.id);
           form.reset({
-            fullName: data.fullName || '',
+            fullName: data.fullName || user.fullName || '',
             gender: reverseGenderMap[data.gender] || '',
             country: data.country || '',
             phoneNumber: data.phoneNumber || '',
